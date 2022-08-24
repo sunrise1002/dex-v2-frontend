@@ -16,7 +16,10 @@
     "incremental": true,
     "baseUrl": ".",
     "paths": {
-      "@view/*": ["./src/views/*"]
+      "@view/*": ["./src/views/*"],
+      "@assets": ["./src/assets"],
+      "@hooks": ["./src/hooks"],
+      "@pancakeswap/localization": ["./packages/localization/src"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
