@@ -19,6 +19,8 @@
       "@view/*": ["./src/views/*"],
       "@assets": ["./src/assets"],
       "@hooks": ["./src/hooks"],
+      "@utils": ["./src/utils"],
+      "@components/*": ["./src/components/*"],
       "@pancakeswap/localization": ["./packages/localization/src"]
     }
   },

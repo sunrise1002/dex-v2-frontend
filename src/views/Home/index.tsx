@@ -3,7 +3,9 @@ import styled from 'styled-components'
 import HomeHeader from './components/HomeHeader'
 
 const Container = styled.div`
-  background-color: ${Color.backgroundHome}
+  display: flex;
+  flex: 1;
+  background-color: ${Color.baseColors.backgroundHome}
 `
 
 const Home: React.FC<React.PropsWithChildren> = () => {
