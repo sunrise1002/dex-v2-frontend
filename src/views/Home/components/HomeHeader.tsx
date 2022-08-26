@@ -9,7 +9,8 @@ const Container = styled.div`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  padding: 0px 72px;
+  padding: 15px 72px;
+  background-color: ${Color.baseColors.backgroundHome};
 `
 
 const FunctionsWrapper = styled.div`
@@ -24,6 +25,7 @@ const ProjectNameWrapper = styled.div`
   font-size: 23px;
   line-height: 32px;
   color: ${Color.baseColors.white};
+  z-index: 1;
 `
 
 const FunctionNameWrapper = styled.div`

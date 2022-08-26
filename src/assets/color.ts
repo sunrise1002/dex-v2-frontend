@@ -5,6 +5,8 @@ export type Colors = {
   empireStateGrey: string
   cistern: string
   freinachtBlack: string
+  charmedChalice: string
+  bayWharf: string
 }
 
 export const baseColors: Colors = {
@@ -12,6 +14,8 @@ export const baseColors: Colors = {
   white: '#FAFAFA',
   empireStateGrey: '#D7DBDF',
   cistern: '#A8B0B9',
-  freinachtBlack: '#242D35'
+  freinachtBlack: '#242D35',
+  charmedChalice: '#A1A1A1',
+  bayWharf: '#717D8A'
 }
 
