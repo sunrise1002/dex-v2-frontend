@@ -1,1 +1,1 @@
-export {default as homeFooterImage} from './home-footer.png'
+export {default as homePhoneImage} from './phone-home.png'

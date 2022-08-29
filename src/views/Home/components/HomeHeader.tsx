@@ -15,11 +15,18 @@ const Container = styled.div`
 
 const FunctionsWrapper = styled.div`
   display: flex;
+  flex: 1;
   flex-direction: row;
+  justify-content: center;
   align-items: center;
 `
 
+const FunctionsWrapper2 = styled(FunctionsWrapper)`
+  justify-content: flex-end;
+`
+
 const ProjectNameWrapper = styled.div`
+  flex: 1;
   font-weight: 700;
   font-family: 'Poppins', sans-serif;
   font-size: 23px;
@@ -103,7 +110,7 @@ const HomeHeader: React.FC<React.PropsWithChildren> = () => {
         </FunctionWrapper>
       </FunctionsWrapper>
 
-      <FunctionsWrapper>
+      <FunctionsWrapper2>
         <SettingWrapper>
           <LanguageIcon fill={Color.baseColors.cistern} />
         </SettingWrapper>
@@ -113,7 +120,7 @@ const HomeHeader: React.FC<React.PropsWithChildren> = () => {
         </SettingWrapper>
 
         <ConnectButton>{t('Connect wallet')}</ConnectButton>
-      </FunctionsWrapper>
+      </FunctionsWrapper2>
     </Container>
   )
 }

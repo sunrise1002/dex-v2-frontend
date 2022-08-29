@@ -1,6 +1,7 @@
 // Image
 export { default as LightImage } from './Images/LightImage'
 export { default as LightCircleImage } from './Images/LightCircleImage'
+export { default as PhoneHomeImage } from './Images/PhoneHomeImage'
 
 // Icon
 export { default as SwapHomeIcon } from './Icons/SwapHomeIcon'
@@ -13,3 +14,10 @@ export { default as MetamaskIcon } from './Icons/MetamaskIcon'
 export { default as CoinbaseIcon } from './Icons/CoinbaseIcon'
 export { default as WalletConnectIcon } from './Icons/WalletConnectIcon'
 export { default as FortmaticIcon } from './Icons/FortmaticIcon'
+export { default as SearchHomeIcon } from './Icons/SearchHomeIcon'
+export { default as MedalHomeIcon } from './Icons/MedalHomeIcon'
+export { default as BoxHomeIcon } from './Icons/BoxHomeIcon'
+export { default as LockHomeIcon } from './Icons/LockHomeIcon'
+export { default as CopyrightIcon } from './Icons/CopyrightIcon'
+export { default as GoogleIcon } from './Icons/GoogleIcon'
+export { default as TwitterIcon } from './Icons/TwitterIcon'
