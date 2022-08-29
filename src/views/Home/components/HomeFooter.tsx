@@ -1,4 +1,4 @@
-import { Color, Images } from '@assets';
+import { Color } from '@assets';
 import { CopyrightIcon, GoogleIcon, TwitterIcon } from '@components/Svg';
 import { useTranslation } from '@pancakeswap/localization';
 import styled from 'styled-components';
