@@ -1,5 +1,5 @@
 import { Color } from '@assets';
-import { ArrowHomeIcon, CoinbaseIcon, FortmaticIcon, MetamaskIcon, WalletConnectIcon } from '@components/Svg';
+import { ArrowHomeIcon, CoinbaseIcon, FortmaticIcon, MetamaskIcon, WalletConnectIcon } from '@components';
 import { useTranslation } from '@pancakeswap/localization';
 import styled from 'styled-components';
 
@@ -77,6 +77,10 @@ const ButtonWrapper = styled.div`
   cursor: pointer;
   &:hover {
     opacity: 0.65;
+  }
+  &:active {
+    opacity: 0.85;
+    transform: translateY(1px);
   }
 `
 

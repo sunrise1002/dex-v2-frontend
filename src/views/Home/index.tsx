@@ -1,10 +1,10 @@
 import { Color } from '@assets'
+import { Header } from '@components'
 import styled from 'styled-components'
 import ContentBottom from './components/ContentBottom'
 import ContentMiddle from './components/ContentMiddle'
 import ContentTop from './components/ContentTop'
 import HomeFooter from './components/HomeFooter'
-import HomeHeader from './components/HomeHeader'
 
 const Container = styled.div`
   display: flex;
@@ -15,7 +15,7 @@ const Container = styled.div`
 const Home: React.FC<React.PropsWithChildren> = () => {
   return (
     <Container>
-      <HomeHeader />
+      <Header isHomeScreen={true} />
       <ContentTop />
       <ContentMiddle />
       <ContentBottom />
