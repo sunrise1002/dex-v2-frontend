@@ -1,5 +1,5 @@
 import { Color } from '@assets'
-import { Header, ReloadIcon } from '@components'
+import { CurrencyTextInput, Header, ReloadIcon } from '@components'
 import { useTranslation } from '@pancakeswap/localization'
 import styled from 'styled-components'
 
@@ -78,6 +78,8 @@ const Swap: React.FC<React.PropsWithChildren> = () => {
           </ReloadIconWrapper>
         </SwapTextContainer>
         <TextMedium>{t('Trade tokens in an instant')}</TextMedium>
+
+        <CurrencyTextInput />
       </SwapFormContainer>
     </Container>
   )

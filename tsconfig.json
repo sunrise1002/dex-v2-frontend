@@ -21,7 +21,9 @@
       "@hooks": ["./src/hooks"],
       "@utils": ["./src/utils"],
       "@components": ["./src/components"],
-      "@pancakeswap/localization": ["./packages/localization/src"]
+      "@pancakeswap/localization": ["./packages/localization/src"],
+      "@pancakeswap/sdk": ["./packages/swap-sdk/src"],
+      "@pancakeswap/tokens": ["./packages/tokens/src"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],

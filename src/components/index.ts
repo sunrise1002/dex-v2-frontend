@@ -25,3 +25,5 @@ export { default as ReloadIcon } from './Svg/Icons/ReloadIcon'
 
 // Components
 export { default as Header } from './Header'
+export { default as CurrencyTextInput } from './CurrencyTextInput'
+export { Checkbox } from './Checkbox'
