@@ -15,7 +15,7 @@ const Container = styled.div`
 const Home: React.FC<React.PropsWithChildren> = () => {
   return (
     <Container>
-      <Header isHomeScreen={true} />
+      <Header isHomeScreen />
       <ContentTop />
       <ContentMiddle />
       <ContentBottom />

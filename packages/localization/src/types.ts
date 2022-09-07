@@ -1,10 +1,6 @@
-import translations from './config/translations.json'
+import { Language } from '@pancakeswap/uikit'
 
-export interface Language {
-  code: string;
-  language: string;
-  locale: string;
-}
+import translations from './config/translations.json'
 
 export type ContextData = {
   [key: string]: string | number

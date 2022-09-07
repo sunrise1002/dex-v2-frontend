@@ -1,9 +1,10 @@
 import { createContext, useCallback, useEffect, useState } from 'react'
+import { Language } from '@pancakeswap/uikit'
+import { useLastUpdated } from '@pancakeswap/hooks'
 import memoize from 'lodash/memoize'
 import { EN, languages } from './config/languages'
-import { ContextApi, Language, ProviderState, TranslateFunction } from './types'
+import { ContextApi, ProviderState, TranslateFunction } from './types'
 import { LS_KEY, fetchLocale, getLanguageCodeFromLS } from './helpers'
-import { useLastUpdated } from '@hooks'
 
 const initialState: ProviderState = {
   isFetching: true,
@@ -24,12 +25,12 @@ const getRegExpForDataKey = memoize((dataKey: string): RegExp => {
 const languageMap = new Map<Language['locale'], Record<string, string>>()
 languageMap.set(EN.locale, {})
 
-export const LanguageContext = createContext<ContextApi | undefined>(undefined)
+export const LanguageContext = createContext<ContextApi>(undefined)
 
 export const LanguageProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
   const { lastUpdated, setLastUpdated: refresh } = useLastUpdated()
   const [state, setState] = useState<ProviderState>(() => {
-    const codeFromStorage = getLanguageCodeFromLS() as keyof typeof languages
+    const codeFromStorage = getLanguageCodeFromLS()
 
     return {
       ...initialState,

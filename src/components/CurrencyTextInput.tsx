@@ -101,7 +101,7 @@ const CurrencyTextInput: React.FC<React.PropsWithChildren> = () => {
         <TextFrom>{t('From')}</TextFrom>
 
         <TextInputWrapper>
-          <TextInput type={'text'} placeholder={'0.0'} />
+          <TextInput type='text' placeholder='0.0' />
 
           <RowContainer>
             <MaxButton>{t('Max')}</MaxButton>

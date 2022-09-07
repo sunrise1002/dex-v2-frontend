@@ -1,7 +1,7 @@
 import styled, { css, keyframes } from "styled-components";
 import { space } from "styled-system";
+import getThemeValue from '@pancakeswap/uikit/src/util/getThemeValue'
 import { SvgProps } from "./types";
-import { getThemeValue } from '@utils'
 
 const rotate = keyframes`
   from {
