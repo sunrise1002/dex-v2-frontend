@@ -1,5 +1,5 @@
 import BigNumber from 'bignumber.js'
-import { BLOCKS_PER_YEAR } from 'config'
+import { BLOCKS_PER_YEAR } from 'config/index'
 import lpAprs56 from 'config/constants/lpAprs/56.json'
 
 const getLpApr = (chainId: number) => {

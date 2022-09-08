@@ -10,7 +10,7 @@ import {
 } from 'state/types'
 import { deserializeToken } from '@pancakeswap/tokens'
 import { BIG_ZERO } from 'utils/bigNumber'
-import { convertSharesToCake } from 'views/Pools/helpers'
+// import { convertSharesToCake } from 'views/Pools/helpers'
 
 type UserData =
   | DeserializedPool['userData']
@@ -111,29 +111,29 @@ export const transformVault = (vaultKey: VaultKey, vault: SerializedCakeVault): 
       ? new BigNumber(currentPerformanceFeeAsString)
       : BIG_ZERO
 
-    const balance = convertSharesToCake(
-      userShares,
-      pricePerFullShare,
-      undefined,
-      undefined,
-      currentOverdueFee.plus(currentPerformanceFee).plus(userBoostedShare),
-    )
-    userDataExtra = {
-      lockEndTime,
-      lockStartTime,
-      locked,
-      lockedAmount,
-      userBoostedShare,
-      currentOverdueFee,
-      currentPerformanceFee,
-      balance,
-    }
-    publicDataExtra = { totalLockedAmount, totalCakeInVault }
+    // const balance = convertSharesToCake(
+    //   userShares,
+    //   pricePerFullShare,
+    //   undefined,
+    //   undefined,
+    //   currentOverdueFee.plus(currentPerformanceFee).plus(userBoostedShare),
+    // )
+    // userDataExtra = {
+    //   lockEndTime,
+    //   lockStartTime,
+    //   locked,
+    //   lockedAmount,
+    //   userBoostedShare,
+    //   currentOverdueFee,
+    //   currentPerformanceFee,
+    //   balance,
+    // }
+    // publicDataExtra = { totalLockedAmount, totalCakeInVault }
   } else {
-    const balance = convertSharesToCake(userShares, pricePerFullShare)
-    const { cakeAsBigNumber } = convertSharesToCake(totalShares, pricePerFullShare)
-    userDataExtra = { balance }
-    publicDataExtra = { totalCakeInVault: cakeAsBigNumber }
+    // const balance = convertSharesToCake(userShares, pricePerFullShare)
+    // const { cakeAsBigNumber } = convertSharesToCake(totalShares, pricePerFullShare)
+    // userDataExtra = { balance }
+    // publicDataExtra = { totalCakeInVault: cakeAsBigNumber }
   }
 
   const performanceFeeAsDecimal = performanceFee && performanceFee / 100

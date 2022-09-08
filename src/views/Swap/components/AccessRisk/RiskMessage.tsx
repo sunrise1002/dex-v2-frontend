@@ -1,9 +1,9 @@
 import { useMemo } from 'react'
 import { Currency } from '@pancakeswap/sdk'
-import { CurrencyLogo } from 'components/Logo'
+import { CurrencyLogo } from 'components'
 import { useTranslation } from '@pancakeswap/localization'
 import { Flex, Message, MessageText, Text, Link } from '@pancakeswap/uikit'
-import { RiskTokenInfo, TOKEN_RISK } from 'views/Swap/hooks/fetchTokenRisk'
+import { RiskTokenInfo, TOKEN_RISK } from '../../hooks/fetchTokenRisk'
 
 interface RiskMessageProps {
   currency: Currency

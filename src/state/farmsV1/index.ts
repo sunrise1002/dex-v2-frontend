@@ -8,7 +8,7 @@ import type {
 import { createAsyncThunk, createSlice, isAnyOf } from '@reduxjs/toolkit'
 import stringify from 'fast-json-stable-stringify'
 import { getFarmConfig } from 'config/constants/farms'
-import type { AppState } from 'state'
+import type { AppState } from 'state/index'
 import { getFarmsPriceHelperLpFiles } from 'config/constants/priceHelperLps/index'
 import fetchFarms from './fetchFarms'
 import getFarmsPrices from './getFarmsPrices'

@@ -1,6 +1,6 @@
 import { Contract } from '@ethersproject/contracts'
 import BigNumber from 'bignumber.js'
-import { BOOSTED_FARM_GAS_LIMIT, DEFAULT_TOKEN_DECIMAL } from 'config'
+import { BOOSTED_FARM_GAS_LIMIT, DEFAULT_TOKEN_DECIMAL } from 'config/index'
 
 const options = {
   gasLimit: BOOSTED_FARM_GAS_LIMIT,

@@ -1,6 +1,5 @@
 import styled from 'styled-components'
-import { RowBetween } from 'components/Layout/Row'
-import { AutoColumn } from 'components/Layout/Column'
+import { RowBetween, AutoColumn } from 'components'
 
 const Grouping = styled(RowBetween)`
   width: 50%;

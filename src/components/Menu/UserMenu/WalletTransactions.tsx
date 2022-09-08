@@ -1,5 +1,5 @@
 import { Box, Button, Flex, Text } from '@pancakeswap/uikit'
-import { useAppDispatch } from 'state'
+import { useAppDispatch } from 'state/index'
 import { isTransactionRecent, useAllTransactions } from 'state/transactions/hooks'
 import { useTranslation } from '@pancakeswap/localization'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'

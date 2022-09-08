@@ -4,7 +4,7 @@ import { useCake } from 'hooks/useContract'
 import useToast from 'hooks/useToast'
 import { useCallWithGasPrice } from 'hooks/useCallWithGasPrice'
 import useCatchTxError from 'hooks/useCatchTxError'
-import { ToastDescriptionWithTx } from 'components/Toast'
+import { ToastDescriptionWithTx } from 'components'
 
 const useCakeApprove = (setLastUpdated: () => void, spender, successMsg) => {
   const { t } = useTranslation()

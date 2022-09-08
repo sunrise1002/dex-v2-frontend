@@ -3,11 +3,8 @@ import { Currency, Fraction, Percent, CurrencyAmount, Token } from '@pancakeswap
 import { Text, useTooltip, TooltipText, Box, Flex, Svg, SvgProps } from '@pancakeswap/uikit'
 import { useTranslation } from '@pancakeswap/localization'
 import styled from 'styled-components'
-import { AutoColumn } from 'components/Layout/Column'
-import { AutoRow, RowBetween } from 'components/Layout/Row'
+import { AutoColumn, AutoRow, RowBetween, DoubleCurrencyLogo, CurrencyLogo, GreyCard } from 'components'
 import { Field } from 'state/burn/actions'
-import { DoubleCurrencyLogo, CurrencyLogo } from 'components/Logo'
-import { GreyCard } from 'components/Card'
 import { getLPSymbol } from 'utils/getLpSymbol'
 
 const Dot = styled(Box)<{ scale?: 'sm' | 'md' }>`

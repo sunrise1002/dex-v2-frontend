@@ -1,4 +1,4 @@
-import { ToastContainer } from 'components/Toast'
+import { ToastContainer } from 'components'
 import useToast from 'hooks/useToast'
 import { useCallback } from 'react'
 

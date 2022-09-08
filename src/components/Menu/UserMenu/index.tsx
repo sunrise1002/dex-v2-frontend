@@ -11,8 +11,7 @@ import {
   UserMenuItem,
   UserMenuVariant,
 } from '@pancakeswap/uikit'
-import ConnectWalletButton from 'components/ConnectWalletButton'
-import Trans from 'components/Trans'
+import { ConnectWalletButton, Trans } from 'components'
 import { useActiveChainId } from 'hooks/useActiveChainId'
 import useAuth from 'hooks/useAuth'
 import NextLink from 'next/link'
@@ -35,7 +34,7 @@ const UserMenu = () => {
   const [onPresentTransactionModal] = useModal(<WalletModal initialView={WalletView.TRANSACTIONS} />)
   const [onPresentWrongNetworkModal] = useModal(<WalletModal initialView={WalletView.WRONG_NETWORK} />)
   const hasProfile = isInitialized && !!profile
-  const avatarSrc = profile?.nft?.image?.thumbnail
+  // const avatarSrc = profile?.nft?.image?.thumbnail
   const [userMenuText, setUserMenuText] = useState<string>('')
   const [userMenuVariable, setUserMenuVariable] = useState<UserMenuVariant>('default')
 
@@ -88,11 +87,12 @@ const UserMenu = () => {
   }
 
   if (account) {
-    return (
-      <UIKitUserMenu account={account} avatarSrc={avatarSrc} text={userMenuText} variant={userMenuVariable}>
-        {({ isOpen }) => (isOpen ? <UserMenuItems /> : null)}
-      </UIKitUserMenu>
-    )
+    // return (
+    //   <UIKitUserMenu account={account} avatarSrc={avatarSrc} text={userMenuText} variant={userMenuVariable}>
+    //     {({ isOpen }) => (isOpen ? <UserMenuItems /> : null)}
+    //   </UIKitUserMenu>
+    // )
+    return null
   }
 
   if (isWrongNetwork) {

@@ -1,10 +1,8 @@
 import { useMemo } from 'react'
 import { useRouter } from 'next/router'
-import { NextLinkFromReactRouter } from 'components/NextLink'
+// import { NextLinkFromReactRouter, PhishingWarningBanner, NetworkSwitcher } from 'components'
 import { Menu as UikitMenu } from '@pancakeswap/uikit'
 import { useTranslation, languageList } from '@pancakeswap/localization'
-import PhishingWarningBanner from 'components/PhishingWarningBanner'
-import { NetworkSwitcher } from 'components/NetworkSwitcher'
 import useTheme from 'hooks/useTheme'
 import { useCakeBusdPrice } from 'hooks/useBUSDPrice'
 import { usePhishingBannerManager } from 'state/user/hooks'
@@ -37,7 +35,7 @@ const Menu = (props) => {
 
   return (
     <>
-      <UikitMenu
+      {/* <UikitMenu
         linkComponent={(linkProps) => {
           return <NextLinkFromReactRouter to={linkProps.href} {...linkProps} prefetch={false} />
         }}
@@ -62,7 +60,7 @@ const Menu = (props) => {
         activeSubItem={activeSubMenuItem?.href}
         buyCakeLabel={t('Buy CAKE')}
         {...props}
-      />
+      /> */}
     </>
   )
 }

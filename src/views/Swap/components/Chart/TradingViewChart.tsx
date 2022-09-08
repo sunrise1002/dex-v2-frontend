@@ -1,10 +1,10 @@
 import { Box, BunnyPlaceholderIcon, Flex, Text } from '@pancakeswap/uikit'
-import TradingView, { useTradingViewEvent } from 'components/TradingView'
+// import TradingView, { useTradingViewEvent } from 'components/TradingView'
 import { useTranslation } from '@pancakeswap/localization'
 import useDebounce from 'hooks/useDebounce'
 import { useCallback, useEffect, useMemo, useState, memo } from 'react'
 import styled from 'styled-components'
-import { BarChartLoader } from 'views/Info/components/ChartLoaders'
+// import { BarChartLoader } from 'views/Info/components/ChartLoaders'
 
 interface TradingViewChartProps {
   outputSymbol: string
@@ -60,11 +60,11 @@ const TradingViewChart = ({ outputSymbol, inputSymbol, isDark, onTwChartSymbol }
     setIsLoading(false)
   }, [])
 
-  useTradingViewEvent({
-    id: ID,
-    onNoDataEvent,
-    onLoadedEvent,
-  })
+  // useTradingViewEvent({
+  //   id: ID,
+  //   onNoDataEvent,
+  //   onLoadedEvent,
+  // })
 
   // debounce the loading to wait for no data event from TV widget.
   // we cover the loading spinner over TV, let TV try to load data from pairs
@@ -91,12 +91,12 @@ const TradingViewChart = ({ outputSymbol, inputSymbol, isDark, onTwChartSymbol }
       )}
       {(isLoading || debouncedLoading) && !hasNoData && (
         <LoadingWrapper $isDark={isDark}>
-          <BarChartLoader />
+          {/* <BarChartLoader /> */}
         </LoadingWrapper>
       )}
       {!hasNoData && (
         <TradingViewWrapper $show={!isLoading}>
-          {symbol && <TradingView id={ID} symbol={`${SYMBOL_PREFIX}${symbol}`} />}
+          {/* {symbol && <TradingView id={ID} symbol={`${SYMBOL_PREFIX}${symbol}`} />} */}
         </TradingViewWrapper>
       )}
     </Box>

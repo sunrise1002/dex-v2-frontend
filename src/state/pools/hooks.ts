@@ -2,7 +2,7 @@ import { useEffect, useMemo } from 'react'
 import { useWeb3React } from '@pancakeswap/wagmi'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { batch, useSelector } from 'react-redux'
-import { useAppDispatch } from 'state'
+import { useAppDispatch } from 'state/index'
 import { useFastRefreshEffect, useSlowRefreshEffect } from 'hooks/useRefreshEffect'
 import { getFarmConfig } from 'config/constants/farms/index'
 import { livePools } from 'config/constants/pools'
@@ -21,7 +21,7 @@ import {
   fetchCakeFlexibleSideVaultFees,
 } from '.'
 import { DeserializedPool, VaultKey } from '../types'
-import { fetchFarmsPublicDataAsync } from '../farms'
+// import { fetchFarmsPublicDataAsync } from '../farms'
 import {
   makePoolWithUserDataLoadingSelector,
   makeVaultPoolByKey,
@@ -54,7 +54,7 @@ export const useFetchPublicPoolsData = () => {
     (currentBlock) => {
       const fetchPoolsDataWithFarms = async () => {
         const activeFarms = await getActiveFarms(chainId)
-        await dispatch(fetchFarmsPublicDataAsync({ pids: activeFarms, chainId }))
+        // await dispatch(fetchFarmsPublicDataAsync({ pids: activeFarms, chainId }))
 
         batch(() => {
           dispatch(fetchPoolsPublicDataAsync(currentBlock, chainId))

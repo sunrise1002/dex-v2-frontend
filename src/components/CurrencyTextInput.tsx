@@ -1,7 +1,6 @@
 import { Color } from '@assets'
-import { Header, ReloadIcon } from '@components'
+import { Header, ReloadIcon } from 'components'
 import { useTranslation } from '@pancakeswap/localization'
-import { text } from 'stream/consumers'
 import styled from 'styled-components'
 
 const Container = styled.div`

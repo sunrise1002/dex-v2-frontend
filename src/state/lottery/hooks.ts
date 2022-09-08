@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from 'react'
 import { useWeb3React } from '@pancakeswap/wagmi'
 import { useSelector, batch } from 'react-redux'
-import { useAppDispatch } from 'state'
+import { useAppDispatch } from 'state/index'
 import { useFastRefreshEffect } from 'hooks/useRefreshEffect'
 import { State } from '../types'
 import { fetchCurrentLotteryId, fetchCurrentLottery, fetchUserTicketsAndLotteries, fetchPublicLotteries } from '.'

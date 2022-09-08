@@ -15,7 +15,7 @@ import {
 import storage from 'redux-persist/lib/storage'
 import IndexedDBStorage from 'utils/IndexedDBStorage'
 import burn from './burn/reducer'
-import farmsReducer from './farms'
+// import farmsReducer from './farms'
 import farmsReducerV1 from './farmsV1'
 import { updateVersion } from './global/actions'
 import infoReducer from './info'
@@ -70,7 +70,7 @@ const ListsConfig = {
 const persistedReducer = persistReducer(
   persistConfig,
   combineReducers({
-    farms: farmsReducer,
+    // farms: farmsReducer,
     farmsV1: farmsReducerV1,
     pools: poolsReducer,
     lottery: lotteryReducer,

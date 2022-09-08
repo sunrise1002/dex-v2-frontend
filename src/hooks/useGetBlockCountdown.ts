@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { BSC_BLOCK_TIME } from 'config'
+import { BSC_BLOCK_TIME } from 'config/index'
 import { bscRpcProvider } from 'utils/providers'
 
 /**

@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react'
 import { useTranslation } from '@pancakeswap/localization'
 import { TransactionReceipt, TransactionResponse } from '@ethersproject/providers'
-import { ToastDescriptionWithTx } from 'components/Toast'
+import { ToastDescriptionWithTx } from 'components'
 
 import useToast from 'hooks/useToast'
 import { logError, isUserRejected } from 'utils/sentry'

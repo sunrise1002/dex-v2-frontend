@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import { useTranslation } from '@pancakeswap/localization'
 import { TransactionDetails } from 'state/transactions/reducer'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
-import { getBlockExploreLink } from 'utils'
+import { getBlockExploreLink } from 'utils/index'
 
 interface TransactionRowProps {
   txn: TransactionDetails

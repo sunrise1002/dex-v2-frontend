@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { escapeRegExp } from 'utils'
+import { escapeRegExp } from 'utils/index'
 import { Text, Button, Input, Flex, Box } from '@pancakeswap/uikit'
 import { useTranslation } from '@pancakeswap/localization'
 import { useUserSlippageTolerance, useUserTransactionTTL } from 'state/user/hooks'

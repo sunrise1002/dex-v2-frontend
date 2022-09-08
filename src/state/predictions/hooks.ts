@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from 'react'
-import { isAddress } from 'utils'
+import { isAddress } from 'utils/index'
 import useLocalDispatch from 'contexts/LocalRedux/useLocalDispatch'
 import useSelector from 'contexts/LocalRedux/useSelector'
 import { FetchStatus } from 'config/constants/types'

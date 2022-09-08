@@ -4,43 +4,43 @@ import { ONE_DAY_UNIX, ONE_HOUR_SECONDS } from 'config/constants/info'
 import { getBlocksFromTimestamps } from 'utils/getBlocksFromTimestamps'
 import { getUnixTime, startOfHour, sub } from 'date-fns'
 import { Block } from 'state/info/types'
-import { multiQuery } from 'views/Info/utils/infoQueryHelpers'
+// import { multiQuery } from 'views/Info/utils/infoQueryHelpers'
 import { getDerivedPrices, getDerivedPricesQueryConstructor } from '../queries/getDerivedPrices'
 import { PairDataTimeWindowEnum } from '../types'
 
 const getTokenDerivedBnbPrices = async (tokenAddress: string, blocks: Block[]) => {
-  const prices: any | undefined = await multiQuery(
-    getDerivedPricesQueryConstructor,
-    getDerivedPrices(tokenAddress, blocks),
-    INFO_CLIENT,
-    200,
-  )
+  // const prices: any | undefined = await multiQuery(
+  //   getDerivedPricesQueryConstructor,
+  //   getDerivedPrices(tokenAddress, blocks),
+  //   INFO_CLIENT,
+  //   200,
+  // )
 
-  if (!prices) {
-    console.error('Price data failed to load')
-    return null
-  }
+  // if (!prices) {
+  //   console.error('Price data failed to load')
+  //   return null
+  // }
 
-  // format token BNB price results
-  const tokenPrices: {
-    tokenAddress: string
-    timestamp: string
-    derivedBNB: number
-  }[] = []
+  // // format token BNB price results
+  // const tokenPrices: {
+  //   tokenAddress: string
+  //   timestamp: string
+  //   derivedBNB: number
+  // }[] = []
 
-  // Get Token prices in BNB
-  Object.keys(prices).forEach((priceKey) => {
-    const timestamp = priceKey.split('t')[1]
-    if (timestamp) {
-      tokenPrices.push({
-        tokenAddress,
-        timestamp,
-        derivedBNB: prices[priceKey]?.derivedBNB ? parseFloat(prices[priceKey].derivedBNB) : 0,
-      })
-    }
-  })
+  // // Get Token prices in BNB
+  // Object.keys(prices).forEach((priceKey) => {
+  //   const timestamp = priceKey.split('t')[1]
+  //   if (timestamp) {
+  //     tokenPrices.push({
+  //       tokenAddress,
+  //       timestamp,
+  //       derivedBNB: prices[priceKey]?.derivedBNB ? parseFloat(prices[priceKey].derivedBNB) : 0,
+  //     })
+  //   }
+  // })
 
-  return orderBy(tokenPrices, (tokenPrice) => parseInt(tokenPrice.timestamp, 10))
+  // return orderBy(tokenPrices, (tokenPrice) => parseInt(tokenPrice.timestamp, 10))
 }
 
 const getInterval = (timeWindow: PairDataTimeWindowEnum) => {

@@ -9,10 +9,10 @@ import { getFarmConfig } from 'config/constants/farms/index'
 import { getFarmsPriceHelperLpFiles } from 'config/constants/priceHelperLps'
 import stringify from 'fast-json-stable-stringify'
 import fromPairs from 'lodash/fromPairs'
-import type { AppState } from 'state'
+import type { AppState } from 'state/index'
 import { chains } from 'utils/wagmi'
 import { createFarmFetcher } from '@pancakeswap/farms'
-import splitProxyFarms from 'views/Farms/components/YieldBooster/helpers/splitProxyFarms'
+// import splitProxyFarms from 'views/Farms/components/YieldBooster/helpers/splitProxyFarms'
 import { multicallv2 } from 'utils/multicall'
 import { resetUserState } from '../global/actions'
 import { SerializedFarm, SerializedFarmsState } from '../types'
@@ -193,14 +193,14 @@ export const fetchFarmUserDataAsync = createAsyncThunk<
       (farmConfig) => pids.includes(farmConfig.pid) && poolLength > farmConfig.pid,
     )
     if (proxyAddress && farmsCanFetch?.length) {
-      const { normalFarms, farmsWithProxy } = splitProxyFarms(farmsCanFetch)
+      // const { normalFarms, farmsWithProxy } = splitProxyFarms(farmsCanFetch)
 
-      const [proxyAllowances, normalAllowances] = await Promise.all([
-        getBoostedFarmsStakeValue(farmsWithProxy, account, chainId, proxyAddress),
-        getNormalFarmsStakeValue(normalFarms, account, chainId),
-      ])
+      // const [proxyAllowances, normalAllowances] = await Promise.all([
+      //   getBoostedFarmsStakeValue(farmsWithProxy, account, chainId, proxyAddress),
+      //   getNormalFarmsStakeValue(normalFarms, account, chainId),
+      // ])
 
-      return [...proxyAllowances, ...normalAllowances]
+      // return [...proxyAllowances, ...normalAllowances]
     }
 
     return getNormalFarmsStakeValue(farmsCanFetch, account, chainId)

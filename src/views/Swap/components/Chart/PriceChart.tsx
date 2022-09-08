@@ -10,7 +10,7 @@ import {
   LineGraphIcon,
   useMatchBreakpoints,
 } from '@pancakeswap/uikit'
-import { CurrencyLogo, DoubleCurrencyLogo } from 'components/Logo'
+import { CurrencyLogo, DoubleCurrencyLogo } from 'components'
 // import { TradingViewLabel } from 'components/TradingView'
 import { useTranslation } from '@pancakeswap/localization'
 import { ChartViewMode } from 'state/user/actions'

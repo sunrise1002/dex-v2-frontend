@@ -1,6 +1,6 @@
 import { useWeb3React } from '@pancakeswap/wagmi'
 import { batch, useSelector } from 'react-redux'
-import { useAppDispatch } from 'state'
+import { useAppDispatch } from 'state/index'
 import { useFastRefreshEffect } from 'hooks/useRefreshEffect'
 import { fetchCakeVaultPublicData, fetchCakeVaultUserData } from 'state/pools'
 import { fetchLastVaultAddressAsync, fetchPublicPotteryDataAsync, fetchPotteryUserDataAsync } from './index'

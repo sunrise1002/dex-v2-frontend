@@ -3,12 +3,12 @@
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable import/no-unresolved */
 import { render as rtlRender } from '@testing-library/react'
-import Provider from 'Providers'
 import { WagmiConfig } from 'wagmi'
-import { initializeStore, makeStore } from 'state'
+import { initializeStore, makeStore } from 'state/index'
 import { RouterContext } from 'next/dist/shared/lib/router-context'
 import { NextRouter } from 'next/router'
 import { SWRConfig } from 'swr'
+import Provider from './Providers'
 import { client } from './utils/wagmi'
 
 const mockRouter: NextRouter = {

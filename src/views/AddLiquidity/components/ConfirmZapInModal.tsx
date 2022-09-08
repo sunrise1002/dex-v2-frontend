@@ -3,14 +3,16 @@ import { BigNumber } from '@ethersproject/bignumber'
 import { Currency, CurrencyAmount, Fraction, JSBI, Pair, Percent, Token } from '@pancakeswap/sdk'
 import { InjectedModalProps, Text, ArrowDownIcon, Button, useTooltip } from '@pancakeswap/uikit'
 import { useTranslation } from '@pancakeswap/localization'
-import TransactionConfirmationModal, {
+import {
+  TransactionConfirmationModal,
   ConfirmationModalContent,
   TransactionErrorContent,
-} from 'components/TransactionConfirmationModal'
-import { AutoColumn } from 'components/Layout/Column'
-import { AutoRow, RowFixed } from 'components/Layout/Row'
+  AutoColumn,
+  AutoRow,
+  RowFixed,
+  CurrencyLogo
+} from 'components'
 import { Field } from 'state/burn/actions'
-import { CurrencyLogo } from 'components/Logo'
 import useTotalSupply from 'hooks/useTotalSupply'
 import { wrappedCurrency } from 'utils/wrappedCurrency'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'

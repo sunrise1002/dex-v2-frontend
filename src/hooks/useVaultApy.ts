@@ -1,7 +1,7 @@
 import { BigNumber, FixedNumber } from '@ethersproject/bignumber'
 import { WeiPerEther } from '@ethersproject/constants'
 import _toString from 'lodash/toString'
-import { BLOCKS_PER_YEAR } from 'config'
+import { BLOCKS_PER_YEAR } from 'config/index'
 import masterChefAbi from 'config/abi/masterchef.json'
 import { useCallback, useMemo } from 'react'
 import { useCakeVault } from 'state/pools/hooks'

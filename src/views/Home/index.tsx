@@ -1,5 +1,5 @@
 import { Color } from '@assets'
-import { Header } from '@components'
+import { Header } from 'components'
 import styled from 'styled-components'
 import ContentBottom from './components/ContentBottom'
 import ContentMiddle from './components/ContentMiddle'

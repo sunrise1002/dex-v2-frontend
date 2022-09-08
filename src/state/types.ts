@@ -14,7 +14,7 @@ import {
   Team,
   TranslatableText,
 } from 'config/constants/types'
-import { NftToken } from './nftMarket/types'
+// import { NftToken } from './nftMarket/types'
 
 export enum GAS_PRICE {
   default = '5',
@@ -141,7 +141,7 @@ export interface Profile {
   tokenId: number
   isActive: boolean
   username: string
-  nft?: NftToken
+  // nft?: NftToken
   team?: Team
   hasRegistered: boolean
 }

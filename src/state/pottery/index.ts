@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { AppState } from 'state'
+import { AppState } from 'state/index'
 import {
   PotteryState,
   SerializedPotteryUserData,

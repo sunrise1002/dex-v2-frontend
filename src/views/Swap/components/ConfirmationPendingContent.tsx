@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 import { Text, Spinner } from '@pancakeswap/uikit'
 import { useTranslation } from '@pancakeswap/localization'
-import { AutoColumn, ColumnCenter } from 'components/Layout/Column'
+import { AutoColumn, ColumnCenter } from 'components'
 import { Trade, Currency, TradeType } from '@pancakeswap/sdk'
 
 const Wrapper = styled.div`

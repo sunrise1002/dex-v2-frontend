@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 import { CheckmarkIcon, CloseIcon, LinkExternal } from '@pancakeswap/uikit'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
-import { getBlockExploreLink } from 'utils'
+import { getBlockExploreLink } from 'utils/index'
 import { TransactionDetails } from 'state/transactions/reducer'
 import CircleLoader from '../../Loader/CircleLoader'
 
