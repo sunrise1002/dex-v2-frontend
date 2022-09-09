@@ -1,4 +1,4 @@
-import { ReactElement, useCallback } from 'react'
+import { useCallback } from 'react'
 import { ChainId, Currency, Token } from '@pancakeswap/sdk'
 import styled from 'styled-components'
 import {
@@ -6,21 +6,22 @@ import {
   Text,
   ErrorIcon,
   ArrowUpIcon,
+  MetamaskIcon,
   Flex,
   Box,
   Link,
   Spinner,
   Modal,
   InjectedModalProps,
-  ModalProps,
 } from '@pancakeswap/uikit'
-import { useTranslation } from '@pancakeswap/localization'
+import { registerToken } from 'utils/wallet'
+import { useTranslation } from 'contexts/Localization'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { wrappedCurrency } from 'utils/wrappedCurrency'
-import { WrappedTokenInfo } from '@pancakeswap/tokens'
+import { WrappedTokenInfo } from 'state/types'
+import { RowFixed } from '../Layout/Row'
 import { AutoColumn, ColumnCenter } from '../Layout/Column'
-import { getBlockExploreLink, getBlockExploreName } from '../../utils'
-import AddToWalletButton, { AddToWalletTextOptions } from '../AddToWallet/AddToWalletButton'
+import { getBscScanLink } from '../../utils'
 
 const Wrapper = styled.div`
   width: 100%;
@@ -66,6 +67,8 @@ export function TransactionSubmittedContent({
   chainId: ChainId
   currencyToAdd?: Currency | undefined
 }) {
+  const { library } = useActiveWeb3React()
+
   const { t } = useTranslation()
 
   const token: Token | undefined = wrappedCurrency(currencyToAdd, chainId)
@@ -79,24 +82,29 @@ export function TransactionSubmittedContent({
         <AutoColumn gap="12px" justify="center">
           <Text fontSize="20px">{t('Transaction Submitted')}</Text>
           {chainId && hash && (
-            <Link external small href={getBlockExploreLink(hash, 'transaction', chainId)}>
-              {t('View on %site%', {
-                site: getBlockExploreName(chainId),
-              })}
+            <Link external small href={getBscScanLink(hash, 'transaction', chainId)}>
+              {t('View on BscScan')}
             </Link>
           )}
-          {currencyToAdd && (
-            <AddToWalletButton
+          {currencyToAdd && library?.provider?.isMetaMask && (
+            <Button
               variant="tertiary"
               mt="12px"
               width="fit-content"
-              marginTextBetweenLogo="6px"
-              textOptions={AddToWalletTextOptions.TEXT_WITH_ASSET}
-              tokenAddress={token.address}
-              tokenSymbol={currencyToAdd.symbol}
-              tokenDecimals={token.decimals}
-              tokenLogo={token instanceof WrappedTokenInfo ? token.logoURI : undefined}
-            />
+              onClick={() =>
+                registerToken(
+                  token.address,
+                  token.symbol,
+                  token.decimals,
+                  token instanceof WrappedTokenInfo ? token.logoURI : undefined,
+                )
+              }
+            >
+              <RowFixed>
+                {t('Add %asset% to Metamask', { asset: currencyToAdd.symbol })}
+                <MetamaskIcon width="16px" ml="6px" />
+              </RowFixed>
+            </Button>
           )}
           <Button onClick={onDismiss} mt="20px">
             {t('Close')}
@@ -122,13 +130,7 @@ export function ConfirmationModalContent({
   )
 }
 
-export function TransactionErrorContent({
-  message,
-  onDismiss,
-}: {
-  message: ReactElement | string
-  onDismiss?: () => void
-}) {
+export function TransactionErrorContent({ message, onDismiss }: { message: string; onDismiss: () => void }) {
   const { t } = useTranslation()
   return (
     <Wrapper>
@@ -139,11 +141,9 @@ export function TransactionErrorContent({
         </Text>
       </AutoColumn>
 
-      {onDismiss ? (
-        <Flex justifyContent="center" pt="24px">
-          <Button onClick={onDismiss}>{t('Dismiss')}</Button>
-        </Flex>
-      ) : null}
+      <Flex justifyContent="center" pt="24px">
+        <Button onClick={onDismiss}>{t('Dismiss')}</Button>
+      </Flex>
     </Wrapper>
   )
 }
@@ -158,9 +158,16 @@ interface ConfirmationModalProps {
   currencyToAdd?: Currency | undefined
 }
 
-const TransactionConfirmationModal: React.FC<
-  React.PropsWithChildren<InjectedModalProps & ConfirmationModalProps & ModalProps>
-> = ({ title, onDismiss, customOnDismiss, attemptingTxn, hash, pendingText, content, currencyToAdd, ...props }) => {
+const TransactionConfirmationModal: React.FC<InjectedModalProps & ConfirmationModalProps> = ({
+  title,
+  onDismiss,
+  customOnDismiss,
+  attemptingTxn,
+  hash,
+  pendingText,
+  content,
+  currencyToAdd,
+}) => {
   const { chainId } = useActiveWeb3React()
 
   const handleDismiss = useCallback(() => {
@@ -173,7 +180,7 @@ const TransactionConfirmationModal: React.FC<
   if (!chainId) return null
 
   return (
-    <Modal title={title} headerBackground="gradients.cardHeader" {...props} onDismiss={handleDismiss}>
+    <Modal title={title} headerBackground="gradients.cardHeader" onDismiss={handleDismiss}>
       {attemptingTxn ? (
         <ConfirmationPendingContent pendingText={pendingText} />
       ) : hash ? (

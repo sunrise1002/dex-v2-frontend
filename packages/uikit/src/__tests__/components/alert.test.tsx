@@ -1,9 +1,9 @@
 import React from "react";
-import { renderWithProvider } from "../../testHelpers";
+import { renderWithTheme } from "../../testHelpers";
 import { Alert } from "../../components/Alert";
 
 it("renders correctly", () => {
-  const { asFragment } = renderWithProvider(<Alert title="Alert title">Description</Alert>);
+  const { asFragment } = renderWithTheme(<Alert title="Alert title">Description</Alert>);
 
   expect(asFragment()).toMatchInlineSnapshot(`
     <DocumentFragment>
@@ -19,16 +19,16 @@ it("renders correctly", () => {
 
     .c5 {
       color: #280D5F;
+      font-size: 16px;
       font-weight: 600;
       line-height: 1.5;
-      font-size: 16px;
     }
 
     .c6 {
       color: #280D5F;
+      font-size: 16px;
       font-weight: 400;
       line-height: 1.5;
-      font-size: 16px;
     }
 
     .c0 {
@@ -62,13 +62,6 @@ it("renders correctly", () => {
       box-shadow: 0px 20px 36px -8px rgba(14,14,44,0.1),0px 1px 1px rgba(0,0,0,0.05);
     }
 
-    @supports (-webkit-text-size-adjust:none) and (not (-ms-accelerator:true)) and (not (-moz-appearance:none)) {
-      .c3 {
-        -webkit-filter: none !important;
-        filter: none !important;
-      }
-    }
-
     <div
         class="c0 c1"
       >
@@ -93,14 +86,12 @@ it("renders correctly", () => {
           <div
             class="c5"
             color="text"
-            font-size="16px"
           >
             Alert title
           </div>
           <p
             class="c6"
             color="text"
-            font-size="16px"
           >
             Description
           </p>

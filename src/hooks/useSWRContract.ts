@@ -11,7 +11,6 @@ import useSWR, {
   unstable_serialize,
 } from 'swr'
 import { multicallv2, MulticallOptions, Call } from 'utils/multicall'
-import { MaybeContract, ContractMethodName, ContractMethodParams } from 'utils/types'
 
 declare module 'swr' {
   interface SWRResponse<Data = any, Error = any> {
@@ -45,6 +44,14 @@ export const fetchStatusMiddleware: Middleware = (useSWRNext) => {
     })
   }
 }
+
+type MaybeContract<C extends Contract = Contract> = C | null | undefined
+type ContractMethodName<C extends Contract = Contract> = keyof C['callStatic'] & string
+
+type ContractMethodParams<
+  C extends Contract = Contract,
+  N extends ContractMethodName<C> = ContractMethodName<C>,
+> = Parameters<C['callStatic'][N]>
 
 type UseSWRContractArrayKey<C extends Contract = Contract, N extends ContractMethodName<C> = any> =
   | [MaybeContract<C>, N, ContractMethodParams<C, N>]
@@ -135,7 +142,7 @@ export const immutableMiddleware: Middleware = (useSWRNext) => (key, fetcher, co
 
 export function useSWRMulticall<Data>(abi: any[], calls: Call[], options?: MulticallOptions & SWRConfiguration) {
   const { requireSuccess = true, ...config } = options || {}
-  return useSWR<Data>(calls, () => multicallv2({ abi, calls, options: { requireSuccess } }), {
+  return useSWR<Data>(calls, () => multicallv2(abi, calls, { requireSuccess }), {
     revalidateIfStale: false,
     revalidateOnFocus: false,
     ...config,
@@ -160,7 +167,7 @@ export const localStorageMiddleware: Middleware = (useSWRNext) => (key, fetcher,
 
   let localStorageDataParsed
 
-  if (!data && typeof window !== 'undefined') {
+  if (!data) {
     const localStorageData = localStorage?.getItem(serializedKey)
 
     if (localStorageData) {

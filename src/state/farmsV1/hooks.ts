@@ -1,13 +1,11 @@
-import { useWeb3React } from '@pancakeswap/wagmi'
-import { ChainId } from '@pancakeswap/sdk'
+import { useWeb3React } from '@web3-react/core'
 import BigNumber from 'bignumber.js'
-import { getFarmConfig } from 'config/constants/farms'
+import { farmsConfig } from 'config/constants'
 import { useFastRefreshEffect, useSlowRefreshEffect } from 'hooks/useRefreshEffect'
 import { useMemo } from 'react'
 import { useSelector } from 'react-redux'
-import { useAppDispatch } from 'state/index'
-import { useCakeBusdPrice } from 'hooks/useBUSDPrice'
-import { deserializeToken } from '@pancakeswap/tokens'
+import { useAppDispatch } from 'state'
+import { deserializeToken } from 'state/user/hooks/helpers'
 import { BIG_ZERO } from 'utils/bigNumber'
 import { getBalanceAmount } from 'utils/formatBalance'
 import { fetchFarmsPublicDataAsync, fetchFarmUserDataAsync } from '.'
@@ -23,10 +21,10 @@ const deserializeFarmUserData = (farm: SerializedFarm): DeserializedFarmUserData
 }
 
 const deserializeFarm = (farm: SerializedFarm): DeserializedFarm => {
-  const { lpAddress, lpSymbol, v1pid, dual, multiplier, isCommunity, quoteTokenPriceBusd, tokenPriceBusd } = farm
+  const { lpAddresses, lpSymbol, v1pid, dual, multiplier, isCommunity, quoteTokenPriceBusd, tokenPriceBusd } = farm
 
   return {
-    lpAddress,
+    lpAddresses,
     lpSymbol,
     pid: v1pid,
     dual,
@@ -50,15 +48,13 @@ export const usePollFarmsV1WithUserData = () => {
   const { account } = useWeb3React()
 
   useSlowRefreshEffect(() => {
-    getFarmConfig(ChainId.BSC).then((farmsConfig) => {
-      const pids = farmsConfig.filter((farmToFetch) => farmToFetch.v1pid).map((farmToFetch) => farmToFetch.v1pid)
+    const pids = farmsConfig.filter((farmToFetch) => farmToFetch.v1pid).map((farmToFetch) => farmToFetch.v1pid)
 
-      dispatch(fetchFarmsPublicDataAsync(pids))
+    dispatch(fetchFarmsPublicDataAsync(pids))
 
-      if (account) {
-        dispatch(fetchFarmUserDataAsync({ account, pids }))
-      }
-    })
+    if (account) {
+      dispatch(fetchFarmUserDataAsync({ account, pids }))
+    }
   }, [dispatch, account])
 }
 
@@ -137,9 +133,16 @@ export const useLpTokenPrice = (symbol: string) => {
 }
 
 /**
- * @deprecated use the BUSD hook in /hooks
+ * @@deprecated use the BUSD hook in /hooks
  */
 export const usePriceCakeBusd = (): BigNumber => {
-  const price = useCakeBusdPrice()
-  return useMemo(() => (price ? new BigNumber(price.toSignificant(6)) : BIG_ZERO), [price])
+  const cakeBnbFarm = useFarmFromPid(251)
+
+  const cakePriceBusdAsString = cakeBnbFarm.tokenPriceBusd
+
+  const cakePriceBusd = useMemo(() => {
+    return new BigNumber(cakePriceBusdAsString)
+  }, [cakePriceBusdAsString])
+
+  return cakePriceBusd
 }

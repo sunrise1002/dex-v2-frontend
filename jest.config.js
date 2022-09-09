@@ -6,16 +6,9 @@ const createJestConfig = nextJest({ dir: './' })
 
 // Any custom config you want to pass to Jest
 const customJestConfig = {
-  testPathIgnorePatterns: ['<rootDir>/apps/test/', '<rootDir>/src/config/__tests__/', '<rootDir>/packages'],
+  testPathIgnorePatterns: ['<rootDir>/cypress/', '<rootDir>/src/config/__tests__/', '<rootDir>/packages'],
   moduleNameMapper: {
     '^@pancakeswap/uikit': '<rootDir>/packages/uikit/src',
-    '^@pancakeswap/sdk': '<rootDir>/packages/swap-sdk/src',
-    '^@pancakeswap/localization': ['<rootDir>/packages/localization/src'],
-    '^@pancakeswap/hooks': ['<rootDir>/packages/hooks/src'],
-    '^@pancakeswap/wagmi/chains': ['<rootDir>/packages/wagmi/chains'],
-    '^@pancakeswap/wagmi/connectors/miniProgram': ['<rootDir>/packages/wagmi/connectors/miniProgram'],
-    '^@pancakeswap/wagmi/connectors/binanceWallet': ['<rootDir>/packages/wagmi/connectors/binanceWallet'],
-    '^@pancakeswap/wagmi': ['<rootDir>/packages/wagmi/src'],
   },
   moduleDirectories: ['node_modules', 'src'],
   testTimeout: 20000,

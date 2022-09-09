@@ -1,21 +1,19 @@
 import { FAST_INTERVAL, SLOW_INTERVAL } from 'config/constants'
-// eslint-disable-next-line camelcase
-import useSWR, { useSWRConfig, unstable_serialize } from 'swr'
+import useSWR, { useSWRConfig } from 'swr'
+import { simpleRpcProvider } from 'utils/providers'
 import useSWRImmutable from 'swr/immutable'
-import useActiveWeb3React from 'hooks/useActiveWeb3React'
 
 const REFRESH_BLOCK_INTERVAL = 6000
 
 export const usePollBlockNumber = () => {
   const { cache, mutate } = useSWRConfig()
-  const { chainId, provider } = useActiveWeb3React()
 
   const { data } = useSWR(
-    ['blockNumber', chainId],
+    'blockNumber',
     async () => {
-      const blockNumber = await provider.getBlockNumber()
-      if (!cache.get(unstable_serialize(['initialBlockNumber', chainId]))) {
-        mutate(['initialBlockNumber', chainId], blockNumber)
+      const blockNumber = await simpleRpcProvider.getBlockNumber()
+      if (!cache.get('initialBlockNumber')) {
+        mutate('initialBlockNumber', blockNumber)
       }
       return blockNumber
     },
@@ -25,7 +23,7 @@ export const usePollBlockNumber = () => {
   )
 
   useSWR(
-    [FAST_INTERVAL, 'blockNumber', chainId],
+    [FAST_INTERVAL, 'blockNumber'],
     async () => {
       return data
     },
@@ -35,7 +33,7 @@ export const usePollBlockNumber = () => {
   )
 
   useSWR(
-    [SLOW_INTERVAL, 'blockNumber', chainId],
+    [SLOW_INTERVAL, 'blockNumber'],
     async () => {
       return data
     },
@@ -46,13 +44,11 @@ export const usePollBlockNumber = () => {
 }
 
 export const useCurrentBlock = (): number => {
-  const { chainId } = useActiveWeb3React()
-  const { data: currentBlock = 0 } = useSWRImmutable(['blockNumber', chainId])
+  const { data: currentBlock = 0 } = useSWRImmutable('blockNumber')
   return currentBlock
 }
 
 export const useInitialBlock = (): number => {
-  const { chainId } = useActiveWeb3React()
-  const { data: initialBlock = 0 } = useSWRImmutable(['initialBlockNumber', chainId])
+  const { data: initialBlock = 0 } = useSWRImmutable('initialBlockNumber')
   return initialBlock
 }

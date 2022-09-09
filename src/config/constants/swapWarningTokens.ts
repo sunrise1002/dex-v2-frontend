@@ -1,9 +1,9 @@
 import { Token } from '@pancakeswap/sdk'
-import { bscTokens } from '@pancakeswap/tokens'
-import { bscWarningTokens } from 'config/constants/warningTokens'
+import tokens from 'config/constants/tokens'
+import rugPullTokens from 'config/constants/rugPullTokens'
 
-const { bondly, itam, ccar, bttold } = bscTokens
-const { pokemoney, free, safemoon } = bscWarningTokens
+const { bondly, safemoon, itam, ccar, bttold } = tokens
+const { pokemoney } = rugPullTokens
 
 interface WarningTokenList {
   [key: string]: Token
@@ -16,7 +16,6 @@ const SwapWarningTokens = <WarningTokenList>{
   ccar,
   bttold,
   pokemoney,
-  free,
 }
 
 export default SwapWarningTokens

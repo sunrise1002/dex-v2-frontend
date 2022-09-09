@@ -1,5 +1,5 @@
 import { createReducer } from '@reduxjs/toolkit'
-import { SerializedWrappedToken } from '@pancakeswap/tokens'
+import { SerializedToken } from 'config/constants/types'
 import { DEFAULT_DEADLINE_FROM_NOW, INITIAL_ALLOWED_SLIPPAGE } from '../../config/constants'
 import { updateVersion } from '../global/actions'
 import {
@@ -34,7 +34,6 @@ import {
   ChartViewMode,
   setSubgraphHealthIndicatorDisplayed,
   updateUserLimitOrderAcceptedWarning,
-  setZapDisabled,
 } from './actions'
 import { GAS_PRICE_GWEI } from '../types'
 
@@ -57,7 +56,7 @@ export interface UserState {
 
   tokens: {
     [chainId: number]: {
-      [address: string]: SerializedWrappedToken
+      [address: string]: SerializedToken
     }
   }
 
@@ -83,7 +82,6 @@ export interface UserState {
   userPredictionChainlinkChartDisclaimerShow: boolean
   userExpertModeAcknowledgementShow: boolean
   userUsernameVisibility: boolean
-  userZapDisabled: boolean
   gasPrice: string
   watchlistTokens: string[]
   watchlistPools: string[]
@@ -116,7 +114,6 @@ export const initialState: UserState = {
   userPredictionChainlinkChartDisclaimerShow: true,
   userExpertModeAcknowledgementShow: true,
   userUsernameVisibility: false,
-  userZapDisabled: false,
   gasPrice: GAS_PRICE_GWEI.default,
   watchlistTokens: [],
   watchlistPools: [],
@@ -259,9 +256,6 @@ export default createReducer(initialState, (builder) =>
     })
     .addCase(setChartViewMode, (state, { payload }) => {
       state.userChartViewMode = payload
-    })
-    .addCase(setZapDisabled, (state, { payload }) => {
-      state.userZapDisabled = payload
     })
     .addCase(setSubgraphHealthIndicatorDisplayed, (state, { payload }) => {
       state.isSubgraphHealthIndicatorDisplayed = payload

@@ -1,16 +1,16 @@
 import React from "react";
-import { renderWithProvider } from "../../testHelpers";
+import { renderWithTheme } from "../../testHelpers";
 import Heading from "../../components/Heading/Heading";
 
 it("renders correctly", () => {
-  const { asFragment } = renderWithProvider(<Heading>Title</Heading>);
+  const { asFragment } = renderWithTheme(<Heading>Title</Heading>);
   expect(asFragment()).toMatchInlineSnapshot(`
     <DocumentFragment>
       .c0 {
       color: #280D5F;
+      font-size: 16px;
       font-weight: 600;
       line-height: 1.5;
-      font-size: 16px;
     }
 
     .c1 {
@@ -28,7 +28,6 @@ it("renders correctly", () => {
     <h2
         class="c0 c1"
         color="text"
-        font-size="16px"
       >
         Title
       </h2>

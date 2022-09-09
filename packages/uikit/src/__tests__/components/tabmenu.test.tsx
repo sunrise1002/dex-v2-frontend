@@ -1,11 +1,11 @@
 import React from "react";
-import { renderWithProvider } from "../../testHelpers";
+import { renderWithTheme } from "../../testHelpers";
 import { TabMenu, Tab } from "../../components/TabMenu";
 
 const handleClick = jest.fn();
 
 it("renders correctly", () => {
-  const { asFragment } = renderWithProvider(
+  const { asFragment } = renderWithTheme(
     <TabMenu activeIndex={0} onItemClick={handleClick}>
       <Tab>Item 1</Tab>
       <Tab>Item 2</Tab>

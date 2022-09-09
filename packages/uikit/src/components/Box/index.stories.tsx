@@ -11,7 +11,7 @@ export default {
   argTypes: {},
 };
 
-export const Box: React.FC<React.PropsWithChildren> = () => {
+export const Box: React.FC = () => {
   return (
     <div>
       <BoxComponent as="p">
@@ -24,7 +24,7 @@ export const Box: React.FC<React.PropsWithChildren> = () => {
   );
 };
 
-export const Flex: React.FC<React.PropsWithChildren> = () => {
+export const Flex: React.FC = () => {
   return (
     <div>
       <Text>Based on the Box component. You can apply any flexbox properties on the Flex component.</Text>
@@ -42,7 +42,7 @@ export const Flex: React.FC<React.PropsWithChildren> = () => {
   );
 };
 
-export const Grid: React.FC<React.PropsWithChildren> = () => {
+export const Grid: React.FC = () => {
   return (
     <GridComponent
       justifyItems="center"

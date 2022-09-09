@@ -12,7 +12,7 @@ export const footerLinks: FooterLinkType[] = [
       },
       {
         label: "Blog",
-        href: "https://medium.com/pancakeswap",
+        href: "https://pancakeswap.medium.com/",
       },
       {
         label: "Community",
@@ -143,10 +143,6 @@ export const socials = [
         href: "https://t.me/PancakeSwapGeorgia",
       },
       {
-        label: "हिन्दी",
-        href: "https://t.me/PancakeSwapINDIA",
-      },
-      {
         label: "Announcements",
         href: "https://t.me/PancakeSwapAnn",
       },
@@ -175,7 +171,7 @@ export const socials = [
   {
     label: "Medium",
     icon: MediumIcon,
-    href: "https://medium.com/pancakeswap",
+    href: "https://pancakeswap.medium.com/",
   },
 ];
 

@@ -26,7 +26,7 @@ const TextLabel = styled(Text)`
   }
 `
 
-const PairPriceDisplay: FC<React.PropsWithChildren<TokenDisplayProps>> = ({
+const PairPriceDisplay: FC<TokenDisplayProps> = ({
   value,
   inputSymbol,
   outputSymbol,

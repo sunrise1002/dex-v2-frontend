@@ -1,64 +1,45 @@
+import { ChainId } from '@pancakeswap/sdk'
+import { useWeb3React } from '@web3-react/core'
 import BigNumber from 'bignumber.js'
-import useActiveWeb3React from 'hooks/useActiveWeb3React'
-import { SLOW_INTERVAL } from 'config/constants'
-import { useCakeBusdPrice } from 'hooks/useBUSDPrice'
-import { useEffect, useMemo } from 'react'
-import { useSelector } from 'react-redux'
-import { useAppDispatch } from 'state/index'
-import useSWRImmutable from 'swr/immutable'
-import { BIG_ZERO } from 'utils/bigNumber'
-// import { useBCakeProxyContractAddress } from 'views/Farms/hooks/useBCakeProxyContractAddress'
-import { getMasterchefContract } from 'utils/contractHelpers'
+import { farmsConfig, SLOW_INTERVAL } from 'config/constants'
+import { CHAIN_ID } from 'config/constants/networks'
 import { useFastRefreshEffect } from 'hooks/useRefreshEffect'
-import { getFarmConfig } from 'config/constants/farms/index'
-import { fetchFarmsPublicDataAsync, fetchFarmUserDataAsync, fetchInitialFarmsData } from '.'
+import useSWRImmutable from 'swr/immutable'
+import { useMemo } from 'react'
+import { useSelector } from 'react-redux'
+import { useAppDispatch } from 'state'
+import { fetchFarmsPublicDataAsync, fetchFarmUserDataAsync } from '.'
 import { DeserializedFarm, DeserializedFarmsState, DeserializedFarmUserData, State } from '../types'
 import {
-  farmFromLpSymbolSelector,
   farmSelector,
+  farmFromLpSymbolSelector,
+  priceCakeFromPidSelector,
   makeBusdPriceFromPidSelector,
-  makeFarmFromPidSelector,
-  makeLpTokenPriceFromLpSymbolSelector,
   makeUserFarmFromPidSelector,
+  makeLpTokenPriceFromLpSymbolSelector,
+  makeFarmFromPidSelector,
 } from './selectors'
-
-export function useFarmsLength() {
-  const { chainId } = useActiveWeb3React()
-  return useSWRImmutable(chainId ? ['farmsLength', chainId] : null, async () => {
-    const mc = getMasterchefContract(undefined, chainId)
-    return (await mc.poolLength()).toNumber()
-  })
-}
 
 export const usePollFarmsWithUserData = () => {
   const dispatch = useAppDispatch()
-  const { account, chainId } = useActiveWeb3React()
-  const proxyAddress = '' // TODO: const { proxyAddress } = useBCakeProxyContractAddress(account)
+  const { account } = useWeb3React()
 
   useSWRImmutable(
-    chainId ? ['publicFarmData', chainId] : null,
-    async () => {
-      const farmsConfig = await getFarmConfig(chainId)
+    ['publicFarmData'],
+    () => {
       const pids = farmsConfig.map((farmToFetch) => farmToFetch.pid)
-      dispatch(fetchFarmsPublicDataAsync({ pids, chainId }))
+      dispatch(fetchFarmsPublicDataAsync(pids))
     },
     {
       refreshInterval: SLOW_INTERVAL,
     },
   )
 
-  const name = proxyAddress
-    ? ['farmsWithUserData', account, proxyAddress, chainId]
-    : ['farmsWithUserData', account, chainId]
-
   useSWRImmutable(
-    account && chainId ? name : null,
-    async () => {
-      const farmsConfig = await getFarmConfig(chainId)
+    account ? ['farmsWithUserData', account] : null,
+    () => {
       const pids = farmsConfig.map((farmToFetch) => farmToFetch.pid)
-      const params = proxyAddress ? { account, pids, proxyAddress, chainId } : { account, pids, chainId }
-
-      dispatch(fetchFarmUserDataAsync(params))
+      dispatch(fetchFarmUserDataAsync({ account, pids }))
     },
     {
       refreshInterval: SLOW_INTERVAL,
@@ -71,32 +52,17 @@ export const usePollFarmsWithUserData = () => {
  * 2 = CAKE-BNB LP
  * 3 = BUSD-BNB LP
  */
-const coreFarmPIDs = {
-  56: [2, 3],
-  97: [4, 10],
-  5: [1, 2],
-}
-
+const coreFarmPIDs = CHAIN_ID === String(ChainId.MAINNET) ? [2, 3] : [1, 2]
 export const usePollCoreFarmData = () => {
   const dispatch = useAppDispatch()
-  const { chainId } = useActiveWeb3React()
-
-  useEffect(() => {
-    if (chainId) {
-      dispatch(fetchInitialFarmsData({ chainId }))
-    }
-  }, [chainId, dispatch])
 
   useFastRefreshEffect(() => {
-    if (chainId) {
-      dispatch(fetchFarmsPublicDataAsync({ pids: coreFarmPIDs[chainId], chainId }))
-    }
-  }, [dispatch, chainId])
+    dispatch(fetchFarmsPublicDataAsync(coreFarmPIDs))
+  }, [dispatch])
 }
 
 export const useFarms = (): DeserializedFarmsState => {
-  const { chainId } = useActiveWeb3React()
-  return useSelector(farmSelector(chainId))
+  return useSelector(farmSelector)
 }
 
 export const useFarmsPoolLength = (): number => {
@@ -130,9 +96,8 @@ export const useLpTokenPrice = (symbol: string) => {
 }
 
 /**
- * @deprecated use the BUSD hook in /hooks
+ * @@deprecated use the BUSD hook in /hooks
  */
-export const usePriceCakeBusd = ({ forceMainnet } = { forceMainnet: false }): BigNumber => {
-  const price = useCakeBusdPrice({ forceMainnet })
-  return useMemo(() => (price ? new BigNumber(price.toSignificant(6)) : BIG_ZERO), [price])
+export const usePriceCakeBusd = (): BigNumber => {
+  return useSelector(priceCakeFromPidSelector)
 }

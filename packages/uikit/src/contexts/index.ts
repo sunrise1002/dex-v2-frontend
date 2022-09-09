@@ -1,2 +1,2 @@
-export { default as useMatchBreakpoints } from "./MatchBreakpoints/useMatchBreakpoints";
+export { default as useMatchBreakpointsContext } from "./MatchBreakpoints/useMatchBreakpointsContext";
 export { MatchBreakpointsProvider } from "./MatchBreakpoints/Provider";

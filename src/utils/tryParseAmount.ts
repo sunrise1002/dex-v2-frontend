@@ -1,8 +1,8 @@
 import { parseUnits } from '@ethersproject/units'
-import { Currency, CurrencyAmount, JSBI } from '@pancakeswap/sdk'
+import { Currency, CurrencyAmount, JSBI, Token, TokenAmount } from '@pancakeswap/sdk'
 
 // try to parse a user entered amount for a given token
-function tryParseAmount<T extends Currency>(value?: string, currency?: T): CurrencyAmount<T> | undefined {
+const tryParseAmount = (value?: string, currency?: Currency): CurrencyAmount | TokenAmount | undefined => {
   if (!value || !currency) {
     return undefined
   }
@@ -10,7 +10,9 @@ function tryParseAmount<T extends Currency>(value?: string, currency?: T): Curre
     const typedValueParsed = parseUnits(value, currency.decimals).toString()
 
     if (typedValueParsed !== '0') {
-      return CurrencyAmount.fromRawAmount(currency, JSBI.BigInt(typedValueParsed))
+      return currency instanceof Token
+        ? new TokenAmount(currency, JSBI.BigInt(typedValueParsed))
+        : CurrencyAmount.ether(JSBI.BigInt(typedValueParsed))
     }
   } catch (error) {
     // should fail if the user specifies too many decimal places of precision (or maybe exceed max uint?)

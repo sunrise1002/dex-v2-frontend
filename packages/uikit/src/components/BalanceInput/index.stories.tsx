@@ -9,7 +9,7 @@ export default {
   argTypes: {},
 };
 
-export const Default: React.FC<React.PropsWithChildren> = () => {
+export const Default: React.FC = () => {
   const [decimalValue, setDecimalValue] = useState(1.43333);
   const [numericValue, setNumericValue] = useState(5);
 
@@ -57,7 +57,7 @@ export const Default: React.FC<React.PropsWithChildren> = () => {
   );
 };
 
-export const UnitDisplay: React.FC<React.PropsWithChildren> = () => {
+export const UnitDisplay: React.FC = () => {
   const CAKE_PRICE = 69;
   const [cakeValue, setCakeValue] = useState("1006.086956");
 
@@ -98,7 +98,7 @@ export const UnitDisplay: React.FC<React.PropsWithChildren> = () => {
   );
 };
 
-export const SwitchUnits: React.FC<React.PropsWithChildren> = () => {
+export const SiwtchUnits: React.FC = () => {
   const CAKE_PRICE = 69;
   const [editingUnit, setEditingUnit] = useState<"CAKE" | "USD">("CAKE");
   const conversionUnit = editingUnit === "CAKE" ? "USD" : "CAKE";
@@ -156,7 +156,7 @@ export const SwitchUnits: React.FC<React.PropsWithChildren> = () => {
   );
 };
 
-export const Textfield: React.FC<React.PropsWithChildren> = () => {
+export const Textfield: React.FC = () => {
   const [value, setValue] = useState("");
 
   return (

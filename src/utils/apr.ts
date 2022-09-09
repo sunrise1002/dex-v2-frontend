@@ -1,15 +1,6 @@
 import BigNumber from 'bignumber.js'
-import { BLOCKS_PER_YEAR } from 'config/index'
-import lpAprs56 from 'config/constants/lpAprs/56.json'
-
-const getLpApr = (chainId: number) => {
-  switch (chainId) {
-    case 56:
-      return lpAprs56
-    default:
-      return {}
-  }
-}
+import { BLOCKS_PER_YEAR } from 'config'
+import lpAprs from 'config/constants/lpAprs.json'
 
 /**
  * Get the APR value in %
@@ -40,7 +31,6 @@ export const getPoolApr = (
  * @returns Farm Apr
  */
 export const getFarmApr = (
-  chainId: number,
   poolWeight: BigNumber,
   cakePriceUsd: BigNumber,
   poolLiquidityUsd: BigNumber,
@@ -55,7 +45,7 @@ export const getFarmApr = (
   if (!cakeRewardsApr.isNaN() && cakeRewardsApr.isFinite()) {
     cakeRewardsAprAsNumber = cakeRewardsApr.toNumber()
   }
-  const lpRewardsApr = getLpApr(chainId)[farmAddress?.toLowerCase()] ?? 0
+  const lpRewardsApr = lpAprs[farmAddress?.toLocaleLowerCase()] ?? 0
   return { cakeRewardsApr: cakeRewardsAprAsNumber, lpRewardsApr }
 }
 

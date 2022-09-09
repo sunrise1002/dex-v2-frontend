@@ -2,31 +2,28 @@ import { ResetCSS } from '@pancakeswap/uikit'
 import Script from 'next/script'
 import dynamic from 'next/dynamic'
 import BigNumber from 'bignumber.js'
-// import GlobalCheckClaimStatus from 'components/GlobalCheckClaimStatus'
-// import { FixedSubgraphHealthIndicator } from 'components/SubgraphHealthIndicator/FixedSubgraphHealthIndicator'
-// import { ToastListener } from 'contexts/ToastsContext'
+import GlobalCheckClaimStatus from 'components/GlobalCheckClaimStatus'
+import FixedSubgraphHealthIndicator from 'components/SubgraphHealthIndicator'
+import { ToastListener } from 'contexts/ToastsContext'
 import useEagerConnect from 'hooks/useEagerConnect'
-import useEagerConnectMP from 'hooks/useEagerConnect.bmp'
 import { useAccountEventListener } from 'hooks/useAccountEventListener'
 import useSentryUser from 'hooks/useSentryUser'
 import useUserAgent from 'hooks/useUserAgent'
-import useThemeCookie from 'hooks/useThemeCookie'
 import type { AppProps } from 'next/app'
 import Head from 'next/head'
 import { Fragment } from 'react'
 import { PersistGate } from 'redux-persist/integration/react'
-import { useStore, persistor } from 'state/index'
-// import { NetworkModal } from 'components/NetworkModal'
+import { useStore, persistor } from 'state'
 import { usePollBlockNumber } from 'state/block/hooks'
 import { usePollCoreFarmData } from 'state/farms/hooks'
 import { NextPage } from 'next'
 import { Blocklist, Updaters } from '..'
-// import { SentryErrorBoundary } from '../components/ErrorBoundary'
-// import Menu from '../components/Menu'
+import ErrorBoundary from '../components/ErrorBoundary'
+import Menu from '../components/Menu'
 import Providers from '../Providers'
 import GlobalStyle from '../style/Global'
 
-// const EasterEgg = dynamic(() => import('components/EasterEgg'), { ssr: false })
+const EasterEgg = dynamic(() => import('components/EasterEgg'), { ssr: false })
 
 // This config is required for number formatting
 BigNumber.config({
@@ -41,22 +38,11 @@ function GlobalHooks() {
   useUserAgent()
   useAccountEventListener()
   useSentryUser()
-  useThemeCookie()
-  return null
-}
-
-function MPGlobalHooks() {
-  usePollBlockNumber()
-  useEagerConnectMP()
-  usePollCoreFarmData()
-  useUserAgent()
-  useAccountEventListener()
-  useSentryUser()
   return null
 }
 
 function MyApp(props: AppProps) {
-  const { pageProps, Component } = props
+  const { pageProps } = props
   const store = useStore(pageProps.initialReduxState)
 
   return (
@@ -79,17 +65,13 @@ function MyApp(props: AppProps) {
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="🥞 PancakeSwap - A next evolution DeFi exchange on BNB Smart Chain (BSC)" />
         <title>PancakeSwap</title>
-        {(Component as NextPageWithLayout).mp && (
-          // eslint-disable-next-line @next/next/no-sync-scripts
-          <script src="https://public.bnbstatic.com/static/js/mp-webview-sdk/webview-v1.0.0.min.js" id="mp-webview" />
-        )}
       </Head>
       <Providers store={store}>
         <Blocklist>
-          {(Component as NextPageWithLayout).mp ? <MPGlobalHooks /> : <GlobalHooks />}
+          <GlobalHooks />
           <ResetCSS />
           <GlobalStyle />
-          {/* <GlobalCheckClaimStatus excludeLocations={[]} /> */}
+          <GlobalCheckClaimStatus excludeLocations={[]} />
           <PersistGate loading={null} persistor={persistor}>
             <Updaters />
             <App {...props} />
@@ -114,48 +96,29 @@ function MyApp(props: AppProps) {
 }
 
 type NextPageWithLayout = NextPage & {
-  Layout?: React.FC<React.PropsWithChildren<unknown>>
-  /** render component without all layouts */
-  pure?: true
-  /** is mini program */
-  mp?: boolean
-  /**
-   * allow chain per page, empty array bypass chain block modal
-   * @default [ChainId.BSC]
-   * */
-  chains?: number[]
+  Layout?: React.FC
 }
 
 type AppPropsWithLayout = AppProps & {
   Component: NextPageWithLayout
 }
 
-// const ProductionErrorBoundary = process.env.NODE_ENV === 'production' ? SentryErrorBoundary : Fragment
+const ProductionErrorBoundary = process.env.NODE_ENV === 'production' ? ErrorBoundary : Fragment
 
 const App = ({ Component, pageProps }: AppPropsWithLayout) => {
-  if (Component.pure) {
-    return <Component {...pageProps} />
-  }
-
   // Use the layout defined at the page level, if available
   const Layout = Component.Layout || Fragment
-  // const ShowMenu = Component.mp ? Fragment : Menu
-
   return (
-    // <ProductionErrorBoundary>
-    //   <ShowMenu>
-    //     <Layout>
-    //       <Component {...pageProps} />
-    //     </Layout>
-    //   </ShowMenu>
-    //   <EasterEgg iterations={2} />
-    //   <ToastListener />
-    //   <FixedSubgraphHealthIndicator />
-    //   <NetworkModal pageSupportedChains={Component.chains} />
-    // </ProductionErrorBoundary>
-    <Layout>
-      <Component {...pageProps} />
-    </Layout>
+    <ProductionErrorBoundary> 
+      {/* <Menu> */}
+        <Layout>
+          <Component {...pageProps} />
+        </Layout>
+      {/* </Menu> */}
+      <EasterEgg iterations={2} />
+      <ToastListener />
+      <FixedSubgraphHealthIndicator />
+    </ProductionErrorBoundary>
   )
 }
 

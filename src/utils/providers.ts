@@ -1,7 +1,8 @@
 import { StaticJsonRpcProvider } from '@ethersproject/providers'
+import getRpcUrl from 'utils/getRpcUrl'
 
-export const BSC_PROD_NODE = process.env.NEXT_PUBLIC_NODE_PRODUCTION || 'https://bsc.nodereal.io'
+const RPC_URL = getRpcUrl()
 
-export const bscRpcProvider = new StaticJsonRpcProvider(BSC_PROD_NODE)
+export const simpleRpcProvider = new StaticJsonRpcProvider(RPC_URL)
 
 export default null

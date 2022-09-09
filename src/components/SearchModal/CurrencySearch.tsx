@@ -1,22 +1,21 @@
 /* eslint-disable no-restricted-syntax */
-import { Currency, Token } from '@pancakeswap/sdk'
-import { Box, Input, Text, useMatchBreakpoints } from '@pancakeswap/uikit'
 import { KeyboardEvent, RefObject, useCallback, useMemo, useRef, useState, useEffect } from 'react'
-import { useTranslation } from '@pancakeswap/localization'
-import useActiveWeb3React from 'hooks/useActiveWeb3React'
-import useDebounce from 'hooks/useDebounce'
-import useNativeCurrency from 'hooks/useNativeCurrency'
+import { Currency, ETHER, Token } from '@pancakeswap/sdk'
+import { Text, Input, Box } from '@pancakeswap/uikit'
+import { useTranslation } from 'contexts/Localization'
 import { FixedSizeList } from 'react-window'
-import { useAllLists, useInactiveListUrls } from 'state/lists/hooks'
-import { TagInfo, WrappedTokenInfo } from '@pancakeswap/tokens'
 import { useAudioModeManager } from 'state/user/hooks'
-import { useAllTokens, useIsUserAddedToken, useToken } from '../../hooks/Tokens'
+import useDebounce from 'hooks/useDebounce'
+import useActiveWeb3React from 'hooks/useActiveWeb3React'
+import { useAllLists, useInactiveListUrls } from 'state/lists/hooks'
+import { TagInfo, WrappedTokenInfo } from 'state/types'
+import { useAllTokens, useToken, useIsUserAddedToken } from '../../hooks/Tokens'
 import { isAddress } from '../../utils'
 import Column, { AutoColumn } from '../Layout/Column'
 import Row from '../Layout/Row'
 import CommonBases from './CommonBases'
 import CurrencyList from './CurrencyList'
-import { createFilterToken, useSortedTokensByQuery } from './filtering'
+import { useSortedTokensByQuery, createFilterToken } from './filtering'
 import useTokenComparator from './sorting'
 import { getSwapSound } from './swapSound'
 
@@ -27,10 +26,8 @@ interface CurrencySearchProps {
   onCurrencySelect: (currency: Currency) => void
   otherSelectedCurrency?: Currency | null
   showCommonBases?: boolean
-  commonBasesType?: string
   showImportView: () => void
   setImportToken: (token: Token) => void
-  height?: number
 }
 
 function useSearchInactiveTokenLists(search: string | undefined, minResults = 10): WrappedTokenInfo[] {
@@ -44,7 +41,6 @@ function useSearchInactiveTokenLists(search: string | undefined, minResults = 10
     const exactMatches: WrappedTokenInfo[] = []
     const rest: WrappedTokenInfo[] = []
     const addressSet: { [address: string]: true } = {}
-    const trimmedSearchQuery = search.toLowerCase().trim()
     for (const url of inactiveUrls) {
       const list = lists[url].current
       // eslint-disable-next-line no-continue
@@ -65,6 +61,7 @@ function useSearchInactiveTokenLists(search: string | undefined, minResults = 10
               ?.filter((x): x is TagInfo => Boolean(x)) ?? []
           const wrapped: WrappedTokenInfo = new WrappedTokenInfo(tokenInfo, tags)
           addressSet[wrapped.address] = true
+          const trimmedSearchQuery = search.toLowerCase().trim()
           if (
             tokenInfo.name?.toLowerCase() === trimmedSearchQuery ||
             tokenInfo.symbol?.toLowerCase() === trimmedSearchQuery
@@ -85,10 +82,8 @@ function CurrencySearch({
   onCurrencySelect,
   otherSelectedCurrency,
   showCommonBases,
-  commonBasesType,
   showImportView,
   setImportToken,
-  height,
 }: CurrencySearchProps) {
   const { t } = useTranslation()
   const { chainId } = useActiveWeb3React()
@@ -107,15 +102,12 @@ function CurrencySearch({
   const searchToken = useToken(debouncedQuery)
   const searchTokenIsAdded = useIsUserAddedToken(searchToken)
 
-  const { isMobile } = useMatchBreakpoints()
   const [audioPlay] = useAudioModeManager()
-
-  const native = useNativeCurrency()
 
   const showBNB: boolean = useMemo(() => {
     const s = debouncedQuery.toLowerCase().trim()
-    return native && native.symbol?.toLowerCase?.()?.indexOf(s) !== -1
-  }, [debouncedQuery, native])
+    return s === '' || s === 'b' || s === 'bn' || s === 'bnb'
+  }, [debouncedQuery])
 
   const filteredTokens: Token[] = useMemo(() => {
     const filterToken = createFilterToken(debouncedQuery)
@@ -144,8 +136,8 @@ function CurrencySearch({
   const inputRef = useRef<HTMLInputElement>()
 
   useEffect(() => {
-    if (!isMobile) inputRef.current.focus()
-  }, [isMobile])
+    inputRef.current.focus()
+  }, [])
 
   const handleInput = useCallback((event) => {
     const input = event.target.value
@@ -158,9 +150,8 @@ function CurrencySearch({
     (e: KeyboardEvent<HTMLInputElement>) => {
       if (e.key === 'Enter') {
         const s = debouncedQuery.toLowerCase().trim()
-        // TODO: FIXME
         if (s === 'bnb') {
-          handleCurrencySelect(native)
+          handleCurrencySelect(ETHER)
         } else if (filteredSortedTokens.length > 0) {
           if (
             filteredSortedTokens[0].symbol?.toLowerCase() === debouncedQuery.trim().toLowerCase() ||
@@ -171,7 +162,7 @@ function CurrencySearch({
         }
       }
     },
-    [debouncedQuery, filteredSortedTokens, handleCurrencySelect, native],
+    [filteredSortedTokens, handleCurrencySelect, debouncedQuery],
   )
 
   // if no results on main list, show option to expand into inactive
@@ -191,7 +182,7 @@ function CurrencySearch({
     return Boolean(filteredSortedTokens?.length) || hasFilteredInactiveTokens ? (
       <Box margin="24px -24px">
         <CurrencyList
-          height={isMobile ? (showCommonBases ? height || 250 : height ? height + 80 : 350) : 390}
+          height={390}
           showBNB={showBNB}
           currencies={filteredSortedTokens}
           inactiveCurrencies={filteredInactiveTokens}
@@ -226,9 +217,6 @@ function CurrencySearch({
     showBNB,
     showImportView,
     t,
-    showCommonBases,
-    isMobile,
-    height,
   ])
 
   return (
@@ -247,12 +235,7 @@ function CurrencySearch({
           />
         </Row>
         {showCommonBases && (
-          <CommonBases
-            chainId={chainId}
-            onSelect={handleCurrencySelect}
-            selectedCurrency={selectedCurrency}
-            commonBasesType={commonBasesType}
-          />
+          <CommonBases chainId={chainId} onSelect={handleCurrencySelect} selectedCurrency={selectedCurrency} />
         )}
       </AutoColumn>
       {getCurrencyListRows()}

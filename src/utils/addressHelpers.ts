@@ -3,18 +3,19 @@ import addresses from 'config/constants/contracts'
 import { Address } from 'config/constants/types'
 import { VaultKey } from 'state/types'
 
-export const getAddress = (address: Address, chainId?: number): string => {
-  return address[chainId] ? address[chainId] : address[ChainId.BSC]
+export const getAddress = (address: Address): string => {
+  const chainId = process.env.NEXT_PUBLIC_CHAIN_ID
+  return address[chainId] ? address[chainId] : address[ChainId.MAINNET]
 }
 
-export const getMasterChefAddress = (chainId?: number) => {
-  return getAddress(addresses.masterChef, chainId)
+export const getMasterChefAddress = () => {
+  return getAddress(addresses.masterChef)
 }
 export const getMasterChefV1Address = () => {
   return getAddress(addresses.masterChefV1)
 }
-export const getMulticallAddress = (chainId?: number) => {
-  return getAddress(addresses.multiCall, chainId)
+export const getMulticallAddress = () => {
+  return getAddress(addresses.multiCall)
 }
 export const getLotteryV2Address = () => {
   return getAddress(addresses.lotteryV2)
@@ -27,9 +28,6 @@ export const getPancakeBunniesAddress = () => {
 }
 export const getBunnyFactoryAddress = () => {
   return getAddress(addresses.bunnyFactory)
-}
-export const getPredictionsV1Address = () => {
-  return getAddress(addresses.predictionsV1)
 }
 export const getClaimRefundAddress = () => {
   return getAddress(addresses.claimRefund)
@@ -70,10 +68,9 @@ export const getCakeVaultAddress = () => {
   return getAddress(addresses.cakeVault)
 }
 
-export const getCakeFlexibleSideVaultAddress = () => {
-  return getAddress(addresses.cakeFlexibleSideVault)
+export const getChainlinkOracleAddress = () => {
+  return getAddress(addresses.chainlinkOracle)
 }
-
 export const getBunnySpecialCakeVaultAddress = () => {
   return getAddress(addresses.bunnySpecialCakeVault)
 }
@@ -92,7 +89,9 @@ export const getFarmAuctionAddress = () => {
 export const getAnniversaryAchievement = () => {
   return getAddress(addresses.AnniversaryAchievement)
 }
-
+export const getGalaxyNFTClaimingAddress = () => {
+  return getAddress(addresses.galaxyNftClaiming)
+}
 export const getNftMarketAddress = () => {
   return getAddress(addresses.nftMarket)
 }
@@ -101,22 +100,4 @@ export const getNftSaleAddress = () => {
 }
 export const getPancakeSquadAddress = () => {
   return getAddress(addresses.pancakeSquad)
-}
-export const getPotteryDrawAddress = () => {
-  return getAddress(addresses.potteryDraw)
-}
-
-export const getZapAddress = () => {
-  return getAddress(addresses.zap)
-}
-export const getICakeAddress = () => {
-  return getAddress(addresses.iCake)
-}
-
-export const getBCakeFarmBoosterAddress = () => {
-  return getAddress(addresses.bCakeFarmBooster)
-}
-
-export const getBCakeFarmBoosterProxyFactoryAddress = () => {
-  return getAddress(addresses.bCakeFarmBoosterProxyFactory)
 }

@@ -9,7 +9,6 @@ export type MenuItemsType = {
   icon?: ElementType<any>;
   fillIcon?: ElementType<any>;
   items?: DropdownMenuItems[];
-  disabled?: boolean;
   showOnMobile?: boolean;
   showItemsOnMobile?: boolean;
 };

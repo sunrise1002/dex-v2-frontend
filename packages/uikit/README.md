@@ -13,14 +13,15 @@ Pancake UIkit is a set of React components and hooks used to build pages on Panc
 
 ## Setup
 
-### Providers
+### Theme
 
-Before using Pancake UIkit, you need to provide the theme file to uikit provider.
+Before using Pancake UIkit, you need to provide the theme file to styled-component.
 
 ```
-import { UIKitProvider, light, dark } from '@pancakeswap/uikit'
+import { ThemeProvider } from 'styled-components'
+import { light, dark } from '@pancakeswap/uikit'
 ...
-<UIKitProvider theme={isDark ? dark : light}>...</UIKitProvider>
+<ThemeProvider theme={isDark}>...</ThemeProvider>
 ```
 
 ### Reset

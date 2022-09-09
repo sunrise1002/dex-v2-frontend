@@ -10,10 +10,10 @@ import {
   useModal,
   ChartDisableIcon,
 } from '@pancakeswap/uikit'
-import { TransactionsModal, GlobalSettings, RefreshIcon } from 'components'
+import TransactionsModal from 'components/App/Transactions/TransactionsModal'
+import GlobalSettings from 'components/Menu/GlobalSettings'
 import { useExpertModeManager } from 'state/user/hooks'
-import { useCallback } from 'react'
-import { SettingsMode } from '../../../components/Menu/GlobalSettings/types'
+import RefreshIcon from 'components/Svg/RefreshIcon'
 
 interface Props {
   title: string
@@ -37,7 +37,7 @@ const ColoredIconButton = styled(IconButton)`
   color: ${({ theme }) => theme.colors.textSubtle};
 `
 
-const CurrencyInputHeader: React.FC<React.PropsWithChildren<Props>> = ({
+const CurrencyInputHeader: React.FC<Props> = ({
   title,
   subtitle,
   setIsChartDisplayed,
@@ -50,7 +50,6 @@ const CurrencyInputHeader: React.FC<React.PropsWithChildren<Props>> = ({
     setIsChartDisplayed((currentIsChartDisplayed) => !currentIsChartDisplayed)
   }
   const [onPresentTransactionsModal] = useModal(<TransactionsModal />)
-  const handleOnClick = useCallback(() => onRefreshPrice?.(), [onRefreshPrice])
 
   return (
     <CurrencyInputContainer>
@@ -65,12 +64,12 @@ const CurrencyInputHeader: React.FC<React.PropsWithChildren<Props>> = ({
         </Flex>
         <Flex>
           <NotificationDot show={expertMode}>
-            <GlobalSettings color="textSubtle" mr="0" mode={SettingsMode.SWAP_LIQUIDITY} />
+            <GlobalSettings color="textSubtle" mr="0" />
           </NotificationDot>
           <IconButton onClick={onPresentTransactionsModal} variant="text" scale="sm">
             <HistoryIcon color="textSubtle" width="24px" />
           </IconButton>
-          <IconButton variant="text" scale="sm" onClick={handleOnClick}>
+          <IconButton variant="text" scale="sm" onClick={() => onRefreshPrice()}>
             <RefreshIcon disabled={!hasAmount} color="textSubtle" width="27px" />
           </IconButton>
         </Flex>

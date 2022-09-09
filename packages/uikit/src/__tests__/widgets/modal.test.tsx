@@ -1,10 +1,10 @@
 import React from "react";
 import noop from "lodash/noop";
-import { renderWithProvider } from "../../testHelpers";
+import { renderWithTheme } from "../../testHelpers";
 import { Modal } from "../../widgets/Modal";
 
 it("renders correctly", () => {
-  const { asFragment } = renderWithProvider(
+  const { asFragment } = renderWithTheme(
     <Modal title="Title" onDismiss={noop}>
       body
     </Modal>
@@ -13,9 +13,9 @@ it("renders correctly", () => {
     <DocumentFragment>
       .c5 {
       color: #280D5F;
+      font-size: 16px;
       font-weight: 600;
       line-height: 1.5;
-      font-size: 16px;
     }
 
     .c6 {
@@ -50,7 +50,6 @@ it("renders correctly", () => {
     }
 
     .c7 {
-      position: relative;
       -webkit-align-items: center;
       -webkit-box-align: center;
       -ms-flex-align: center;
@@ -141,7 +140,6 @@ it("renders correctly", () => {
       -ms-flex-direction: column;
       flex-direction: column;
       max-height: 90vh;
-      max-height: calc(var(--vh,1vh) * 90);
       overflow-y: auto;
     }
 
@@ -153,20 +151,12 @@ it("renders correctly", () => {
       border-radius: 32px;
       width: 100%;
       max-height: 100vh;
-      max-height: calc(var(--vh,1vh) * 100);
       z-index: 100;
     }
 
     @media screen and (min-width:968px) {
       .c6 {
         font-size: 20px;
-      }
-    }
-
-    @supports (-webkit-text-size-adjust:none) and (not (-ms-accelerator:true)) and (not (-moz-appearance:none)) {
-      .c9 {
-        -webkit-filter: none !important;
-        filter: none !important;
       }
     }
 
@@ -190,7 +180,6 @@ it("renders correctly", () => {
             <h2
               class="c5 c6"
               color="text"
-              font-size="16px"
             >
               Title
             </h2>
@@ -209,7 +198,6 @@ it("renders correctly", () => {
             >
               <path
                 d="M18.3 5.70997C17.91 5.31997 17.28 5.31997 16.89 5.70997L12 10.59L7.10997 5.69997C6.71997 5.30997 6.08997 5.30997 5.69997 5.69997C5.30997 6.08997 5.30997 6.71997 5.69997 7.10997L10.59 12L5.69997 16.89C5.30997 17.28 5.30997 17.91 5.69997 18.3C6.08997 18.69 6.71997 18.69 7.10997 18.3L12 13.41L16.89 18.3C17.28 18.69 17.91 18.69 18.3 18.3C18.69 17.91 18.69 17.28 18.3 16.89L13.41 12L18.3 7.10997C18.68 6.72997 18.68 6.08997 18.3 5.70997Z"
-                fill="currentColor"
               />
             </svg>
           </button>

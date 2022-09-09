@@ -13,7 +13,7 @@ export default {
   argTypes: {},
 };
 
-export const Default: React.FC<React.PropsWithChildren> = () => {
+export const Default: React.FC = () => {
   return (
     <BrowserRouter>
       <Text p="32px">
@@ -33,7 +33,7 @@ export const Default: React.FC<React.PropsWithChildren> = () => {
   );
 };
 
-export const CustomSeparator: React.FC<React.PropsWithChildren> = () => {
+export const CustomSeparator: React.FC = () => {
   return (
     <Text p="32px">
       <Text mb="16px">

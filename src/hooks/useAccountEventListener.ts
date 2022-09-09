@@ -1,23 +1,15 @@
 import { useEffect } from 'react'
-import replaceBrowserHistory from 'utils/replaceBrowserHistory'
-import { ConnectorData } from 'wagmi'
 import { useAppDispatch } from '../state'
 import { clearUserStates } from '../utils/clearUserStates'
 import useActiveWeb3React from './useActiveWeb3React'
-import { useSessionChainId } from './useSessionChainId'
 
 export const useAccountEventListener = () => {
   const { account, chainId, connector } = useActiveWeb3React()
-  const [, setSessionChainId] = useSessionChainId()
   const dispatch = useAppDispatch()
 
   useEffect(() => {
     if (account && connector) {
-      const handleUpdateEvent = (e: ConnectorData<any>) => {
-        if (e?.chain?.id && !(e?.chain?.unsupported ?? false)) {
-          replaceBrowserHistory('chainId', e.chain.id)
-          setSessionChainId(e.chain.id)
-        }
+      const handleUpdateEvent = () => {
         clearUserStates(dispatch, chainId)
       }
 
@@ -25,14 +17,14 @@ export const useAccountEventListener = () => {
         clearUserStates(dispatch, chainId, true)
       }
 
-      connector.addListener('disconnect', handleDeactiveEvent)
-      connector.addListener('change', handleUpdateEvent)
+      connector.addListener('Web3ReactDeactivate', handleDeactiveEvent)
+      connector.addListener('Web3ReactUpdate', handleUpdateEvent)
 
       return () => {
-        connector.removeListener('disconnect', handleDeactiveEvent)
-        connector.removeListener('change', handleUpdateEvent)
+        connector.removeListener('Web3ReactDeactivate', handleDeactiveEvent)
+        connector.removeListener('Web3ReactUpdate', handleUpdateEvent)
       }
     }
     return undefined
-  }, [account, chainId, dispatch, connector, setSessionChainId])
+  }, [account, chainId, dispatch, connector])
 }

@@ -7,7 +7,7 @@ export default {
   component: CakePrice,
 };
 
-const Template: React.FC<React.PropsWithChildren<CakePriceProps>> = ({ ...args }) => {
+const Template: React.FC<CakePriceProps> = ({ ...args }) => {
   return (
     <Flex p="10px">
       <CakePrice {...args} />

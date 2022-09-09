@@ -1,7 +1,7 @@
-import { Color } from '@assets';
-import { BoxHomeIcon, LightCircleImage, LightImage, LockHomeIcon, MedalHomeIcon, SearchHomeIcon } from 'components';
-import { useTranslation } from '@pancakeswap/localization';
-import styled from 'styled-components';
+import { Color } from '@assets'
+import { BoxHomeIcon, LightCircleImage, LightImage, LockHomeIcon, MedalHomeIcon, SearchHomeIcon } from '@components'
+import { useTranslation } from 'contexts/Localization'
+import styled from 'styled-components'
 
 const Container = styled.div`
   flex: 1;
@@ -80,7 +80,10 @@ const Container2 = styled(Container)`
   padding: 170px 157px 172px 157px;
 `
 
-const ContentMiddle: React.FC<React.PropsWithChildren> = () => {
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+interface ContentMiddleProps {}
+
+const ContentMiddle: React.FC<React.PropsWithChildren<ContentMiddleProps>> = () => {
   const { t } = useTranslation()
 
   return (

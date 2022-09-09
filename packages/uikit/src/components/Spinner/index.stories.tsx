@@ -7,6 +7,6 @@ export default {
   argTypes: {},
 };
 
-export const Default: React.FC<React.PropsWithChildren> = () => {
+export const Default: React.FC = () => {
   return <Spinner size={50} />;
 };

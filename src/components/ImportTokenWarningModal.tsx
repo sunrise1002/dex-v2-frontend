@@ -1,14 +1,14 @@
 import { Token } from '@pancakeswap/sdk'
-import { Modal, Box, InjectedModalProps } from '@pancakeswap/uikit'
-import { useTranslation } from '@pancakeswap/localization'
-import ImportToken from './SearchModal/ImportToken'
+import { Modal, InjectedModalProps } from '@pancakeswap/uikit'
+import ImportToken from 'components/SearchModal/ImportToken'
+import { useTranslation } from 'contexts/Localization'
 
 interface Props extends InjectedModalProps {
   tokens: Token[]
   onCancel: () => void
 }
 
-const ImportTokenWarningModal: React.FC<React.PropsWithChildren<Props>> = ({ tokens, onDismiss, onCancel }) => {
+const ImportTokenWarningModal: React.FC<Props> = ({ tokens, onDismiss, onCancel }) => {
   const { t } = useTranslation()
   return (
     <Modal
@@ -17,10 +17,9 @@ const ImportTokenWarningModal: React.FC<React.PropsWithChildren<Props>> = ({ tok
         onDismiss?.()
         onCancel()
       }}
+      style={{ maxWidth: '420px' }}
     >
-      <Box maxWidth="380px">
-        <ImportToken tokens={tokens} handleCurrencySelect={onDismiss} />
-      </Box>
+      <ImportToken tokens={tokens} handleCurrencySelect={onDismiss} />
     </Modal>
   )
 }

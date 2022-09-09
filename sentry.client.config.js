@@ -2,7 +2,7 @@
 // The config you add here will be used whenever a page is visited.
 // https://docs.sentry.io/platforms/javascript/guides/nextjs/
 
-import { init, GlobalHandlers, Breadcrumbs, Dedupe } from '@sentry/react'
+import * as Sentry from '@sentry/nextjs'
 
 const SENTRY_DSN = process.env.SENTRY_DSN || process.env.NEXT_PUBLIC_SENTRY_DSN
 
@@ -13,17 +13,16 @@ const isUserRejected = (err) => {
 
 const ENV = process.env.VERCEL_ENV || process.env.NODE_ENV
 
-init({
+Sentry.init({
   dsn: SENTRY_DSN,
   integrations: [
-    new Breadcrumbs({
+    new Sentry.Integrations.Breadcrumbs({
       console: ENV === 'production',
     }),
-    new GlobalHandlers({
+    new Sentry.Integrations.GlobalHandlers({
       onerror: false,
       onunhandledrejection: false,
     }),
-    new Dedupe(),
   ],
   environment: ENV === 'production' ? 'production' : 'development',
   // Adjust this value in production, or use tracesSampler for greater control

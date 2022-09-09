@@ -1,9 +1,9 @@
 import React from "react";
-import { renderWithProvider } from "../../testHelpers";
+import { renderWithTheme } from "../../testHelpers";
 import { Spinner } from "../../components/Spinner";
 
 it("renders correctly", () => {
-  const { asFragment } = renderWithProvider(<Spinner />);
+  const { asFragment } = renderWithTheme(<Spinner />);
   expect(asFragment()).toMatchInlineSnapshot(`
     <DocumentFragment>
       .c1 {
@@ -37,13 +37,6 @@ it("renders correctly", () => {
       -webkit-transform: translate3d(0,0,0);
       -ms-transform: translate3d(0,0,0);
       transform: translate3d(0,0,0);
-    }
-
-    @supports (-webkit-text-size-adjust:none) and (not (-ms-accelerator:true)) and (not (-moz-appearance:none)) {
-      .c1 {
-        -webkit-filter: none !important;
-        filter: none !important;
-      }
     }
 
     <div

@@ -16,10 +16,6 @@ const SubMenuItemsMock = [
     href: "/swap",
     iconName: "Swap",
   },
-  {
-    label: "Trading Competition",
-    href: "/",
-  },
 ];
 
 export default SubMenuItemsMock;

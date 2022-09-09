@@ -1,7 +1,7 @@
-import { Color } from '@assets';
-import { ArrowHomeIcon, CoinbaseIcon, FortmaticIcon, MetamaskIcon, WalletConnectIcon } from 'components';
-import { useTranslation } from '@pancakeswap/localization';
-import styled from 'styled-components';
+import { Color } from '@assets'
+import { ArrowHomeIcon, CoinbaseIcon, FortmaticIcon, MetamaskIcon, WalletConnectIcon } from '@components'
+import { useTranslation } from 'contexts/Localization'
+import styled from 'styled-components'
 
 const Container = styled.div`
   flex: 1;
@@ -113,7 +113,10 @@ const LogosContainer = styled.div`
   z-index: 1;
 `
 
-const ContentTop: React.FC<React.PropsWithChildren> = () => {
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+interface ContentTopProps {}
+
+const ContentTop: React.FC<React.PropsWithChildren<ContentTopProps>> = () => {
   const { t } = useTranslation()
 
   return (
@@ -130,15 +133,15 @@ const ContentTop: React.FC<React.PropsWithChildren> = () => {
       </ButtonsContainer>
 
       <IntroductionContainer>
-        <ArrowHomeIcon stroke={Color.baseColors.white} />
+        <ArrowHomeIcon stroke={Color.baseColors.white} color='transparent' />
         <IntroductionText>{t('Swap, liquidity, earn, leverage all on\none decentralized,community\ndriven platform.')}</IntroductionText>
       </IntroductionContainer>
 
       <LogosContainer>
-        <MetamaskIcon fill={Color.baseColors.charmedChalice} />
-        <CoinbaseIcon fill={Color.baseColors.charmedChalice} />
-        <WalletConnectIcon fill={Color.baseColors.charmedChalice} />
-        <FortmaticIcon fill={Color.baseColors.charmedChalice} />
+        <MetamaskIcon color={Color.baseColors.charmedChalice} />
+        <CoinbaseIcon color={Color.baseColors.charmedChalice} />
+        <WalletConnectIcon color={Color.baseColors.charmedChalice} />
+        <FortmaticIcon color={Color.baseColors.charmedChalice} />
       </LogosContainer>
     </Container>
   )

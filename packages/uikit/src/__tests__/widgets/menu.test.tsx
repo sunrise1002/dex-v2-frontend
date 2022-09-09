@@ -1,7 +1,7 @@
 import React from "react";
 import noop from "lodash/noop";
 import { BrowserRouter } from "react-router-dom";
-import { renderWithProvider } from "../../testHelpers";
+import { renderWithTheme } from "../../testHelpers";
 import { Menu, menuConfig, Language } from "../../widgets/Menu";
 import { footerLinks } from "../../components/Footer/config";
 import { SubMenuItemsType } from "../../components/SubMenuItems/types";
@@ -30,7 +30,7 @@ const langs: Language[] = [...Array(20)].map((_, i) => ({
 }));
 
 it("renders correctly", () => {
-  const { asFragment } = renderWithProvider(
+  const { asFragment } = renderWithTheme(
     <BrowserRouter>
       <Menu
         isDark={false}

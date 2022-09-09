@@ -27,5 +27,4 @@ export interface TagProps extends SpaceProps, TypographyProps {
   endIcon?: ReactNode;
   outline?: boolean;
   textTransform?: "uppercase" | "lowercase" | "capitalize";
-  style?: React.CSSProperties;
 }

@@ -1,9 +1,9 @@
 import React from "react";
-import { renderWithProvider } from "../../testHelpers";
+import { renderWithTheme } from "../../testHelpers";
 import Skeleton from "../../components/Skeleton/Skeleton";
 
 it("renders correctly", () => {
-  const { asFragment } = renderWithProvider(<Skeleton />);
+  const { asFragment } = renderWithTheme(<Skeleton />);
   expect(asFragment()).toMatchInlineSnapshot(`
     <DocumentFragment>
       .c0 {
@@ -29,7 +29,7 @@ it("renders correctly", () => {
 });
 
 it("renders correctly avatar", () => {
-  const { asFragment } = renderWithProvider(<Skeleton width={50} height={50} variant="circle" />);
+  const { asFragment } = renderWithTheme(<Skeleton width={50} height={50} variant="circle" />);
   expect(asFragment()).toMatchInlineSnapshot(`
     <DocumentFragment>
       .c0 {
@@ -59,7 +59,7 @@ it("renders correctly avatar", () => {
 });
 
 it("renders correctly waves animation", () => {
-  const { asFragment } = renderWithProvider(<Skeleton width={50} height={50} animation="waves" />);
+  const { asFragment } = renderWithTheme(<Skeleton width={50} height={50} animation="waves" />);
   expect(asFragment()).toMatchInlineSnapshot(`
     <DocumentFragment>
       .c0 {
@@ -72,6 +72,7 @@ it("renders correctly waves animation", () => {
     }
 
     .c1 {
+      position: relative;
       overflow: hidden;
       -webkit-transform: translate3d(0,0,0);
       -ms-transform: translate3d(0,0,0);

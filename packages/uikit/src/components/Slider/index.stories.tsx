@@ -36,7 +36,7 @@ const SliderVariant = ({ initialValue }: { initialValue: number }) => {
   );
 };
 
-export const Default: React.FC<React.PropsWithChildren> = () => {
+export const Default: React.FC = () => {
   return (
     <Col>
       <SliderVariant initialValue={5} />
@@ -44,7 +44,7 @@ export const Default: React.FC<React.PropsWithChildren> = () => {
   );
 };
 
-export const Variants: React.FC<React.PropsWithChildren> = () => {
+export const Variants: React.FC = () => {
   const [value, setValue] = useState(10);
 
   const handleChange = (newValue) => {
@@ -62,7 +62,7 @@ const percentShortcuts = [10, 25, 50, 75];
 const initialBalance = 1.795394;
 const maxBalance = initialBalance - 0.01;
 
-export const Balance: React.FC<React.PropsWithChildren> = () => {
+export const Balance: React.FC = () => {
   const [balance, setBalance] = useState(maxBalance);
 
   const handleChange = (newValue: number) => {

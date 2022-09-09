@@ -2,14 +2,14 @@ import BigNumber from 'bignumber.js'
 import erc20ABI from 'config/abi/erc20.json'
 import masterchefABIV1 from 'config/abi/masterchefV1.json'
 import multicall from 'utils/multicall'
-import { getMasterChefV1Address } from 'utils/addressHelpers'
+import { getAddress, getMasterChefV1Address } from 'utils/addressHelpers'
 import { SerializedFarmConfig } from 'config/constants/types'
 
 export const fetchFarmUserAllowances = async (account: string, farmsToFetch: SerializedFarmConfig[]) => {
   const masterChefAddress = getMasterChefV1Address()
 
   const calls = farmsToFetch.map((farm) => {
-    const lpContractAddress = farm.lpAddress
+    const lpContractAddress = getAddress(farm.lpAddresses)
     return { address: lpContractAddress, name: 'allowance', params: [account, masterChefAddress] }
   })
 
@@ -22,7 +22,7 @@ export const fetchFarmUserAllowances = async (account: string, farmsToFetch: Ser
 
 export const fetchFarmUserTokenBalances = async (account: string, farmsToFetch: SerializedFarmConfig[]) => {
   const calls = farmsToFetch.map((farm) => {
-    const lpContractAddress = farm.lpAddress
+    const lpContractAddress = getAddress(farm.lpAddresses)
     return {
       address: lpContractAddress,
       name: 'balanceOf',

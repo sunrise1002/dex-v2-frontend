@@ -12,7 +12,7 @@ export default {
   argTypes: {},
 };
 
-export const Default: React.FC<React.PropsWithChildren> = () => {
+export const Default: React.FC = () => {
   return (
     <div>
       <Svg viewBox="0 0 18 13">
@@ -28,17 +28,16 @@ export const Default: React.FC<React.PropsWithChildren> = () => {
   );
 };
 
-// @ts-ignore
-const modules = import.meta.glob("./Icons/*.tsx", { eager: true });
-const components = Object.keys(modules).reduce((accum, path) => {
+const context = require.context("./Icons", true, /.tsx$/);
+const components = context.keys().reduce((accum, path) => {
   const file = path.substring(2).replace(".tsx", "");
   return {
     ...accum,
-    [file]: modules[path],
+    [file]: context(path),
   };
 }, {});
 
-export const Icons: React.FC<React.PropsWithChildren> = () => {
+export const Icons: React.FC = () => {
   return (
     <Flex justifyContent="start" alignItems="center" flexWrap="wrap">
       {Object.keys(components).map((file) => {
@@ -71,7 +70,7 @@ export const Icons: React.FC<React.PropsWithChildren> = () => {
   );
 };
 
-const AnimatedIconComponentTemplate: React.FC<React.PropsWithChildren> = (args) => {
+const AnimatedIconComponentTemplate: React.FC = (args) => {
   return (
     <Box background="white" height="48px" width="48px">
       <AnimatedIconComponent

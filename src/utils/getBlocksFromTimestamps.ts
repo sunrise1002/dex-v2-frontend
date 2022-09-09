@@ -1,7 +1,7 @@
 import orderBy from 'lodash/orderBy'
 import { gql } from 'graphql-request'
 import { Block } from '../state/info/types'
-import { multiQuery } from './infoQueryHelpers'
+import { multiQuery } from '../views/Info/utils/infoQueryHelpers'
 import { BLOCKS_CLIENT } from '../config/constants/endpoints'
 
 const getBlockSubqueries = (timestamps: number[]) =>

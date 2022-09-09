@@ -1,5 +1,5 @@
 import React from "react";
-import { renderWithProvider } from "../../testHelpers";
+import { renderWithTheme } from "../../testHelpers";
 import FallingBunnies from "../../components/FallingBunnies/FallingBunnies";
 
 beforeEach(() => {
@@ -11,7 +11,7 @@ afterEach(() => {
 });
 
 it("renders correctly", () => {
-  const { asFragment } = renderWithProvider(<FallingBunnies count={1} />);
+  const { asFragment } = renderWithTheme(<FallingBunnies count={1} />);
   expect(asFragment()).toMatchInlineSnapshot(`
     <DocumentFragment>
       .c1 {
@@ -86,13 +86,6 @@ it("renders correctly", () => {
     .c0:nth-child(3n + 7) {
       -webkit-animation-delay: 8s;
       animation-delay: 8s;
-    }
-
-    @supports (-webkit-text-size-adjust:none) and (not (-ms-accelerator:true)) and (not (-moz-appearance:none)) {
-      .c1 {
-        -webkit-filter: none !important;
-        filter: none !important;
-      }
     }
 
     <div>

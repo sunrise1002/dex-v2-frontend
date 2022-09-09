@@ -1,9 +1,9 @@
 import React from "react";
-import { renderWithProvider } from "../../testHelpers";
+import { renderWithTheme } from "../../testHelpers";
 import Tag from "../../components/Tag/Tag";
 
 it("renders correctly", () => {
-  const { asFragment } = renderWithProvider(<Tag>Core</Tag>);
+  const { asFragment } = renderWithTheme(<Tag>Core</Tag>);
   expect(asFragment()).toMatchInlineSnapshot(`
     <DocumentFragment>
       .c0 {

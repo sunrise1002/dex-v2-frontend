@@ -1,12 +1,11 @@
 import { memo, useCallback, useMemo, useState, useEffect } from 'react'
-import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { Button, Text, CheckmarkIcon, CogIcon, Input, Toggle, LinkExternal, useTooltip } from '@pancakeswap/uikit'
 import { useSelector } from 'react-redux'
 import styled from 'styled-components'
 import { TokenList, Version } from '@uniswap/token-lists'
-import { Card } from 'components'
+import Card from 'components/Card'
 import { UNSUPPORTED_LIST_URLS } from 'config/constants/lists'
-import { useTranslation } from '@pancakeswap/localization'
+import { useTranslation } from 'contexts/Localization'
 import useFetchListCallback from '../../hooks/useFetchListCallback'
 
 import { AppState, useAppDispatch } from '../../state'
@@ -28,7 +27,7 @@ const Wrapper = styled(Column)`
   height: 100%;
 `
 
-const RowWrapper = styled(Row)<{ active: boolean; hasActiveTokens: boolean }>`
+const RowWrapper = styled(Row)<{ active: boolean }>`
   background-color: ${({ active, theme }) => (active ? `${theme.colors.success}19` : 'transparent')};
   border: solid 1px;
   border-color: ${({ active, theme }) => (active ? theme.colors.success : theme.colors.tertiary)};
@@ -36,7 +35,6 @@ const RowWrapper = styled(Row)<{ active: boolean; hasActiveTokens: boolean }>`
   align-items: center;
   padding: 1rem;
   border-radius: 20px;
-  opacity: ${({ hasActiveTokens }) => (hasActiveTokens ? 1 : 0.4)};
 `
 
 function listUrlRowHTMLId(listUrl: string) {
@@ -44,20 +42,13 @@ function listUrlRowHTMLId(listUrl: string) {
 }
 
 const ListRow = memo(function ListRow({ listUrl }: { listUrl: string }) {
-  const { chainId } = useActiveWeb3React()
-  const { t } = useTranslation()
-  const isActive = useIsListActive(listUrl)
-
   const listsByUrl = useSelector<AppState, AppState['lists']['byUrl']>((state) => state.lists.byUrl)
   const dispatch = useAppDispatch()
   const { current: list, pendingUpdate: pending } = listsByUrl[listUrl]
 
-  const activeTokensOnThisChain = useMemo(() => {
-    if (!list || !chainId) {
-      return 0
-    }
-    return list.tokens.reduce((acc, cur) => (cur.chainId === chainId ? acc + 1 : acc), 0)
-  }, [chainId, list])
+  const isActive = useIsListActive(listUrl)
+
+  const { t } = useTranslation()
 
   const handleAcceptListUpdate = useCallback(() => {
     if (!pending) return
@@ -100,12 +91,7 @@ const ListRow = memo(function ListRow({ listUrl }: { listUrl: string }) {
   if (!list) return null
 
   return (
-    <RowWrapper
-      active={isActive}
-      hasActiveTokens={activeTokensOnThisChain > 0}
-      key={listUrl}
-      id={listUrlRowHTMLId(listUrl)}
-    >
+    <RowWrapper active={isActive} key={listUrl} id={listUrlRowHTMLId(listUrl)}>
       {tooltipVisible && tooltip}
       {list.logoURI ? (
         <ListLogo size="40px" style={{ marginRight: '1rem' }} logoURI={list.logoURI} alt={`${list.name} list logo`} />

@@ -1,14 +1,12 @@
 import { ChainId, Pair, Token } from '@pancakeswap/sdk'
-import { deserializeToken } from '@pancakeswap/tokens'
 import { differenceInDays } from 'date-fns'
 import flatMap from 'lodash/flatMap'
-import { getFarmConfig } from 'config/constants/farms/index'
+import farms from 'config/constants/farms'
 import { useCallback, useMemo } from 'react'
 import { useSelector } from 'react-redux'
-import { BASES_TO_TRACK_LIQUIDITY_FOR, PINNED_PAIRS } from 'config/constants/exchange'
+import { CHAIN_ID } from 'config/constants/networks'
+import { BASES_TO_TRACK_LIQUIDITY_FOR, PINNED_PAIRS } from 'config/constants'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
-import useSWRImmutable from 'swr/immutable'
-import { useFeeData } from 'wagmi'
 import { useOfficialsAndUserAddedTokens } from 'hooks/Tokens'
 import { AppState, useAppDispatch } from '../../index'
 import {
@@ -42,8 +40,8 @@ import {
   setChartViewMode,
   setSubgraphHealthIndicatorDisplayed,
   updateUserLimitOrderAcceptedWarning,
-  setZapDisabled,
 } from '../actions'
+import { deserializeToken, serializeToken } from './helpers'
 import { GAS_PRICE_GWEI } from '../../types'
 
 export function useAudioModeManager(): [boolean, () => void] {
@@ -110,20 +108,6 @@ export function useExchangeChartViewManager() {
   )
 
   return [chartViewMode, setUserChartViewPreference] as const
-}
-
-export function useZapModeManager() {
-  const dispatch = useAppDispatch()
-  const zapEnabled = useSelector<AppState, AppState['user']['userZapDisabled']>((state) => !state.user.userZapDisabled)
-
-  const setZapEnable = useCallback(
-    (enable: boolean) => {
-      dispatch(setZapDisabled(!enable))
-    },
-    [dispatch],
-  )
-
-  return [zapEnabled, setZapEnable] as const
 }
 
 export function useSubgraphHealthIndicatorManager() {
@@ -386,7 +370,7 @@ export function useAddUserToken(): (token: Token) => void {
   const dispatch = useAppDispatch()
   return useCallback(
     (token: Token) => {
-      dispatch(addSerializedToken({ serializedToken: token.serialize }))
+      dispatch(addSerializedToken({ serializedToken: serializeToken(token) }))
     },
     [dispatch],
   )
@@ -403,23 +387,9 @@ export function useRemoveUserAddedToken(): (chainId: number, address: string) =>
 }
 
 export function useGasPrice(): string {
-  const { chainId, chain } = useActiveWeb3React()
+  const chainId = CHAIN_ID
   const userGas = useSelector<AppState, AppState['user']['gasPrice']>((state) => state.user.gasPrice)
-  const { data } = useFeeData({
-    chainId,
-    enabled: chainId !== ChainId.BSC && chainId !== ChainId.BSC_TESTNET,
-    watch: true,
-  })
-  if (chainId === ChainId.BSC) {
-    return userGas
-  }
-  if (chainId === ChainId.BSC_TESTNET) {
-    return GAS_PRICE_GWEI.testnet
-  }
-  if (chain?.testnet) {
-    return data?.formatted?.maxPriorityFeePerGas
-  }
-  return data?.formatted?.gasPrice
+  return chainId === ChainId.MAINNET.toString() ? userGas : GAS_PRICE_GWEI.testnet
 }
 
 export function useGasPriceManager(): [string, (userGasPrice: string) => void] {
@@ -438,8 +408,8 @@ export function useGasPriceManager(): [string, (userGasPrice: string) => void] {
 
 function serializePair(pair: Pair): SerializedPair {
   return {
-    token0: pair.token0.serialize,
-    token1: pair.token1.serialize,
+    token0: serializeToken(pair.token0),
+    token1: serializeToken(pair.token1),
   }
 }
 
@@ -473,12 +443,13 @@ export function useTrackedTokenPairs(): [Token, Token][] {
   // pinned pairs
   const pinnedPairs = useMemo(() => (chainId ? PINNED_PAIRS[chainId] ?? [] : []), [chainId])
 
-  const { data: farmPairs = [] } = useSWRImmutable(chainId && ['track-farms-pairs', chainId], async () => {
-    const farms = await getFarmConfig(chainId)
-    farms
-      .filter((farm) => farm.pid !== 0)
-      .map((farm) => [deserializeToken(farm.token), deserializeToken(farm.quoteToken)])
-  })
+  const farmPairs: [Token, Token][] = useMemo(
+    () =>
+      farms
+        .filter((farm) => farm.pid !== 0)
+        .map((farm) => [deserializeToken(farm.token), deserializeToken(farm.quoteToken)]),
+    [],
+  )
 
   // pairs for every token against every base
   const generatedPairs: [Token, Token][] = useMemo(

@@ -1,9 +1,9 @@
 import React from "react";
-import { renderWithProvider } from "../../testHelpers";
+import { renderWithTheme } from "../../testHelpers";
 import Breadcrumbs from "../../components/Breadcrumbs/Breadcrumbs";
 
 it("renders correctly", () => {
-  const { asFragment } = renderWithProvider(<Breadcrumbs>Link</Breadcrumbs>);
+  const { asFragment } = renderWithTheme(<Breadcrumbs>Link</Breadcrumbs>);
   expect(asFragment()).toMatchInlineSnapshot(`
     <DocumentFragment>
       .c0 {

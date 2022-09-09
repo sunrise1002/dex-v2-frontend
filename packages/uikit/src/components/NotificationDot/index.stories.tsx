@@ -11,7 +11,7 @@ export default {
   argTypes: {},
 };
 
-export const Default: React.FC<React.PropsWithChildren> = () => {
+export const Default: React.FC = () => {
   return (
     <>
       <NotificationDot show>
@@ -33,7 +33,7 @@ const Row = styled.div`
   }
 `;
 
-export const MenuButtons: React.FC<React.PropsWithChildren> = () => {
+export const MenuButtons: React.FC = () => {
   const [index, setIndex] = useState(0);
   const handleClick = (newIndex) => setIndex(newIndex);
   return (

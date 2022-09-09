@@ -12,4 +12,3 @@ export type {
   variants as userMenuVariants,
   Variant as UserMenuVariant,
 } from "./components/UserMenu/types";
-export { default as Logo } from "./components/Logo";

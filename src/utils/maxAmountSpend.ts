@@ -1,17 +1,17 @@
-import { Currency, CurrencyAmount, JSBI } from '@pancakeswap/sdk'
-import { BIG_INT_ZERO, MIN_BNB } from 'config/constants/exchange'
+import { CurrencyAmount, ETHER, JSBI } from '@pancakeswap/sdk'
+import { MIN_BNB, BIG_INT_ZERO } from 'config/constants/exchange'
 
 /**
  * Given some token amount, return the max that can be spent of it
  * @param currencyAmount to return max of
  */
-export function maxAmountSpend(currencyAmount?: CurrencyAmount<Currency>): CurrencyAmount<Currency> | undefined {
+export function maxAmountSpend(currencyAmount?: CurrencyAmount): CurrencyAmount | undefined {
   if (!currencyAmount) return undefined
-  if (currencyAmount.currency?.isNative) {
-    if (JSBI.greaterThan(currencyAmount.quotient, MIN_BNB)) {
-      return CurrencyAmount.fromRawAmount(currencyAmount.currency, JSBI.subtract(currencyAmount.quotient, MIN_BNB))
+  if (currencyAmount.currency === ETHER) {
+    if (JSBI.greaterThan(currencyAmount.raw, MIN_BNB)) {
+      return CurrencyAmount.ether(JSBI.subtract(currencyAmount.raw, MIN_BNB))
     }
-    return CurrencyAmount.fromRawAmount(currencyAmount.currency, BIG_INT_ZERO)
+    return CurrencyAmount.ether(BIG_INT_ZERO)
   }
   return currencyAmount
 }

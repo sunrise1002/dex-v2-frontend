@@ -21,7 +21,7 @@ const Row = styled.div`
   display: flex;
 `;
 
-export const Default: React.FC<React.PropsWithChildren> = () => {
+export const Default: React.FC = () => {
   return (
     <Stepper>
       {steps.map((step, index) => (
@@ -35,7 +35,7 @@ export const Default: React.FC<React.PropsWithChildren> = () => {
   );
 };
 
-export const Components: React.FC<React.PropsWithChildren> = () => {
+export const Components: React.FC = () => {
   return (
     <div>
       <Row>

@@ -1,9 +1,9 @@
 import { useEffect, useMemo } from 'react'
 import { useSelector } from 'react-redux'
-import { useTranslation } from '@pancakeswap/localization'
+import { useTranslation } from 'contexts/Localization'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { useCurrentBlock } from 'state/block/hooks'
-import { ToastDescriptionWithTx } from 'components'
+import { ToastDescriptionWithTx } from 'components/Toast'
 import useToast from 'hooks/useToast'
 import { AppState, useAppDispatch } from '../index'
 import { checkedTransaction, finalizeTransaction } from './actions'
@@ -30,7 +30,7 @@ export function shouldCheck(
 }
 
 export default function Updater(): null {
-  const { chainId, provider } = useActiveWeb3React()
+  const { library, chainId } = useActiveWeb3React()
   const { t } = useTranslation()
 
   const currentBlock = useCurrentBlock()
@@ -43,12 +43,12 @@ export default function Updater(): null {
   const { toastError, toastSuccess } = useToast()
 
   useEffect(() => {
-    if (!chainId || !provider || !currentBlock) return
+    if (!chainId || !library || !currentBlock) return
 
     Object.keys(transactions)
       .filter((hash) => shouldCheck(currentBlock, transactions[hash]))
       .forEach((hash) => {
-        provider
+        library
           .getTransactionReceipt(hash)
           .then((receipt) => {
             if (receipt) {
@@ -79,7 +79,7 @@ export default function Updater(): null {
             console.error(`failed to check transaction hash: ${hash}`, error)
           })
       })
-  }, [chainId, provider, transactions, currentBlock, dispatch, toastSuccess, toastError, t])
+  }, [chainId, library, transactions, currentBlock, dispatch, toastSuccess, toastError, t])
 
   return null
 }

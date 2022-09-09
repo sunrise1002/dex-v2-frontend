@@ -18,7 +18,7 @@ import {
   useAddTokenKeys,
 } from './hooks'
 
-export const ProtocolUpdater: React.FC<React.PropsWithChildren> = () => {
+export const ProtocolUpdater: React.FC = () => {
   const [protocolData, setProtocolData] = useProtocolData()
   const { data: fetchedProtocolData, error } = useFetchProtocolData()
 
@@ -56,7 +56,7 @@ export const ProtocolUpdater: React.FC<React.PropsWithChildren> = () => {
   return null
 }
 
-export const PoolUpdater: React.FC<React.PropsWithChildren> = () => {
+export const PoolUpdater: React.FC = () => {
   const updatePoolData = useUpdatePoolData()
   const addPoolKeys = useAddPoolKeys()
 

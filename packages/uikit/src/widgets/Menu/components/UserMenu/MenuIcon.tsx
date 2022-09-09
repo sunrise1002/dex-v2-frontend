@@ -13,19 +13,19 @@ const MenuIconWrapper = styled.div<{ borderColor: keyof Colors }>`
   border-style: solid;
   border-width: 2px;
   display: flex;
-  height: 32px;
+  height: 40px;
   justify-content: center;
   left: 0;
   position: absolute;
-  top: 0;
-  width: 32px;
+  top: -4px;
+  width: 40px;
   z-index: 102;
 `;
 
 const ProfileIcon = styled(Image)`
   left: 0;
   position: absolute;
-  top: 0;
+  top: -4px;
   z-index: 102;
 
   & > img {
@@ -33,34 +33,31 @@ const ProfileIcon = styled(Image)`
   }
 `;
 
-export const NoProfileMenuIcon: React.FC<React.PropsWithChildren> = () => (
+export const NoProfileMenuIcon: React.FC = () => (
   <MenuIconWrapper borderColor="primary">
     <WalletFilledIcon color="primary" width="24px" />
   </MenuIconWrapper>
 );
 
-export const PendingMenuIcon: React.FC<React.PropsWithChildren> = () => (
+export const PendingMenuIcon: React.FC = () => (
   <MenuIconWrapper borderColor="secondary">
     <RefreshIcon color="secondary" width="24px" spin />
   </MenuIconWrapper>
 );
 
-export const WarningMenuIcon: React.FC<React.PropsWithChildren> = () => (
+export const WarningMenuIcon: React.FC = () => (
   <MenuIconWrapper borderColor="warning">
     <WarningIcon color="warning" width="24px" />
   </MenuIconWrapper>
 );
 
-export const DangerMenuIcon: React.FC<React.PropsWithChildren> = () => (
+export const DangerMenuIcon: React.FC = () => (
   <MenuIconWrapper borderColor="failure">
     <WarningIcon color="failure" width="24px" />
   </MenuIconWrapper>
 );
 
-const MenuIcon: React.FC<React.PropsWithChildren<{ avatarSrc?: string; variant: Variant }>> = ({
-  avatarSrc,
-  variant,
-}) => {
+const MenuIcon: React.FC<{ avatarSrc?: string; variant: Variant }> = ({ avatarSrc, variant }) => {
   if (variant === variants.DANGER) {
     return <DangerMenuIcon />;
   }
@@ -77,7 +74,7 @@ const MenuIcon: React.FC<React.PropsWithChildren<{ avatarSrc?: string; variant: 
     return <NoProfileMenuIcon />;
   }
 
-  return <ProfileIcon src={avatarSrc} height={32} width={32} />;
+  return <ProfileIcon src={avatarSrc} height={40} width={40} />;
 };
 
 export default MenuIcon;

@@ -10,7 +10,7 @@ export default {
   component: DropdownMenu,
 };
 
-export const Default: React.FC<React.PropsWithChildren> = () => {
+export const Default: React.FC = () => {
   return (
     <BrowserRouter>
       <Box width="300px">

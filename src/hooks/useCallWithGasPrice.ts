@@ -3,7 +3,7 @@ import { TransactionResponse } from '@ethersproject/providers'
 import { Contract, CallOverrides } from '@ethersproject/contracts'
 import { useGasPrice } from 'state/user/hooks'
 import get from 'lodash/get'
-import { addBreadcrumb } from '@sentry/nextjs'
+import * as Sentry from '@sentry/react'
 
 export function useCallWithGasPrice() {
   const gasPrice = useGasPrice()
@@ -23,7 +23,7 @@ export function useCallWithGasPrice() {
       methodArgs: any[] = [],
       overrides: CallOverrides = null,
     ): Promise<TransactionResponse> => {
-      addBreadcrumb({
+      Sentry.addBreadcrumb({
         type: 'Transaction',
         message: `Call with gas price: ${gasPrice}`,
         data: {
@@ -33,16 +33,16 @@ export function useCallWithGasPrice() {
           overrides,
         },
       })
-
       const contractMethod = get(contract, methodName)
       const hasManualGasPriceOverride = overrides?.gasPrice
+
       const tx = await contractMethod(
         ...methodArgs,
         hasManualGasPriceOverride ? { ...overrides } : { ...overrides, gasPrice },
       )
 
       if (tx) {
-        addBreadcrumb({
+        Sentry.addBreadcrumb({
           type: 'Transaction',
           message: `Transaction sent: ${tx.hash}`,
           data: {

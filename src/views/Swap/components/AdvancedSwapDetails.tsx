@@ -1,30 +1,20 @@
-import { Trade, TradeType, Currency } from '@pancakeswap/sdk'
+import { Trade, TradeType } from '@pancakeswap/sdk'
 import { Text } from '@pancakeswap/uikit'
 import { Field } from 'state/swap/actions'
-import { useTranslation } from '@pancakeswap/localization'
+import { useTranslation } from 'contexts/Localization'
 import { useUserSlippageTolerance } from 'state/user/hooks'
 import { computeSlippageAdjustedAmounts, computeTradePriceBreakdown } from 'utils/exchange'
-import { AutoColumn, QuestionHelper, RowBetween, RowFixed  } from 'components'
-import { TOTAL_FEE, LP_HOLDERS_FEE, TREASURY_FEE, BUYBACK_FEE } from 'config/constants/info'
+import { AutoColumn } from 'components/Layout/Column'
+import QuestionHelper from 'components/QuestionHelper'
+import { RowBetween, RowFixed } from 'components/Layout/Row'
 import FormattedPriceImpact from './FormattedPriceImpact'
 import SwapRoute from './SwapRoute'
 
-function TradeSummary({
-  trade,
-  allowedSlippage,
-}: {
-  trade: Trade<Currency, Currency, TradeType>
-  allowedSlippage: number
-}) {
+function TradeSummary({ trade, allowedSlippage }: { trade: Trade; allowedSlippage: number }) {
   const { t } = useTranslation()
   const { priceImpactWithoutFee, realizedLPFee } = computeTradePriceBreakdown(trade)
   const isExactIn = trade.tradeType === TradeType.EXACT_INPUT
   const slippageAdjustedAmounts = computeSlippageAdjustedAmounts(trade, allowedSlippage)
-
-  const totalFeePercent = `${(TOTAL_FEE * 100).toFixed(2)}%`
-  const lpHoldersFeePercent = `${(LP_HOLDERS_FEE * 100).toFixed(2)}%`
-  const treasuryFeePercent = `${(TREASURY_FEE * 100).toFixed(4)}%`
-  const buyBackFeePercent = `${(BUYBACK_FEE * 100).toFixed(4)}%`
 
   return (
     <AutoColumn style={{ padding: '0 16px' }}>
@@ -72,10 +62,10 @@ function TradeSummary({
           <QuestionHelper
             text={
               <>
-                <Text mb="12px">{t('For each trade a %amount% fee is paid', { amount: totalFeePercent })}</Text>
-                <Text>- {t('%amount% to LP token holders', { amount: lpHoldersFeePercent })}</Text>
-                <Text>- {t('%amount% to the Treasury', { amount: treasuryFeePercent })}</Text>
-                <Text>- {t('%amount% towards CAKE buyback and burn', { amount: buyBackFeePercent })}</Text>
+                <Text mb="12px">{t('For each trade a %amount% fee is paid', { amount: '0.25%' })}</Text>
+                <Text>- {t('%amount% to LP token holders', { amount: '0.17%' })}</Text>
+                <Text>- {t('%amount% to the Treasury', { amount: '0.03%' })}</Text>
+                <Text>- {t('%amount% towards CAKE buyback and burn', { amount: '0.05%' })}</Text>
               </>
             }
             ml="4px"
@@ -91,7 +81,7 @@ function TradeSummary({
 }
 
 export interface AdvancedSwapDetailsProps {
-  trade?: Trade<Currency, Currency, TradeType>
+  trade?: Trade
 }
 
 export function AdvancedSwapDetails({ trade }: AdvancedSwapDetailsProps) {

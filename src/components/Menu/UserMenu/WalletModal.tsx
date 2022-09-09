@@ -1,4 +1,4 @@
-import { parseUnits } from '@ethersproject/units'
+import { useState } from 'react'
 import {
   ButtonMenu,
   ButtonMenuItem,
@@ -11,11 +11,11 @@ import {
   ModalHeader as UIKitModalHeader,
   ModalTitle,
 } from '@pancakeswap/uikit'
-import { useWeb3React } from '@pancakeswap/wagmi'
-import { useState } from 'react'
-import { useTranslation } from '@pancakeswap/localization'
+import { parseUnits } from '@ethersproject/units'
+import { useTranslation } from 'contexts/Localization'
 import styled from 'styled-components'
-import { useBalance } from 'wagmi'
+import { useGetBnbBalance } from 'hooks/useTokenBalance'
+import { FetchStatus } from 'config/constants/types'
 import WalletInfo from './WalletInfo'
 import WalletTransactions from './WalletTransactions'
 import WalletWrongNetwork from './WalletWrongNetwork'
@@ -42,21 +42,17 @@ const Tabs = styled.div`
   padding: 16px 24px;
 `
 
-const WalletModal: React.FC<React.PropsWithChildren<WalletModalProps>> = ({
-  initialView = WalletView.WALLET_INFO,
-  onDismiss,
-}) => {
+const WalletModal: React.FC<WalletModalProps> = ({ initialView = WalletView.WALLET_INFO, onDismiss }) => {
   const [view, setView] = useState(initialView)
   const { t } = useTranslation()
-  const { account } = useWeb3React()
-  const { data, isFetched } = useBalance({ addressOrName: account })
-  const hasLowNativeBalance = isFetched && data && data.value.lte(LOW_BNB_BALANCE)
+  const { balance, fetchStatus } = useGetBnbBalance()
+  const hasLowBnbBalance = fetchStatus === FetchStatus.Fetched && balance.lte(LOW_BNB_BALANCE)
 
   const handleClick = (newIndex: number) => {
     setView(newIndex)
   }
 
-  const TabsComponent: React.FC<React.PropsWithChildren> = () => (
+  const TabsComponent: React.FC = () => (
     <Tabs>
       <ButtonMenu scale="sm" variant="subtle" onItemClick={handleClick} activeIndex={view} fullWidth>
         <ButtonMenuItem>{t('Wallet')}</ButtonMenuItem>
@@ -66,7 +62,7 @@ const WalletModal: React.FC<React.PropsWithChildren<WalletModalProps>> = ({
   )
 
   return (
-    <ModalContainer title={t('Welcome!')} $minWidth="320px">
+    <ModalContainer title={t('Welcome!')} minWidth="320px">
       <ModalHeader>
         <ModalTitle>
           <Heading>{t('Your Wallet')}</Heading>
@@ -76,10 +72,8 @@ const WalletModal: React.FC<React.PropsWithChildren<WalletModalProps>> = ({
         </IconButton>
       </ModalHeader>
       {view !== WalletView.WRONG_NETWORK && <TabsComponent />}
-      <ModalBody p="24px" width="100%">
-        {view === WalletView.WALLET_INFO && (
-          <WalletInfo hasLowNativeBalance={hasLowNativeBalance} onDismiss={onDismiss} />
-        )}
+      <ModalBody p="24px" maxWidth="400px" width="100%">
+        {view === WalletView.WALLET_INFO && <WalletInfo hasLowBnbBalance={hasLowBnbBalance} onDismiss={onDismiss} />}
         {view === WalletView.TRANSACTIONS && <WalletTransactions />}
         {view === WalletView.WRONG_NETWORK && <WalletWrongNetwork onDismiss={onDismiss} />}
       </ModalBody>

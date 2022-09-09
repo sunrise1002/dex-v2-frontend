@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useCallback } from "react";
+import React, { ChangeEvent } from "react";
 import { Box } from "../Box";
 import {
   BunnySlider,
@@ -11,7 +11,7 @@ import {
 } from "./styles";
 import SliderProps from "./types";
 
-const Slider: React.FC<React.PropsWithChildren<SliderProps>> = ({
+const Slider: React.FC<SliderProps> = ({
   name,
   min,
   max,
@@ -22,12 +22,9 @@ const Slider: React.FC<React.PropsWithChildren<SliderProps>> = ({
   disabled = false,
   ...props
 }) => {
-  const handleChange = useCallback(
-    ({ target }: ChangeEvent<HTMLInputElement>) => {
-      onValueChanged(parseFloat(target.value));
-    },
-    [onValueChanged]
-  );
+  const handleChange = ({ target }: ChangeEvent<HTMLInputElement>) => {
+    onValueChanged(parseFloat(target.value));
+  };
 
   const progressPercentage = (value / max) * 100;
   const isMax = value === max;

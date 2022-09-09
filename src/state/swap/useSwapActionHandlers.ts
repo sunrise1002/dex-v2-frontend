@@ -1,5 +1,5 @@
 import { useCallback } from 'react'
-import { Currency } from '@pancakeswap/sdk'
+import { Currency, Token, ETHER } from '@pancakeswap/sdk'
 import { Field, selectCurrency, switchCurrencies, typeInput, setRecipient } from './actions'
 import { useAppDispatch } from '../index'
 
@@ -20,7 +20,7 @@ export function useSwapActionHandlers(): {
       dispatch(
         selectCurrency({
           field,
-          currencyId: currency?.isToken ? currency.address : currency?.isNative ? currency.symbol : '',
+          currencyId: currency instanceof Token ? currency.address : currency === ETHER ? 'BNB' : '',
         }),
       )
     },

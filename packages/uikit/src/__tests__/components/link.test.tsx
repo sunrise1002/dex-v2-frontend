@@ -1,16 +1,16 @@
 import React from "react";
-import { renderWithProvider } from "../../testHelpers";
+import { renderWithTheme } from "../../testHelpers";
 import { Link, LinkExternal } from "../../components/Link";
 
 it("renders link correctly", () => {
-  const { asFragment } = renderWithProvider(<Link href="https://pancakeswap.finance">Link</Link>);
+  const { asFragment } = renderWithTheme(<Link href="https://pancakeswap.finance">Link</Link>);
   expect(asFragment()).toMatchInlineSnapshot(`
     <DocumentFragment>
       .c0 {
       color: #1FC7D4;
+      font-size: 16px;
       font-weight: 600;
       line-height: 1.5;
-      font-size: 16px;
     }
 
     .c1 {
@@ -35,7 +35,6 @@ it("renders link correctly", () => {
     <a
         class="c0 c1"
         color="primary"
-        font-size="16px"
         href="https://pancakeswap.finance"
       >
         Link
@@ -45,14 +44,14 @@ it("renders link correctly", () => {
 });
 
 it("renders link external link correctly", () => {
-  const { asFragment } = renderWithProvider(<LinkExternal href="https://pancakeswap.finance">Link</LinkExternal>);
+  const { asFragment } = renderWithTheme(<LinkExternal href="https://pancakeswap.finance">Link</LinkExternal>);
   expect(asFragment()).toMatchInlineSnapshot(`
     <DocumentFragment>
       .c0 {
       color: #1FC7D4;
+      font-size: 16px;
       font-weight: 600;
       line-height: 1.5;
-      font-size: 16px;
     }
 
     .c1 {
@@ -85,17 +84,9 @@ it("renders link external link correctly", () => {
       margin-left: 4px;
     }
 
-    @supports (-webkit-text-size-adjust:none) and (not (-ms-accelerator:true)) and (not (-moz-appearance:none)) {
-      .c2 {
-        -webkit-filter: none !important;
-        filter: none !important;
-      }
-    }
-
     <a
         class="c0 c1"
         color="primary"
-        font-size="16px"
         href="https://pancakeswap.finance"
         rel="noreferrer noopener"
         target="_blank"

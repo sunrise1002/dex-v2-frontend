@@ -1,13 +1,14 @@
 import { useState } from 'react'
 import { Token, Currency } from '@pancakeswap/sdk'
 import { Button, Text, ErrorIcon, Flex, Message, Checkbox, Link, Tag, Grid } from '@pancakeswap/uikit'
-import { AutoColumn, ListLogo } from 'components'
+import { AutoColumn } from 'components/Layout/Column'
 import { useAddUserToken } from 'state/user/hooks'
-import { getBlockExploreLink, getBlockExploreName } from 'utils/index'
+import { getBscScanLink } from 'utils'
 import truncateHash from 'utils/truncateHash'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { useCombinedInactiveList } from 'state/lists/hooks'
-import { useTranslation } from '@pancakeswap/localization'
+import { ListLogo } from 'components/Logo'
+import { useTranslation } from 'contexts/Localization'
 
 interface ImportProps {
   tokens: Token[]
@@ -65,12 +66,8 @@ function ImportToken({ tokens, handleCurrencySelect }: ImportProps) {
             {chainId && (
               <Flex justifyContent="space-between" width="100%">
                 <Text mr="4px">{address}</Text>
-                <Link href={getBlockExploreLink(token.address, 'address', chainId)} external>
-                  (
-                  {t('View on %site%', {
-                    site: getBlockExploreName(chainId),
-                  })}
-                  )
+                <Link href={getBscScanLink(token.address, 'address', chainId)} external>
+                  ({t('View on BscScan')})
                 </Link>
               </Flex>
             )}

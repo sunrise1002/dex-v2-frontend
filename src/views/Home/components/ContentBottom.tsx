@@ -1,6 +1,6 @@
-import { Color, Images } from '@assets';
-import { useTranslation } from '@pancakeswap/localization';
-import styled from 'styled-components';
+import { Color, Images } from '@assets'
+import { useTranslation } from 'contexts/Localization'
+import styled from 'styled-components'
 
 const Container = styled.div`
   flex: 1;
@@ -57,7 +57,10 @@ const ConnectButton = styled.div`
   }
 `
 
-const ContentBottom: React.FC<React.PropsWithChildren> = () => {
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+interface ContentBottomProps {}
+
+const ContentBottom: React.FC<React.PropsWithChildren<ContentBottomProps>> = () => {
   const { t } = useTranslation()
 
   return (

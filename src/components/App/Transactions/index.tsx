@@ -1,13 +1,13 @@
-import { HistoryIcon, useModal, IconButton } from '@pancakeswap/uikit'
+import { HistoryIcon, Button, useModal } from '@pancakeswap/uikit'
 import TransactionsModal from './TransactionsModal'
 
 const Transactions = () => {
   const [onPresentTransactionsModal] = useModal(<TransactionsModal />)
   return (
     <>
-      <IconButton scale="sm" variant="text" onClick={onPresentTransactionsModal}>
+      <Button variant="text" p={0} onClick={onPresentTransactionsModal} ml="16px">
         <HistoryIcon color="textSubtle" width="24px" />
-      </IconButton>
+      </Button>
     </>
   )
 }

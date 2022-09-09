@@ -1,9 +1,9 @@
 import { useEffect, Dispatch, SetStateAction } from 'react'
 import { ResponsiveContainer, XAxis, YAxis, Tooltip, AreaChart, Area } from 'recharts'
 import useTheme from 'hooks/useTheme'
-// import { LineChartLoader } from 'views/Info/components/ChartLoaders'
+import { LineChartLoader } from 'views/Info/components/ChartLoaders'
 import { PairDataTimeWindowEnum } from 'state/swap/types'
-import { useTranslation } from '@pancakeswap/localization'
+import { useTranslation } from 'contexts/Localization'
 
 export type SwapLineChartProps = {
   data: any[]
@@ -69,8 +69,7 @@ const LineChart = ({ data, setHoverValue, setHoverDate, isChangePositive, timeWi
   const dateFormatting = dateFormattingByTimewindow[timeWindow]
 
   if (!data || data.length === 0) {
-    // return <LineChartLoader />
-    return null
+    return <LineChartLoader />
   }
   return (
     <ResponsiveContainer>

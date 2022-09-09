@@ -1,8 +1,9 @@
 import styled from 'styled-components'
-import NextLink from 'next/link'
 import { Flex, Skeleton, UserMenuItem } from '@pancakeswap/uikit'
-import { useWeb3React } from '@pancakeswap/wagmi'
-import { useTranslation } from '@pancakeswap/localization'
+import { useWeb3React } from '@web3-react/core'
+import { useTranslation } from 'contexts/Localization'
+import { nftsBaseUrl } from 'views/Nft/market/constants'
+import { useRouter } from 'next/router'
 
 interface ProfileUserMenuItemProps {
   isLoading: boolean
@@ -17,13 +18,18 @@ const Dot = styled.div`
   width: 8px;
 `
 
-const ProfileUserMenuItem: React.FC<React.PropsWithChildren<ProfileUserMenuItemProps>> = ({
-  isLoading,
-  hasProfile,
-  disabled,
-}) => {
+const ProfileUserMenuItem: React.FC<ProfileUserMenuItemProps> = ({ isLoading, hasProfile, disabled }) => {
   const { account } = useWeb3React()
+  const router = useRouter()
   const { t } = useTranslation()
+
+  const handleClick = () => {
+    router.push(`${nftsBaseUrl}/profile/${account.toLowerCase()}/achievements`)
+  }
+
+  const handleNoProfileClick = () => {
+    router.push('/create-profile')
+  }
 
   if (isLoading) {
     return (
@@ -35,23 +41,19 @@ const ProfileUserMenuItem: React.FC<React.PropsWithChildren<ProfileUserMenuItemP
 
   if (!hasProfile) {
     return (
-      <NextLink href="/create-profile" passHref>
-        <UserMenuItem as="a" disabled={disabled}>
-          <Flex alignItems="center" justifyContent="space-between" width="100%">
-            {t('Make a Profile')}
-            <Dot />
-          </Flex>
-        </UserMenuItem>
-      </NextLink>
+      <UserMenuItem as="button" disabled={disabled} onClick={handleNoProfileClick}>
+        <Flex alignItems="center" justifyContent="space-between" width="100%">
+          {t('Make a Profile')}
+          <Dot />
+        </Flex>
+      </UserMenuItem>
     )
   }
 
   return (
-    <NextLink href={`/profile/${account?.toLowerCase()}/achievements`} passHref>
-      <UserMenuItem as="a" disabled={disabled}>
-        {t('Your Profile')}
-      </UserMenuItem>
-    </NextLink>
+    <UserMenuItem as="button" disabled={disabled} onClick={handleClick}>
+      {t('Your Profile')}
+    </UserMenuItem>
   )
 }
 

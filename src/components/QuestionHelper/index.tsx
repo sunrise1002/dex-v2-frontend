@@ -14,13 +14,8 @@ const QuestionWrapper = styled.div`
   }
 `
 
-const QuestionHelper: React.FC<React.PropsWithChildren<Props>> = ({
-  text,
-  placement = 'right-end',
-  size = '16px',
-  ...props
-}) => {
-  const { targetRef, tooltip, tooltipVisible } = useTooltip(text, { placement })
+const QuestionHelper: React.FC<Props> = ({ text, placement = 'right-end', size = '16px', ...props }) => {
+  const { targetRef, tooltip, tooltipVisible } = useTooltip(text, { placement, trigger: 'hover' })
 
   return (
     <Box {...props}>

@@ -1,20 +1,57 @@
-import { BigNumber as EthersBigNumber } from '@ethersproject/bignumber'
-import { parseUnits } from '@ethersproject/units'
-import { SerializedFarmPublicData } from '@pancakeswap/farms'
-import { Token } from '@pancakeswap/sdk'
 import BigNumber from 'bignumber.js'
+import { BigNumber as EthersBigNumber } from '@ethersproject/bignumber'
 import {
   CampaignType,
-  DeserializedFarmConfig,
-  DeserializedPoolConfig,
-  FetchStatus,
+  SerializedFarmConfig,
   LotteryStatus,
   LotteryTicket,
+  DeserializedPoolConfig,
   SerializedPoolConfig,
   Team,
   TranslatableText,
+  DeserializedFarmConfig,
+  FetchStatus,
 } from 'config/constants/types'
-// import { NftToken } from './nftMarket/types'
+import { Token, ChainId } from '@pancakeswap/sdk'
+import { TokenInfo, TokenList, Tags } from '@uniswap/token-lists'
+import { parseUnits } from '@ethersproject/units'
+import { NftToken, State as NftMarketState } from './nftMarket/types'
+
+/**
+ * Token instances created from token info.
+ */
+export class WrappedTokenInfo extends Token {
+  public readonly tokenInfo: TokenInfo
+
+  public readonly tags: TagInfo[]
+
+  constructor(tokenInfo: TokenInfo, tags: TagInfo[]) {
+    super(tokenInfo.chainId, tokenInfo.address, tokenInfo.decimals, tokenInfo.symbol, tokenInfo.name)
+    this.tokenInfo = tokenInfo
+    this.tags = tags
+  }
+
+  public get logoURI(): string | undefined {
+    return this.tokenInfo.logoURI
+  }
+}
+
+export type TokenAddressMap = Readonly<{
+  [chainId in ChainId]: Readonly<{ [tokenAddress: string]: { token: WrappedTokenInfo; list: TokenList } }>
+}>
+
+type TagDetails = Tags[keyof Tags]
+export interface TagInfo extends TagDetails {
+  id: string
+}
+
+/**
+ * An empty result, useful as a default.
+ */
+export const EMPTY_LIST: TokenAddressMap = {
+  [ChainId.MAINNET]: {},
+  [ChainId.TESTNET]: {},
+}
 
 export enum GAS_PRICE {
   default = '5',
@@ -31,7 +68,6 @@ export const GAS_PRICE_GWEI = {
 }
 
 export type DeserializedPoolVault = DeserializedPool & DeserializedCakeVault
-export type DeserializedPoolLockedVault = DeserializedPool & DeserializedLockedCakeVault
 
 export interface BigNumberToJson {
   type: 'BigNumber'
@@ -45,12 +81,6 @@ interface SerializedFarmUserData {
   tokenBalance: string
   stakedBalance: string
   earnings: string
-  proxy?: {
-    allowance: string
-    tokenBalance: string
-    stakedBalance: string
-    earnings: string
-  }
 }
 
 export interface DeserializedFarmUserData {
@@ -58,15 +88,17 @@ export interface DeserializedFarmUserData {
   tokenBalance: BigNumber
   stakedBalance: BigNumber
   earnings: BigNumber
-  proxy?: {
-    allowance: BigNumber
-    tokenBalance: BigNumber
-    stakedBalance: BigNumber
-    earnings: BigNumber
-  }
 }
 
-export interface SerializedFarm extends SerializedFarmPublicData {
+export interface SerializedFarm extends SerializedFarmConfig {
+  tokenPriceBusd?: string
+  quoteTokenPriceBusd?: string
+  tokenAmountTotal?: SerializedBigNumber
+  quoteTokenAmountTotal?: SerializedBigNumber
+  lpTotalInQuoteToken?: SerializedBigNumber
+  lpTotalSupply?: SerializedBigNumber
+  tokenPriceVsQuote?: SerializedBigNumber
+  poolWeight?: SerializedBigNumber
   userData?: SerializedFarmUserData
 }
 
@@ -80,13 +112,11 @@ export interface DeserializedFarm extends DeserializedFarmConfig {
   tokenPriceVsQuote?: BigNumber
   poolWeight?: BigNumber
   userData?: DeserializedFarmUserData
-  boosted?: boolean
 }
 
 export enum VaultKey {
   CakeVaultV1 = 'cakeVaultV1',
   CakeVault = 'cakeVault',
-  CakeFlexibleSideVault = 'cakeFlexibleSideVault',
   IfoPool = 'ifoPool',
 }
 
@@ -141,7 +171,7 @@ export interface Profile {
   tokenId: number
   isActive: boolean
   username: string
-  // nft?: NftToken
+  nft?: NftToken
   team?: Team
   hasRegistered: boolean
 }
@@ -175,7 +205,7 @@ export interface DeserializedVaultFees extends SerializedVaultFees {
   performanceFeeAsDecimal: number
 }
 
-export interface SerializedVaultUser {
+interface SerializedVaultUser {
   isLoading: boolean
   userShares: SerializedBigNumber
   cakeAtLastUserAction: SerializedBigNumber
@@ -199,11 +229,6 @@ export interface DeserializedVaultUser {
   cakeAtLastUserAction: BigNumber
   lastDepositedTime: string
   lastUserActionTime: string
-  balance: {
-    cakeAsNumberBalance: number
-    cakeAsBigNumber: BigNumber
-    cakeAsDisplayBalance: string
-  }
 }
 
 export interface DeserializedLockedVaultUser extends DeserializedVaultUser {
@@ -211,12 +236,20 @@ export interface DeserializedLockedVaultUser extends DeserializedVaultUser {
   lastUserActionTime: string
   lockStartTime: string
   lockEndTime: string
-  burnStartTime: string
   userBoostedShare: BigNumber
   locked: boolean
   lockedAmount: BigNumber
+  balance: {
+    cakeAsNumberBalance: number
+    cakeAsBigNumber: BigNumber
+    cakeAsDisplayBalance: string
+  }
   currentPerformanceFee: BigNumber
   currentOverdueFee: BigNumber
+}
+
+export interface DeserializedIfoVaultUser extends DeserializedVaultUser {
+  credit: string
 }
 
 export interface DeserializedCakeVault {
@@ -225,41 +258,21 @@ export interface DeserializedCakeVault {
   pricePerFullShare?: BigNumber
   totalCakeInVault?: BigNumber
   fees?: DeserializedVaultFees
-  userData?: DeserializedVaultUser
-}
-
-export interface DeserializedLockedCakeVault extends Omit<DeserializedCakeVault, 'userData'> {
-  totalLockedAmount?: BigNumber
   userData?: DeserializedLockedVaultUser
-}
-
-export interface SerializedLockedCakeVault extends Omit<SerializedCakeVault, 'userData'> {
-  totalLockedAmount?: SerializedBigNumber
-  userData?: SerializedLockedVaultUser
 }
 
 export interface SerializedCakeVault {
   totalShares?: SerializedBigNumber
+  totalLockedAmount?: SerializedBigNumber
   pricePerFullShare?: SerializedBigNumber
   totalCakeInVault?: SerializedBigNumber
   fees?: SerializedVaultFees
-  userData?: SerializedVaultUser
-}
-
-// Ifo
-export interface IfoState extends PublicIfoData {
-  credit: string
-}
-
-export interface PublicIfoData {
-  ceiling: string
+  userData?: SerializedLockedVaultUser
 }
 
 export interface PoolsState {
   data: SerializedPool[]
-  ifo: IfoState
-  cakeVault: SerializedLockedCakeVault
-  cakeFlexibleSideVault: SerializedCakeVault
+  cakeVault: SerializedCakeVault
   userDataLoaded: boolean
 }
 
@@ -290,11 +303,6 @@ export enum PredictionStatus {
   LIVE = 'live',
   PAUSED = 'paused',
   ERROR = 'error',
-}
-
-export enum PredictionSupportedSymbol {
-  BNB = 'BNB',
-  CAKE = 'CAKE',
 }
 
 export enum PredictionsChartView {
@@ -616,91 +624,7 @@ export interface PredictionConfig {
   address: string
   api: string
   chainlinkOracleAddress: string
-  minPriceUsdDisplayed: EthersBigNumber
-  displayedDecimals: number
   token: Token
-}
-
-// Pottery
-export interface PotteryState {
-  lastVaultAddress: string
-  publicData: SerializedPotteryPublicData
-  userData: SerializedPotteryUserData
-  finishedRoundInfo: PotteryRoundInfo
-}
-
-export interface SerializedPotteryPublicData {
-  lastDrawId: string
-  totalPrize: string
-  getStatus: PotteryDepositStatus
-  totalLockCake: string
-  totalSupply: string
-  lockStartTime: string
-  totalLockedValue: string
-  latestRoundId: string
-  maxTotalDeposit: string
-}
-
-export interface DeserializedPublicData {
-  lastDrawId: string
-  totalPrize: BigNumber
-  getStatus: PotteryDepositStatus
-  totalLockCake: BigNumber
-  totalSupply: BigNumber
-  lockStartTime: string
-  totalLockedValue: BigNumber
-  latestRoundId: string
-  maxTotalDeposit: BigNumber
-}
-
-export interface SerializedPotteryUserData {
-  isLoading?: boolean
-  allowance: string
-  previewDepositBalance: string
-  stakingTokenBalance: string
-  rewards: string
-  winCount: string
-  withdrawAbleData: PotteryWithdrawAbleData[]
-}
-
-export interface DeserializedPotteryUserData {
-  isLoading?: boolean
-  allowance: BigNumber
-  previewDepositBalance: BigNumber
-  stakingTokenBalance: BigNumber
-  rewards: BigNumber
-  winCount: string
-  withdrawAbleData: PotteryWithdrawAbleData[]
-}
-
-export interface PotteryRoundInfo {
-  isFetched: boolean
-  roundId: string
-  drawDate: string
-  prizePot: string
-  totalPlayers: string
-  txid: string
-  winners: Array<string>
-  lockDate: string
-}
-
-export enum PotteryDepositStatus {
-  BEFORE_LOCK = 0,
-  LOCK = 1,
-  UNLOCK = 2,
-}
-
-export interface PotteryWithdrawAbleData {
-  id: string
-  shares: string
-  depositDate: string
-  previewRedeem: string
-  status: PotteryDepositStatus
-  potteryVaultAddress: string
-  totalSupply: string
-  totalLockCake: string
-  lockedDate: string
-  balanceOf: string
 }
 
 // Global state
@@ -711,5 +635,5 @@ export interface State {
   pools: PoolsState
   predictions: PredictionsState
   lottery: LotteryState
-  pottery: PotteryState
+  nftMarket: NftMarketState
 }

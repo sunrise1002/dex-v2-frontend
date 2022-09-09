@@ -1,14 +1,10 @@
 import BigNumber from 'bignumber.js'
 import { Token, ChainId } from '@pancakeswap/sdk'
-import { SerializedWrappedToken } from '@pancakeswap/tokens'
-import type { SerializedFarmConfig, FarmConfigBaseProps } from '@pancakeswap/farms'
 
 // a list of tokens by chain
-export type ChainMap<T> = {
-  readonly [chainId in ChainId]: T
+export type ChainTokenList = {
+  readonly [chainId in ChainId]: Token[]
 }
-
-export type ChainTokenList = ChainMap<Token[]>
 
 export type TranslatableText =
   | string
@@ -21,7 +17,16 @@ export type TranslatableText =
 export interface Address {
   97?: string
   56: string
-  [chainId: number]: string
+}
+
+export interface SerializedToken {
+  chainId: number
+  address: string
+  decimals: number
+  symbol?: string
+  name?: string
+  projectLink?: string
+  logoURI?: string
 }
 
 export enum PoolIds {
@@ -53,7 +58,6 @@ export interface Ifo {
   twitterUrl?: string
   telegramUrl?: string
   version: number
-  vestingTitle?: string
   [PoolIds.poolBasic]?: IfoPoolInfo
   [PoolIds.poolUnlimited]: IfoPoolInfo
 }
@@ -65,7 +69,26 @@ export enum PoolCategory {
   'AUTO' = 'Auto',
 }
 
-export type { SerializedFarmConfig, FarmConfigBaseProps }
+interface FarmConfigBaseProps {
+  pid: number
+  v1pid?: number
+  lpSymbol: string
+  lpAddresses: Address
+  multiplier?: string
+  isCommunity?: boolean
+  auctionHostingStartSeconds?: number
+  auctionHostingEndDate?: string
+  dual?: {
+    rewardPerBlock: number
+    earnLabel: string
+    endBlock: number
+  }
+}
+
+export interface SerializedFarmConfig extends FarmConfigBaseProps {
+  token: SerializedToken
+  quoteToken: SerializedToken
+}
 
 export interface DeserializedFarmConfig extends FarmConfigBaseProps {
   token: Token
@@ -77,14 +100,15 @@ interface PoolConfigBaseProps {
   contractAddress: Address
   poolCategory: PoolCategory
   tokenPerBlock: string
+  harvest?: boolean
   isFinished?: boolean
   enableEmergencyWithdraw?: boolean
   version?: number
 }
 
 export interface SerializedPoolConfig extends PoolConfigBaseProps {
-  earningToken: SerializedWrappedToken
-  stakingToken: SerializedWrappedToken
+  earningToken: SerializedToken
+  stakingToken: SerializedToken
 }
 
 export interface DeserializedPoolConfig extends PoolConfigBaseProps {

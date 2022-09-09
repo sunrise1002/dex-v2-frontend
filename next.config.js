@@ -1,10 +1,9 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const { withSentryConfig } = require('@sentry/nextjs')
-const { withAxiom } = require('next-axiom')
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
 })
-const withTM = require('next-transpile-modules')(['@pancakeswap/uikit', '@pancakeswap/sdk'])
+const withTM = require('next-transpile-modules')(['@pancakeswap/uikit'])
 
 const sentryWebpackPluginOptions =
   process.env.VERCEL_ENV === 'production'
@@ -16,6 +15,11 @@ const sentryWebpackPluginOptions =
         //   urlPrefix, include, ignore
         silent: false, // Logging when deploying to check if there is any problem
         validate: true,
+        // Mark the release as Production
+        // https://github.com/getsentry/sentry-webpack-plugin/blob/master/src/index.js#L522
+        deploy: {
+          env: process.env.VERCEL_ENV,
+        },
         // For all available options, see:
         // https://github.com/getsentry/sentry-webpack-plugin#options.
       }
@@ -31,12 +35,8 @@ const config = {
   },
   experimental: {
     scrollRestoration: true,
-    images: {
-      allowFutureImage: true,
-    },
   },
   reactStrictMode: true,
-  swcMinify: true,
   images: {
     domains: ['static-nft.pancakeswap.com'],
   },
@@ -131,16 +131,6 @@ const config = {
       },
     ]
   },
-  webpack: (webpackConfig, { webpack }) => {
-    // tree shake sentry tracing
-    webpackConfig.plugins.push(
-      new webpack.DefinePlugin({
-        __SENTRY_DEBUG__: false,
-        __SENTRY_TRACING__: false,
-      }),
-    )
-    return webpackConfig
-  },
 }
 
-module.exports = withBundleAnalyzer(withSentryConfig(withTM(withAxiom(config)), sentryWebpackPluginOptions))
+module.exports = withBundleAnalyzer(withSentryConfig(withTM(config), sentryWebpackPluginOptions))

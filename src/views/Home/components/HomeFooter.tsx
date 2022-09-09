@@ -1,7 +1,7 @@
-import { Color } from '@assets';
-import { CopyrightIcon, GoogleIcon, TwitterIcon } from 'components';
-import { useTranslation } from '@pancakeswap/localization';
-import styled from 'styled-components';
+import { Color } from '@assets'
+import { CopyrightIcon, GoogleIcon, TwitterIcon } from '@components'
+import { useTranslation } from 'contexts/Localization'
+import styled from 'styled-components'
 
 const Container = styled.div`
   display: flex;
@@ -95,7 +95,10 @@ const SocialMediaWrapper = styled(RowWrapper)`
   justify-content: flex-end;
 `
 
-const HomeFooter: React.FC<React.PropsWithChildren> = () => {
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+interface HomeFooterProps {}
+
+const HomeFooter: React.FC<React.PropsWithChildren<HomeFooterProps>> = () => {
   const { t } = useTranslation()
 
   return (
@@ -105,7 +108,7 @@ const HomeFooter: React.FC<React.PropsWithChildren> = () => {
         <CopyrightContainer>
           <RowWrapper>
             <CopyrightIconWrapper>
-            <CopyrightIcon fill={Color.baseColors.wizardGrey} />
+            <CopyrightIcon color={Color.baseColors.wizardGrey} />
             </CopyrightIconWrapper>
             <CopyrightText>{t('Copyright 2022 thelabX')}</CopyrightText>
           </RowWrapper>
@@ -116,10 +119,10 @@ const HomeFooter: React.FC<React.PropsWithChildren> = () => {
 
         <SocialMediaWrapper>
           <GoogleIconWrapper>
-            <GoogleIcon fill={Color.baseColors.wizardGrey} />
+            <GoogleIcon color={Color.baseColors.wizardGrey} />
           </GoogleIconWrapper>
           <TwitterIconWrapper>
-            <TwitterIcon fill={Color.baseColors.wizardGrey} />
+            <TwitterIcon color={Color.baseColors.wizardGrey} />
           </TwitterIconWrapper>
         </SocialMediaWrapper>
       </RowContainer>

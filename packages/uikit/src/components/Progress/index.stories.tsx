@@ -13,7 +13,7 @@ export default {
   argTypes: {},
 };
 
-const DefaultTemplate: React.FC<React.PropsWithChildren> = (args) => {
+const DefaultTemplate: React.FC = (args) => {
   const [progress, setProgress] = useState(random(1, 100));
 
   const handleClick = () => setProgress(random(1, 100));
@@ -49,7 +49,7 @@ Default.args = {
   useDark: false,
 };
 
-export const WithSecondary: React.FC<React.PropsWithChildren> = () => {
+export const WithSecondary: React.FC = () => {
   const [primaryStep, setPrimaryStep] = useState(10);
   const [secondaryStep, setSecondaryStep] = useState(40);
 
@@ -68,7 +68,7 @@ export const WithSecondary: React.FC<React.PropsWithChildren> = () => {
   );
 };
 
-export const WithSecondaryAndProgressBunny: React.FC<React.PropsWithChildren> = () => {
+export const WithSecondaryAndProgressBunny: React.FC = () => {
   const [primaryStep, setPrimaryStep] = useState(10);
   const [secondaryStep, setSecondaryStep] = useState(40);
 

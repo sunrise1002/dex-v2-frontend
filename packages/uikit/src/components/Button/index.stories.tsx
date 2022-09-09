@@ -25,7 +25,7 @@ const Row = styled(Flex)`
   }
 `;
 
-export const Default: React.FC<React.PropsWithChildren> = () => {
+export const Default: React.FC = () => {
   return (
     <>
       <Box mb="32px">
@@ -61,7 +61,7 @@ export const Default: React.FC<React.PropsWithChildren> = () => {
   );
 };
 
-export const Anchors: React.FC<React.PropsWithChildren> = () => {
+export const Anchors: React.FC = () => {
   return (
     <>
       <Box mb="32px">
@@ -99,7 +99,7 @@ export const Anchors: React.FC<React.PropsWithChildren> = () => {
   );
 };
 
-export const Variants: React.FC<React.PropsWithChildren> = () => {
+export const Variants: React.FC = () => {
   return (
     <Box width="640px">
       <BrowserRouter>
@@ -147,7 +147,7 @@ export const Variants: React.FC<React.PropsWithChildren> = () => {
   );
 };
 
-export const Expandable: React.FC<React.PropsWithChildren> = () => {
+export const Expandable: React.FC = () => {
   const [expanded, setExpanded] = useState(false);
   return (
     <Box width="640px">

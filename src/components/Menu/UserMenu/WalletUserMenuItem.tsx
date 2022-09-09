@@ -1,5 +1,5 @@
 import { Flex, UserMenuItem, WarningIcon } from '@pancakeswap/uikit'
-import { useTranslation } from '@pancakeswap/localization'
+import { useTranslation } from 'contexts/Localization'
 import { useGetBnbBalance } from 'hooks/useTokenBalance'
 import { FetchStatus } from 'config/constants/types'
 import { LOW_BNB_BALANCE } from './WalletModal'
@@ -9,10 +9,7 @@ interface WalletUserMenuItemProps {
   onPresentWalletModal: () => void
 }
 
-const WalletUserMenuItem: React.FC<React.PropsWithChildren<WalletUserMenuItemProps>> = ({
-  isWrongNetwork,
-  onPresentWalletModal,
-}) => {
+const WalletUserMenuItem: React.FC<WalletUserMenuItemProps> = ({ isWrongNetwork, onPresentWalletModal }) => {
   const { t } = useTranslation()
   const { balance, fetchStatus } = useGetBnbBalance()
   const hasLowBnbBalance = fetchStatus === FetchStatus.Fetched && balance.lte(LOW_BNB_BALANCE)

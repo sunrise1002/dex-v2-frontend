@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import styled, { useTheme } from "styled-components";
-import EXTERNAL_LINK_PROPS from "../../util/externalLinkProps";
+import getExternalLinkProps from "../../util/getExternalLinkProps";
 import Grid from "../../components/Box/Grid";
 import Box from "../../components/Box/Box";
 import getThemeValue from "../../util/getThemeValue";
@@ -17,7 +17,6 @@ interface Props {
   onDismiss?: () => void;
   displayCount?: number;
   t: (key: string) => string;
-  connectors?: Config[];
 }
 
 const WalletWrapper = styled(Box)`
@@ -53,34 +52,25 @@ const getPreferredConfig = (walletConfig: Config[]) => {
   ];
 };
 
-const ConnectModal: React.FC<React.PropsWithChildren<Props>> = ({
-  login,
-  onDismiss = () => null,
-  displayCount = 3,
-  t,
-  connectors,
-}) => {
+const ConnectModal: React.FC<Props> = ({ login, onDismiss = () => null, displayCount = 3, t }) => {
   const [showMore, setShowMore] = useState(false);
   const theme = useTheme();
-  const sortedConfig = getPreferredConfig(connectors || config);
+  const sortedConfig = getPreferredConfig(config);
   // Filter out WalletConnect if user is inside TrustWallet built-in browser
-  const walletsToShow =
-    window.ethereum?.isTrust &&
-    // @ts-ignore
-    !window?.ethereum?.isSafePal
-      ? sortedConfig.filter((wallet) => wallet.title !== "WalletConnect")
-      : sortedConfig;
+  const walletsToShow = window.ethereum?.isTrust
+    ? sortedConfig.filter((wallet) => wallet.title !== "WalletConnect")
+    : sortedConfig;
   const displayListConfig = showMore ? walletsToShow : walletsToShow.slice(0, displayCount);
 
   return (
-    <ModalContainer $minWidth="320px">
-      <ModalHeader background={getThemeValue(theme, "colors.gradients.bubblegum")}>
+    <ModalContainer minWidth="320px">
+      <ModalHeader background={getThemeValue("colors.gradients.bubblegum")(theme)}>
         <ModalTitle>
           <Heading>{t("Connect Wallet")}</Heading>
         </ModalTitle>
         <ModalCloseButton onDismiss={onDismiss} />
       </ModalHeader>
-      <ModalBody minWidth={["320px", null, "340px"]}>
+      <ModalBody width={["320px", null, "340px"]}>
         <WalletWrapper py="24px" maxHeight="453px" overflowY="auto">
           <Grid gridTemplateColumns="1fr 1fr">
             {displayListConfig.map((wallet) => (
@@ -100,7 +90,7 @@ const ConnectModal: React.FC<React.PropsWithChildren<Props>> = ({
             href="https://docs.pancakeswap.finance/get-started/connection-guide"
             variant="subtle"
             width="100%"
-            {...EXTERNAL_LINK_PROPS}
+            {...getExternalLinkProps()}
           >
             {t("Learn How to Connect")}
           </Button>

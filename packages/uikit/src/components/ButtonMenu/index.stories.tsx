@@ -20,7 +20,7 @@ export default {
   argTypes: {},
 } as Meta;
 
-export const Default: React.FC<React.PropsWithChildren> = () => {
+export const Default: React.FC = () => {
   const [index, setIndex] = useState(0);
   const [index1, setIndex1] = useState(1);
 
@@ -65,7 +65,7 @@ export const Default: React.FC<React.PropsWithChildren> = () => {
   );
 };
 
-export const AsLinks: React.FC<React.PropsWithChildren> = () => {
+export const AsLinks: React.FC = () => {
   return (
     <Row>
       <ButtonMenu activeIndex={0}>
@@ -83,7 +83,7 @@ export const AsLinks: React.FC<React.PropsWithChildren> = () => {
   );
 };
 
-export const DisabledMenu: React.FC<React.PropsWithChildren> = () => {
+export const DisabledMenu: React.FC = () => {
   const [index, setIndex] = useState(0);
   const [index1, setIndex1] = useState(1);
 
@@ -127,7 +127,7 @@ export const DisabledMenu: React.FC<React.PropsWithChildren> = () => {
   );
 };
 
-export const FullWidthMenu: React.FC<React.PropsWithChildren> = () => {
+export const FullWidthMenu: React.FC = () => {
   const [index, setIndex] = useState(0);
 
   const handleClick = (newIndex: number) => setIndex(newIndex);

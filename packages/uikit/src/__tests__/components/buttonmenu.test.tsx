@@ -1,12 +1,12 @@
 import React from "react";
-import { renderWithProvider } from "../../testHelpers";
+import { renderWithTheme } from "../../testHelpers";
 import ButtonMenu from "../../components/ButtonMenu/ButtonMenu";
 import ButtonMenuItem from "../../components/ButtonMenu/ButtonMenuItem";
 
 const handleClick = jest.fn();
 
 it("renders correctly", () => {
-  const { asFragment } = renderWithProvider(
+  const { asFragment } = renderWithTheme(
     <ButtonMenu activeIndex={0} onItemClick={handleClick}>
       <ButtonMenuItem>Item 1</ButtonMenuItem>
       <ButtonMenuItem>Item 2</ButtonMenuItem>
@@ -43,7 +43,6 @@ it("renders correctly", () => {
     }
 
     .c1 {
-      position: relative;
       -webkit-align-items: center;
       -webkit-box-align: center;
       -ms-flex-align: center;

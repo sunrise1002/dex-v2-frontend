@@ -3,10 +3,9 @@ import sousChefABI from 'config/abi/sousChef.json'
 import erc20ABI from 'config/abi/erc20.json'
 import multicall from 'utils/multicall'
 import { getAddress } from 'utils/addressHelpers'
-import { bscRpcProvider } from 'utils/providers'
+import { simpleRpcProvider } from 'utils/providers'
 import BigNumber from 'bignumber.js'
 import uniq from 'lodash/uniq'
-import fromPairs from 'lodash/fromPairs'
 
 // Pool 0, Cake / Cake is a different kind of contract (master chef)
 // BNB pools use the native BNB token (wrapping ? unwrapping is done at the contract level)
@@ -22,7 +21,10 @@ export const fetchPoolsAllowance = async (account) => {
   }))
 
   const allowances = await multicall(erc20ABI, calls)
-  return fromPairs(nonBnbPools.map((pool, index) => [pool.sousId, new BigNumber(allowances[index]).toJSON()]))
+  return nonBnbPools.reduce(
+    (acc, pool, index) => ({ ...acc, [pool.sousId]: new BigNumber(allowances[index]).toJSON() }),
+    {},
+  )
 }
 
 export const fetchUserBalances = async (account) => {
@@ -33,24 +35,24 @@ export const fetchUserBalances = async (account) => {
     name: 'balanceOf',
     params: [account],
   }))
-  const [tokenBalancesRaw, bnbBalance] = await Promise.all([
-    multicall(erc20ABI, calls),
-    bscRpcProvider.getBalance(account),
-  ])
-  const tokenBalances = fromPairs(tokens.map((token, index) => [token, tokenBalancesRaw[index]]))
-
-  const poolTokenBalances = fromPairs(
-    nonBnbPools
-      .map((pool) => {
-        if (!tokenBalances[pool.stakingToken.address]) return null
-        return [pool.sousId, new BigNumber(tokenBalances[pool.stakingToken.address]).toJSON()]
-      })
-      .filter(Boolean),
+  const tokenBalancesRaw = await multicall(erc20ABI, calls)
+  const tokenBalances = tokens.reduce((acc, token, index) => ({ ...acc, [token]: tokenBalancesRaw[index] }), {})
+  const poolTokenBalances = nonBnbPools.reduce(
+    (acc, pool) => ({
+      ...acc,
+      ...(tokenBalances[pool.stakingToken.address] && {
+        [pool.sousId]: new BigNumber(tokenBalances[pool.stakingToken.address]).toJSON(),
+      }),
+    }),
+    {},
   )
 
   // BNB pools
-  const bnbBalanceJson = new BigNumber(bnbBalance.toString()).toJSON()
-  const bnbBalances = fromPairs(bnbPools.map((pool) => [pool.sousId, bnbBalanceJson]))
+  const bnbBalance = await simpleRpcProvider.getBalance(account)
+  const bnbBalances = bnbPools.reduce(
+    (acc, pool) => ({ ...acc, [pool.sousId]: new BigNumber(bnbBalance.toString()).toJSON() }),
+    {},
+  )
 
   return { ...poolTokenBalances, ...bnbBalances }
 }
@@ -62,8 +64,12 @@ export const fetchUserStakeBalances = async (account) => {
     params: [account],
   }))
   const userInfo = await multicall(sousChefABI, calls)
-  return fromPairs(
-    nonMasterPools.map((pool, index) => [pool.sousId, new BigNumber(userInfo[index].amount._hex).toJSON()]),
+  return nonMasterPools.reduce(
+    (acc, pool, index) => ({
+      ...acc,
+      [pool.sousId]: new BigNumber(userInfo[index].amount._hex).toJSON(),
+    }),
+    {},
   )
 }
 
@@ -74,5 +80,11 @@ export const fetchUserPendingRewards = async (account) => {
     params: [account],
   }))
   const res = await multicall(sousChefABI, calls)
-  return fromPairs(nonMasterPools.map((pool, index) => [pool.sousId, new BigNumber(res[index]).toJSON()]))
+  return nonMasterPools.reduce(
+    (acc, pool, index) => ({
+      ...acc,
+      [pool.sousId]: new BigNumber(res[index]).toJSON(),
+    }),
+    {},
+  )
 }

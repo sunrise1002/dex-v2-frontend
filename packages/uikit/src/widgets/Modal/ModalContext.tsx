@@ -1,9 +1,7 @@
-import { AnimatePresence, domMax, LazyMotion, m } from "framer-motion";
-import React, { createContext, useRef, useState } from "react";
+import { AnimatePresence, domAnimation, LazyMotion, m } from "framer-motion";
+import React, { createContext, useRef, useState, useEffect } from "react";
 import styled from "styled-components";
-import { mountAnimation, unmountAnimation } from "../../components/BottomDrawer/styles";
 import { Overlay } from "../../components/Overlay";
-import { useIsomorphicEffect } from "../../hooks";
 import {
   animationHandler,
   animationMap,
@@ -11,7 +9,6 @@ import {
   appearAnimation,
   disappearAnimation,
 } from "../../util/animationToolkit";
-import { ModalContainer } from "./styles";
 import { Handler } from "./types";
 
 interface ModalsContext {
@@ -38,21 +35,9 @@ const ModalWrapper = styled(m.div)`
   opacity: 0;
   &.appear {
     animation: ${appearAnimation} 0.3s ease-in-out forwards;
-    ${ModalContainer} {
-      animation: ${mountAnimation} 0.3s ease-in-out forwards;
-      ${({ theme }) => theme.mediaQueries.md} {
-        animation: none;
-      }
-    }
   }
   &.disappear {
     animation: ${disappearAnimation} 0.3s ease-in-out forwards;
-    ${ModalContainer} {
-      animation: ${unmountAnimation} 0.3s ease-in-out forwards;
-      ${({ theme }) => theme.mediaQueries.md} {
-        animation: none;
-      }
-    }
   }
 `;
 
@@ -65,14 +50,14 @@ export const Context = createContext<ModalsContext>({
   onDismiss: () => null,
 });
 
-const ModalProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
+const ModalProvider: React.FC = ({ children }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [modalNode, setModalNode] = useState<React.ReactNode>();
   const [nodeId, setNodeId] = useState("");
   const [closeOnOverlayClick, setCloseOnOverlayClick] = useState(true);
   const animationRef = useRef<HTMLDivElement>(null);
 
-  useIsomorphicEffect(() => {
+  useEffect(() => {
     const setViewportHeight = () => {
       const vh = window.innerHeight * 0.01;
       document.documentElement.style.setProperty("--vh", `${vh}px`);
@@ -113,7 +98,7 @@ const ModalProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
         onDismiss: handleDismiss,
       }}
     >
-      <LazyMotion features={domMax}>
+      <LazyMotion features={domAnimation}>
         <AnimatePresence>
           {isOpen && (
             <ModalWrapper

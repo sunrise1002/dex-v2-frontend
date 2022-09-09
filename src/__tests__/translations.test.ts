@@ -1,10 +1,8 @@
 import Path from 'path'
 import fs from 'fs'
+import translations from 'config/localization/translations.json'
 import teams from 'config/constants/teams'
 import { NftLocation } from 'state/nftMarket/types'
-
-// FIXME: should move this test file inside localization pkg
-import translations from '../../packages/localization/src/config/translations.json'
 
 const allTranslationKeys = Object.keys(translations)
 
@@ -28,19 +26,6 @@ const whitelist = [
   `These bunnies like their pancakes with blueberries. What's your favorite topping?`,
   "Love makes the world go 'round... but so do pancakes. And these bunnies know it.",
   `It’s sparkling syrup, pancakes, and even lottery tickets! This bunny really loves it.`,
-  'Swap max. %inputAmount% %inputSymbol% for %outputAmount% %outputSymbol%',
-  'Swap max. %inputAmount% %inputSymbol% for %outputAmount% %outputSymbol% to %recipientAddress%',
-  'Swap %inputAmount% %inputSymbol% for min. %outputAmount% %outputSymbol%',
-  'Swap %inputAmount% %inputSymbol% for min. %outputAmount% %outputSymbol% to %recipientAddress%',
-  'Unwrap %amount% %wrap% to %native%',
-  'Wrap %amount% %native% to %wrap%',
-  'Approve %symbol%',
-  'Add %amountA% %symbolA% and %amountB% %symbolB%',
-  'Remove %amount% %symbol%',
-  'Remove %amountA% %symbolA% and %amountB% %symbolB%',
-  'Zap %amountA% %symbolA% and %amountB% %symbolB%',
-  'Zap in %amount% BNB for %symbol%',
-  'Zap in %amount% %symbol% for %lpSymbol%',
 ]
 
 describe('Check translations integrity', () => {

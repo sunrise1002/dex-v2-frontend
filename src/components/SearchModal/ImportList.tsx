@@ -1,14 +1,17 @@
 import { useState, useCallback } from 'react'
 import styled from 'styled-components'
 import { Button, Text, Link, Flex, Checkbox, Message } from '@pancakeswap/uikit'
-import { Card, AutoColumn, RowBetween, RowFixed, ListLogo } from 'components'
+import Card from 'components/Card'
+import { AutoColumn } from 'components/Layout/Column'
+import { RowBetween, RowFixed } from 'components/Layout/Row'
 import useTheme from 'hooks/useTheme'
+import { ListLogo } from 'components/Logo'
 import { TokenList } from '@uniswap/token-lists'
-import { useAppDispatch } from 'state/index'
+import { useAppDispatch } from 'state'
 import useFetchListCallback from 'hooks/useFetchListCallback'
 import { removeList, enableList } from 'state/lists/actions'
 import { useAllLists } from 'state/lists/hooks'
-import { useTranslation } from '@pancakeswap/localization'
+import { useTranslation } from 'contexts/Localization'
 
 interface ImportProps {
   listURL: string

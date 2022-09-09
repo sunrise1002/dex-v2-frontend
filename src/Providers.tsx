@@ -1,50 +1,43 @@
-import { ModalProvider, light, dark, UIKitProvider } from '@pancakeswap/uikit'
+import { ModalProvider, light, dark, MatchBreakpointsProvider } from '@pancakeswap/uikit'
+import { Web3ReactProvider } from '@web3-react/core'
 import { Provider } from 'react-redux'
 import { SWRConfig } from 'swr'
-import { LanguageProvider } from '@pancakeswap/localization'
+import { ThemeProvider } from 'styled-components'
+import { getLibrary } from 'utils/web3React'
+import { LanguageProvider } from 'contexts/Localization'
 import { ToastsProvider } from 'contexts/ToastsContext'
 import { fetchStatusMiddleware } from 'hooks/useSWRContract'
 import { Store } from '@reduxjs/toolkit'
 import { ThemeProvider as NextThemeProvider, useTheme as useNextTheme } from 'next-themes'
-import { WagmiProvider } from '@pancakeswap/wagmi'
-import { client } from 'utils/wagmi'
-import { HistoryManagerProvider } from 'contexts/HistoryContext'
 
-const StyledUIKitProvider: React.FC<React.PropsWithChildren> = ({ children, ...props }) => {
+const StyledThemeProvider = (props) => {
   const { resolvedTheme } = useNextTheme()
-  return (
-    <UIKitProvider theme={resolvedTheme === 'dark' ? dark : light} {...props}>
-      {children}
-    </UIKitProvider>
-  )
+  return <ThemeProvider theme={resolvedTheme === 'dark' ? dark : light} {...props} />
 }
 
-const Providers: React.FC<React.PropsWithChildren<{ store: Store; children: React.ReactNode }>> = ({
-  children,
-  store,
-}) => {
+const Providers: React.FC<{ store: Store }> = ({ children, store }) => {
   return (
-    <WagmiProvider client={client}>
+    <Web3ReactProvider getLibrary={getLibrary}>
       <Provider store={store}>
-        <ToastsProvider>
-          <NextThemeProvider>
-            <StyledUIKitProvider>
-              <LanguageProvider>
-                <SWRConfig
-                  value={{
-                    use: [fetchStatusMiddleware],
-                  }}
-                >
-                  <HistoryManagerProvider>
+        <MatchBreakpointsProvider>
+          <ToastsProvider>
+            <NextThemeProvider>
+              <StyledThemeProvider>
+                <LanguageProvider>
+                  <SWRConfig
+                    value={{
+                      use: [fetchStatusMiddleware],
+                    }}
+                  >
                     <ModalProvider>{children}</ModalProvider>
-                  </HistoryManagerProvider>
-                </SWRConfig>
-              </LanguageProvider>
-            </StyledUIKitProvider>
-          </NextThemeProvider>
-        </ToastsProvider>
+                  </SWRConfig>
+                </LanguageProvider>
+              </StyledThemeProvider>
+            </NextThemeProvider>
+          </ToastsProvider>
+        </MatchBreakpointsProvider>
       </Provider>
-    </WagmiProvider>
+    </Web3ReactProvider>
   )
 }
 

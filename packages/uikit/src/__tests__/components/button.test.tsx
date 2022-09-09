@@ -1,13 +1,12 @@
 import React from "react";
-import { renderWithProvider } from "../../testHelpers";
+import { renderWithTheme } from "../../testHelpers";
 import Button from "../../components/Button/Button";
 
 it("renders correctly", () => {
-  const { asFragment } = renderWithProvider(<Button>Submit</Button>);
+  const { asFragment } = renderWithTheme(<Button>Submit</Button>);
   expect(asFragment()).toMatchInlineSnapshot(`
     <DocumentFragment>
       .c0 {
-      position: relative;
       -webkit-align-items: center;
       -webkit-box-align: center;
       -ms-flex-align: center;

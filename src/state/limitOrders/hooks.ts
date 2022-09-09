@@ -1,7 +1,7 @@
 import JSBI from 'jsbi'
 import { useDispatch, useSelector } from 'react-redux'
 import { ParsedUrlQuery } from 'querystring'
-import { Currency, CurrencyAmount, Trade, Token, Price, Native, TradeType } from '@pancakeswap/sdk'
+import { Currency, CurrencyAmount, TokenAmount, Trade, Token, Price, ETHER } from '@pancakeswap/sdk'
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import { DEFAULT_INPUT_CURRENCY, DEFAULT_OUTPUT_CURRENCY, BIG_INT_TEN } from 'config/constants/exchange'
 import { useRouter } from 'next/router'
@@ -10,9 +10,8 @@ import { wrappedCurrency } from 'utils/wrappedCurrency'
 import { useCurrency } from 'hooks/Tokens'
 import { useTradeExactIn, useTradeExactOut } from 'hooks/Trades'
 import getPriceForOneToken from 'views/LimitOrders/utils/getPriceForOneToken'
-import { isAddress } from 'utils/index'
+import { isAddress } from 'utils'
 import tryParseAmount from 'utils/tryParseAmount'
-import { useTranslation } from '@pancakeswap/localization'
 import { useCurrencyBalances } from '../wallet/hooks'
 import { replaceLimitOrdersState, selectCurrency, setRateType, switchCurrencies, typeInput } from './actions'
 import { Field, Rate, OrderState } from './types'
@@ -36,18 +35,24 @@ const getDesiredInput = (
   }
 
   if (isInverted) {
-    const invertedResultAsFraction = parsedOutAmount
+    const invertedResultAsFraction = parsedOutAmount.asFraction
       .multiply(parsedExchangeRate.asFraction)
       .multiply(JSBI.exponentiate(BIG_INT_TEN, JSBI.BigInt(inputCurrency.decimals)))
-    const invertedResultAsAmount = CurrencyAmount.fromRawAmount(inputCurrency, invertedResultAsFraction.toFixed(0))
+    const invertedResultAsAmount =
+      inputCurrency instanceof Token
+        ? new TokenAmount(inputCurrency, invertedResultAsFraction.toFixed(0))
+        : CurrencyAmount.ether(invertedResultAsFraction.toFixed(0))
 
     return invertedResultAsAmount
   }
-  const resultAsFraction = parsedOutAmount
+  const resultAsFraction = parsedOutAmount.asFraction
     .divide(parsedExchangeRate.asFraction)
     .multiply(JSBI.exponentiate(BIG_INT_TEN, JSBI.BigInt(inputCurrency.decimals)))
-
-  return CurrencyAmount.fromRawAmount(inputCurrency, resultAsFraction.quotient.toString())
+  const resultAsAmount =
+    inputCurrency instanceof Token
+      ? new TokenAmount(inputCurrency, resultAsFraction.quotient.toString())
+      : CurrencyAmount.ether(resultAsFraction.quotient.toString())
+  return resultAsAmount
 }
 
 // Get desired output amount in input basis mode
@@ -57,7 +62,7 @@ const getDesiredOutput = (
   inputCurrency: Currency,
   outputCurrency: Currency,
   isInverted: boolean,
-): CurrencyAmount<Native | Token> | undefined => {
+): CurrencyAmount | undefined => {
   if (!inputValue || !inputCurrency || !outputCurrency) {
     return undefined
   }
@@ -69,17 +74,25 @@ const getDesiredOutput = (
   }
 
   if (isInverted) {
-    const invertedResultAsFraction = parsedInputAmount
-      .multiply(JSBI.exponentiate(BIG_INT_TEN, JSBI.BigInt(inputCurrency.decimals)))
+    const invertedResultAsFraction = parsedInputAmount.asFraction
+      .multiply(JSBI.exponentiate(BIG_INT_TEN, JSBI.BigInt(outputCurrency.decimals)))
       .divide(parsedExchangeRate.asFraction)
-    return CurrencyAmount.fromRawAmount(outputCurrency, invertedResultAsFraction.quotient)
+    const invertedResultAsAmount =
+      outputCurrency instanceof Token
+        ? new TokenAmount(outputCurrency, invertedResultAsFraction.toFixed(0))
+        : CurrencyAmount.ether(invertedResultAsFraction.toFixed(0))
+
+    return invertedResultAsAmount
   }
 
-  const resultAsFraction = parsedInputAmount
-    .divide(JSBI.exponentiate(BIG_INT_TEN, JSBI.BigInt(inputCurrency.decimals)))
+  const resultAsFraction = parsedInputAmount.asFraction
     .multiply(parsedExchangeRate.asFraction)
-
-  return CurrencyAmount.fromRawAmount(outputCurrency, resultAsFraction.quotient.toString())
+    .multiply(JSBI.exponentiate(BIG_INT_TEN, JSBI.BigInt(outputCurrency.decimals)))
+  const resultAsAmount =
+    outputCurrency instanceof Token
+      ? new TokenAmount(outputCurrency, resultAsFraction.quotient.toString())
+      : CurrencyAmount.ether(resultAsFraction.quotient.toString())
+  return resultAsAmount
 }
 
 // Just returns Redux state for limitOrders
@@ -100,7 +113,7 @@ export const useOrderActionHandlers = (): {
       dispatch(
         selectCurrency({
           field,
-          currencyId: currency.isToken ? currency.address : currency.isNative ? 'BNB' : '',
+          currencyId: currency instanceof Token ? currency.address : currency === ETHER ? 'BNB' : '',
         }),
       )
     },
@@ -136,14 +149,14 @@ export const useOrderActionHandlers = (): {
 export interface DerivedOrderInfo {
   currencies: { input: Currency | Token | undefined; output: Currency | Token | undefined }
   currencyBalances: {
-    input: CurrencyAmount<Currency> | undefined
-    output: CurrencyAmount<Currency> | undefined
+    input: CurrencyAmount | undefined
+    output: CurrencyAmount | undefined
   }
   inputError?: string
-  trade: Trade<Currency, Currency, TradeType> | undefined
+  trade: Trade | undefined
   parsedAmounts: {
-    input: CurrencyAmount<Currency> | undefined
-    output: CurrencyAmount<Currency> | undefined
+    input: CurrencyAmount | undefined
+    output: CurrencyAmount | undefined
   }
   formattedAmounts: {
     input: string
@@ -154,7 +167,7 @@ export interface DerivedOrderInfo {
     input: string | undefined
     output: string | undefined
   }
-  price: Price<Currency, Currency> | undefined
+  price: Price | undefined
   wrappedCurrencies: {
     input: Token
     output: Token
@@ -175,39 +188,38 @@ const getErrorMessage = (
     output: Token
   },
   currencies: { input: Currency | Token; output: Currency | Token },
-  currencyBalances: { input: CurrencyAmount<Currency>; output: CurrencyAmount<Currency> },
-  parsedAmounts: { input: CurrencyAmount<Currency>; output: CurrencyAmount<Currency> },
-  trade: Trade<Currency, Currency, TradeType>,
-  price: Price<Currency, Currency>,
+  currencyBalances: { input: CurrencyAmount; output: CurrencyAmount },
+  parsedAmounts: { input: CurrencyAmount; output: CurrencyAmount },
+  trade: Trade,
+  price: Price,
   rateType: Rate,
-  t: any,
 ) => {
   if (!account) {
-    return t('Connect Wallet')
+    return 'Connect Wallet'
   }
   if (
     wrappedCurrencies.input &&
     wrappedCurrencies.output &&
     wrappedCurrencies.input.address.toLowerCase() === wrappedCurrencies.output.address.toLowerCase()
   ) {
-    return t('Order not allowed')
+    return 'Order not allowed'
   }
   const hasBothTokensSelected = currencies.input && currencies.output
   if (!hasBothTokensSelected) {
-    return t('Select a token')
+    return 'Select a token'
   }
   const hasAtLeastOneParsedAmount = parsedAmounts.input || parsedAmounts.output
 
   const tradeIsNotAvailable = !trade || !trade?.route
   if (hasAtLeastOneParsedAmount && tradeIsNotAvailable) {
-    return t('Insufficient liquidity for this trade.')
+    return 'Insufficient liquidity for this trade'
   }
   const someParsedAmountIsMissing = !parsedAmounts.input || !parsedAmounts.output
   if (someParsedAmountIsMissing) {
-    return t('Enter an amount')
+    return 'Enter an amount'
   }
   if (currencyBalances.input && currencyBalances.input.lessThan(parsedAmounts.input)) {
-    return t(`Insufficient %symbol% balance`, { symbol: currencyBalances.input.currency.symbol })
+    return `Insufficient ${currencyBalances.input.currency.symbol} balance`
   }
 
   if (price) {
@@ -215,14 +227,14 @@ const getErrorMessage = (
       rateType === Rate.MUL &&
       (price.lessThan(trade.executionPrice.asFraction) || price.equalTo(trade.executionPrice.asFraction))
     ) {
-      return t('Only possible to place sell orders above market rate')
+      return 'Only possible to place sell orders above market rate'
     }
     if (
       rateType === Rate.DIV &&
       (price.invert().greaterThan(trade.executionPrice.invert().asFraction) ||
         price.invert().equalTo(trade.executionPrice.invert().asFraction))
     ) {
-      return t('Only possible to place buy orders below market rate')
+      return 'Only possible to place buy orders below market rate'
     }
   }
 
@@ -232,7 +244,6 @@ const getErrorMessage = (
 // from the current swap inputs, compute the best trade and return it.
 export const useDerivedOrderInfo = (): DerivedOrderInfo => {
   const { account, chainId } = useActiveWeb3React()
-  const { t } = useTranslation()
   const {
     independentField,
     basisField,
@@ -349,7 +360,7 @@ export const useDerivedOrderInfo = (): DerivedOrderInfo => {
     }
     // Use trade amount as default
     // If we're in output basis mode - no matter what keep output as specified by user
-    let output: CurrencyAmount<Currency>
+    let output: CurrencyAmount | TokenAmount
     if (isOutputBasis) {
       output = outputAmount
     } else if (independentField === Field.OUTPUT) {
@@ -424,7 +435,6 @@ export const useDerivedOrderInfo = (): DerivedOrderInfo => {
       trade,
       price,
       rateType,
-      t,
     ),
     formattedAmounts,
     trade: trade ?? undefined,
@@ -498,8 +508,9 @@ export const useDefaultsFromURLSearch = ():
   const { chainId } = useActiveWeb3React()
   const dispatch = useAppDispatch()
   const { query } = useRouter()
-  const [result, setResult] =
-    useState<{ inputCurrencyId: string | undefined; outputCurrencyId: string | undefined } | undefined>()
+  const [result, setResult] = useState<
+    { inputCurrencyId: string | undefined; outputCurrencyId: string | undefined } | undefined
+  >()
 
   useEffect(() => {
     if (!chainId) return

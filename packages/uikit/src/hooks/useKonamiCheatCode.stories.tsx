@@ -6,7 +6,7 @@ export default {
   argTypes: {},
 };
 
-export const Default: React.FC<React.PropsWithChildren> = () => {
+export const Default: React.FC = () => {
   const [correctCodeEntered, setCorrectCodeEntered] = useState(false);
   const correctCodeHandler = useCallback(() => setCorrectCodeEntered(true), [setCorrectCodeEntered]);
   useKonamiCheatCode(correctCodeHandler);

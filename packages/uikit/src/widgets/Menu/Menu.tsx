@@ -7,7 +7,7 @@ import Flex from "../../components/Box/Flex";
 import Footer from "../../components/Footer";
 import MenuItems from "../../components/MenuItems/MenuItems";
 import { SubMenuItems } from "../../components/SubMenuItems";
-import { useMatchBreakpoints } from "../../contexts";
+import { useMatchBreakpoints } from "../../hooks";
 import CakePrice from "../../components/CakePrice/CakePrice";
 import Logo from "./components/Logo";
 import { MENU_HEIGHT, MOBILE_MENU_HEIGHT, TOP_BANNER_HEIGHT, TOP_BANNER_HEIGHT_MOBILE } from "./config";
@@ -63,10 +63,11 @@ const Inner = styled.div<{ isPushed: boolean; showMenu: boolean }>`
   max-width: 100%;
 `;
 
-const Menu: React.FC<React.PropsWithChildren<NavProps>> = ({
+const Menu: React.FC<NavProps> = ({
   linkComponent = "a",
+  userMenu,
   banner,
-  rightSide,
+  globalMenu,
   isDark,
   toggleTheme,
   currentLang,
@@ -150,7 +151,7 @@ const Menu: React.FC<React.PropsWithChildren<NavProps>> = ({
                   hideLanguage
                 />
               </Box>
-              {rightSide}
+              {globalMenu} {userMenu}
             </Flex>
           </StyledNav>
         </FixedContainer>
