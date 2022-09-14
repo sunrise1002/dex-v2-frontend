@@ -14,6 +14,7 @@ import TransactionsModal from 'components/App/Transactions/TransactionsModal'
 import GlobalSettings from 'components/Menu/GlobalSettings'
 import { useExpertModeManager } from 'state/user/hooks'
 import RefreshIcon from 'components/Svg/RefreshIcon'
+import { Color } from '@assets'
 
 interface Props {
   title: string
@@ -30,7 +31,8 @@ const CurrencyInputContainer = styled(Flex)`
   align-items: center;
   padding: 24px;
   width: 100%;
-  border-bottom: 1px solid ${({ theme }) => theme.colors.cardBorder};
+  // border-bottom: 1px solid ${({ theme }) => theme.colors.cardBorder};
+  background-color: ${Color.baseColors.white};
 `
 
 const ColoredIconButton = styled(IconButton)`
@@ -56,26 +58,26 @@ const CurrencyInputHeader: React.FC<Props> = ({
       <Flex width="100%" alignItems="center" justifyContent="space-between">
         {setIsChartDisplayed && (
           <ColoredIconButton onClick={toggleChartDisplayed} variant="text" scale="sm">
-            {isChartDisplayed ? <ChartDisableIcon color="textSubtle" /> : <ChartIcon width="24px" color="textSubtle" />}
+            {isChartDisplayed ? <ChartDisableIcon color={Color.baseColors.bayWharf} /> : <ChartIcon width="24px" color={Color.baseColors.bayWharf} />}
           </ColoredIconButton>
         )}
         <Flex flexDirection="column" alignItems="flex-end" width="100%" mr={18}>
-          <Heading as="h2">{title}</Heading>
+          <Heading color={Color.baseColors.bayWharf} as="h2">{title}</Heading>
         </Flex>
         <Flex>
           <NotificationDot show={expertMode}>
-            <GlobalSettings color="textSubtle" mr="0" />
+            <GlobalSettings color={Color.baseColors.bayWharf} mr="0" />
           </NotificationDot>
           <IconButton onClick={onPresentTransactionsModal} variant="text" scale="sm">
-            <HistoryIcon color="textSubtle" width="24px" />
+            <HistoryIcon color={Color.baseColors.bayWharf} width="24px" />
           </IconButton>
           <IconButton variant="text" scale="sm" onClick={() => onRefreshPrice()}>
-            <RefreshIcon disabled={!hasAmount} color="textSubtle" width="27px" />
+            <RefreshIcon disabled={!hasAmount} color={Color.baseColors.bayWharf} width="27px" />
           </IconButton>
         </Flex>
       </Flex>
       <Flex alignItems="center">
-        <Text color="textSubtle" fontSize="14px">
+        <Text color={Color.baseColors.cistern} fontSize="14px">
           {subtitle}
         </Text>
       </Flex>

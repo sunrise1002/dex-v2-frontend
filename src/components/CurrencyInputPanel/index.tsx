@@ -12,6 +12,7 @@ import { CurrencyLogo, DoubleCurrencyLogo } from '../Logo'
 
 import { Input as NumericalInput } from './NumericalInput'
 import { CopyButton } from '../CopyButton'
+import { Color } from '@assets'
 
 const InputRow = styled.div<{ selected: boolean }>`
   display: flex;
@@ -113,11 +114,11 @@ export default function CurrencyInputPanel({
                 <CurrencyLogo currency={currency} size="24px" style={{ marginRight: '8px' }} />
               ) : null}
               {pair ? (
-                <Text id="pair" bold>
+                <Text color={Color.baseColors.bayWharf} id="pair" bold>
                   {pair?.token0.symbol}:{pair?.token1.symbol}
                 </Text>
               ) : (
-                <Text id="pair" bold>
+                <Text color={Color.baseColors.bayWharf} id="pair" bold>
                   {(currency && currency.symbol && currency.symbol.length > 20
                     ? `${currency.symbol.slice(0, 4)}...${currency.symbol.slice(
                         currency.symbol.length - 5,
@@ -126,7 +127,7 @@ export default function CurrencyInputPanel({
                     : currency?.symbol) || t('Select a currency')}
                 </Text>
               )}
-              {!disableCurrencySelect && <ChevronDownIcon />}
+              {!disableCurrencySelect && <ChevronDownIcon color={Color.baseColors.bayWharf} />}
             </Flex>
           </CurrencySelectButton>
           {token && tokenAddress ? (
@@ -139,6 +140,7 @@ export default function CurrencyInputPanel({
                 tooltipTop={-20}
                 tooltipRight={40}
                 tooltipFontSize={12}
+                color={Color.baseColors.bayWharf}
               />
               {library?.provider?.isMetaMask && (
                 <MetamaskIcon
@@ -158,7 +160,7 @@ export default function CurrencyInputPanel({
           ) : null}
         </Flex>
         {account && (
-          <Text onClick={onMax} color="textSubtle" fontSize="14px" style={{ display: 'inline', cursor: 'pointer' }}>
+          <Text  onClick={onMax} color={Color.baseColors.bayWharf} fontSize="14px" style={{ display: 'inline', cursor: 'pointer' }}>
             {!hideBalance && !!currency
               ? t('Balance: %balance%', { balance: selectedCurrencyBalance?.toSignificant(6) ?? t('Loading') })
               : ' -'}
