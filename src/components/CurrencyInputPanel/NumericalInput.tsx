@@ -3,8 +3,8 @@ import styled from 'styled-components'
 import { useTranslation } from 'contexts/Localization'
 import { escapeRegExp } from '../../utils'
 
-const StyledInput = styled.input<{ error?: boolean; fontSize?: string; align?: string }>`
-  color: ${({ error, theme }) => (error ? theme.colors.failure : theme.colors.text)};
+const StyledInput = styled.input<{ error?: boolean; fontSize?: string; align?: string; color?: string; placeholderTextColor?: string; }>`
+  color: ${({ error, theme, color }) => (color || (error ? theme.colors.failure : theme.colors.text))};
   width: 0;
   position: relative;
   font-weight: 500;
@@ -34,7 +34,7 @@ const StyledInput = styled.input<{ error?: boolean; fontSize?: string; align?: s
   }
 
   ::placeholder {
-    color: ${({ theme }) => theme.colors.textSubtle};
+    color: ${({ theme, placeholderTextColor }) => placeholderTextColor || theme.colors.textSubtle};
   }
 `
 
@@ -51,6 +51,7 @@ export const Input = memo(function InnerInput({
   error?: boolean
   fontSize?: string
   align?: 'right' | 'left'
+  placeholderTextColor?: string
 } & Omit<React.HTMLProps<HTMLInputElement>, 'ref' | 'onChange' | 'as'>) {
   const enforcer = (nextUserInput: string) => {
     if (nextUserInput === '' || inputRegex.test(escapeRegExp(nextUserInput))) {

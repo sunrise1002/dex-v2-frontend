@@ -1,3 +1,4 @@
+import { Color } from '@assets'
 import { ErrorIcon, Flex, Text } from '@pancakeswap/uikit'
 import { AutoColumn } from 'components/Layout/Column'
 import styled, { css } from 'styled-components'
@@ -37,10 +38,10 @@ export const ErrorText = styled(Text)<{ severity?: 0 | 1 | 2 | 3 | 4 }>`
 export const StyledBalanceMaxMini = styled.button`
   height: 22px;
   width: 22px;
-  background-color: ${({ theme }) => theme.colors.background};
+  background-color: transparent;
   border: none;
   border-radius: 50%;
-  padding: 0.2rem;
+  // padding: 0.2rem;
   font-size: 0.875rem;
   font-weight: 400;
   margin-left: 0.4rem;
@@ -51,13 +52,13 @@ export const StyledBalanceMaxMini = styled.button`
   align-items: center;
   float: right;
 
-  :hover {
-    background-color: ${({ theme }) => theme.colors.dropdown};
-  }
-  :focus {
-    background-color: ${({ theme }) => theme.colors.dropdown};
-    outline: none;
-  }
+  // :hover {
+  //   background-color: ${({ theme }) => theme.colors.dropdown};
+  // }
+  // :focus {
+  //   background-color: ${({ theme }) => theme.colors.dropdown};
+  //   outline: none;
+  // }
 `
 
 export const TruncatedText = styled(Text).attrs({ ellipsis: true })`

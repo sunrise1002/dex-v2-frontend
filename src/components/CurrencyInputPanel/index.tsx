@@ -6,13 +6,13 @@ import { isAddress } from 'utils'
 import { useTranslation } from 'contexts/Localization'
 import { WrappedTokenInfo } from 'state/types'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
+import { Color } from '@assets'
 import { useCurrencyBalance } from '../../state/wallet/hooks'
 import CurrencySearchModal from '../SearchModal/CurrencySearchModal'
 import { CurrencyLogo, DoubleCurrencyLogo } from '../Logo'
 
 import { Input as NumericalInput } from './NumericalInput'
 import { CopyButton } from '../CopyButton'
-import { Color } from '@assets'
 
 const InputRow = styled.div<{ selected: boolean }>`
   display: flex;
@@ -38,13 +38,20 @@ const InputPanel = styled.div`
   flex-flow: column nowrap;
   position: relative;
   border-radius: 20px;
-  background-color: ${({ theme }) => theme.colors.backgroundAlt};
+  background-color: ${Color.baseColors.white};
   z-index: 1;
 `
 const Container = styled.div`
   border-radius: 16px;
-  background-color: ${({ theme }) => theme.colors.input};
-  box-shadow: ${({ theme }) => theme.shadows.inset};
+  background-color: ${Color.baseColors.white};
+  border: 1px solid ${Color.baseColors.lagoonMirror};
+  border-radius: 12px;
+`
+
+const StyledButton = styled(Button)`
+  background-color: ${Color.baseColors.freinachtBlack};
+  border-width: 0px;
+  color: ${Color.baseColors.white};
 `
 interface CurrencyInputPanelProps {
   value: string
@@ -173,6 +180,8 @@ export default function CurrencyInputPanel({
             <NumericalInput
               className="token-amount-input"
               value={value}
+              color={Color.baseColors.bayWharf}
+              placeholderTextColor={Color.baseColors.cistern}
               onUserInput={(val) => {
                 onUserInput(val)
               }}
@@ -180,9 +189,9 @@ export default function CurrencyInputPanel({
           </LabelRow>
           <InputRow selected={disableCurrencySelect}>
             {account && currency && showMaxButton && label !== 'To' && (
-              <Button onClick={onMax} scale="xs" variant="secondary">
+              <StyledButton onClick={onMax} scale="xs" variant="secondary">
                 {t('Max').toLocaleUpperCase(locale)}
-              </Button>
+              </StyledButton>
             )}
           </InputRow>
         </Container>

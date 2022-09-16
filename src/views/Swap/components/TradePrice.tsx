@@ -1,3 +1,4 @@
+import { Color } from '@assets'
 import { Price } from '@pancakeswap/sdk'
 import { Text, AutoRenewIcon } from '@pancakeswap/uikit'
 import { StyledBalanceMaxMini } from './styleds'
@@ -17,12 +18,12 @@ export default function TradePrice({ price, showInverted, setShowInverted }: Tra
     : `${price?.baseCurrency?.symbol} per ${price?.quoteCurrency?.symbol}`
 
   return (
-    <Text style={{ justifyContent: 'center', alignItems: 'center', display: 'flex' }}>
+    <Text style={{ justifyContent: 'center', alignItems: 'center', display: 'flex', color: Color.baseColors.bayWharf }}>
       {show ? (
         <>
           {formattedPrice ?? '-'} {label}
           <StyledBalanceMaxMini onClick={() => setShowInverted(!showInverted)}>
-            <AutoRenewIcon width="14px" />
+            <AutoRenewIcon width="20px" color={Color.baseColors.bayWharf} />
           </StyledBalanceMaxMini>
         </>
       ) : (

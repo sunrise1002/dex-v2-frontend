@@ -27,6 +27,7 @@ import shouldShowSwapWarning from 'utils/shouldShowSwapWarning'
 import { useWeb3React } from '@web3-react/core'
 import { useSwapActionHandlers } from 'state/swap/useSwapActionHandlers'
 import { Header } from '@components'
+import { Color } from '@assets'
 import useRefreshBlockNumberID from './hooks/useRefreshBlockNumber'
 import AddressInputPanel from './components/AddressInputPanel'
 import { GreyCard } from '../../components/Card'
@@ -69,25 +70,31 @@ import ImportTokenWarningModal from '../../components/ImportTokenWarningModal'
 const Label = styled(Text)`
   font-size: 12px;
   font-weight: bold;
-  color: ${({ theme }) => theme.colors.secondary};
+  color: ${Color.baseColors.bayWharf};
 `
 
 const SwitchIconButton = styled(IconButton)`
-  box-shadow: inset 0px -2px 0px rgba(0, 0, 0, 0.1);
+  background-color: transparent;
+  border: 1px solid ${Color.baseColors.cistern};
   .icon-up-down {
     display: none;
   }
   &:hover {
-    background-color: ${({ theme }) => theme.colors.primary};
+    background-color: transparent;
+    border: 1px solid ${Color.baseColors.cistern};
     .icon-down {
       display: none;
-      fill: white;
+      fill: ${Color.baseColors.bayWharf};
     }
     .icon-up-down {
       display: block;
-      fill: white;
+      fill: ${Color.baseColors.bayWharf};
     }
   }
+`
+
+const TextButton = styled(Button)`
+  color: ${Color.baseColors.bayWharf};
 `
 
 export default function Swap() {
@@ -441,17 +448,17 @@ export default function Swap() {
                           >
                             <ArrowDownIcon
                               className="icon-down"
-                              color={currencies[Field.INPUT] && currencies[Field.OUTPUT] ? 'primary' : 'text'}
+                              color={Color.baseColors.bayWharf}
                             />
                             <ArrowUpDownIcon
                               className="icon-up-down"
-                              color={currencies[Field.INPUT] && currencies[Field.OUTPUT] ? 'primary' : 'text'}
+                              color={Color.baseColors.bayWharf}
                             />
                           </SwitchIconButton>
                           {recipient === null && !showWrap && isExpertMode ? (
-                            <Button variant="text" id="add-recipient-button" onClick={() => onChangeRecipient('')}>
+                            <TextButton variant="text" id="add-recipient-button" onClick={() => onChangeRecipient('')}>
                               {t('+ Add a send (optional)')}
-                            </Button>
+                            </TextButton>
                           ) : null}
                         </AutoRow>
                       </AutoColumn>
@@ -472,9 +479,9 @@ export default function Swap() {
                             <ArrowWrapper clickable={false}>
                               <ArrowDownIcon width="16px" />
                             </ArrowWrapper>
-                            <Button variant="text" id="remove-recipient-button" onClick={() => onChangeRecipient(null)}>
+                            <TextButton variant="text" id="remove-recipient-button" onClick={() => onChangeRecipient(null)}>
                               {t('- Remove send')}
-                            </Button>
+                            </TextButton>
                           </AutoRow>
                           <AddressInputPanel id="recipient" value={recipient} onChange={onChangeRecipient} />
                         </>
@@ -500,7 +507,7 @@ export default function Swap() {
                           </RowBetween>
                           <RowBetween align="center">
                             <Label>{t('Slippage Tolerance')}</Label>
-                            <Text bold color="primary">
+                            <Text bold color={Color.baseColors.bayWharf}>
                               {allowedSlippage / 100}%
                             </Text>
                           </RowBetween>

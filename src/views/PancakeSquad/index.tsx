@@ -59,7 +59,7 @@ const PancakeSquad: React.FC = () => {
           eventInfos={eventInfos}
           userStatus={userStatus}
         />
-        <BunniesSection />
+        {/* <BunniesSection /> */}
         <EventDescriptionSection />
         <EventStepsSection
           userInfos={userInfos}

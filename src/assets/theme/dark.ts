@@ -1,6 +1,6 @@
 import { DefaultTheme } from 'styled-components';
 
-const darkTheme: DefaultTheme = {
+const darkTheme: Partial<DefaultTheme> = {
   isDark: true
 }
 
