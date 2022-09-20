@@ -1,10 +1,10 @@
 import { Text, Flex, Skeleton, Heading, Box, useMatchBreakpointsContext } from '@pancakeswap/uikit'
-import { useWeb3React } from '@web3-react/core'
+import { useWeb3React } from '@pancakeswap/wagmi'
 import { getCakeVaultEarnings } from 'views/Pools/helpers'
-import { useTranslation } from 'contexts/Localization'
+import { useTranslation } from '@pancakeswap/localization'
 import { BalanceWithLoading } from 'components/Balance'
 import { useVaultPoolByKey } from 'state/pools/hooks'
-import { DeserializedPool } from 'state/types'
+import { DeserializedPool, VaultKey, DeserializedLockedCakeVault } from 'state/types'
 import { getVaultPosition, VaultPosition } from 'utils/cakePool'
 import { useVaultApy } from 'hooks/useVaultApy'
 
@@ -12,7 +12,7 @@ import { ActionContainer, ActionTitles, ActionContent, RowActionContainer } from
 import UnstakingFeeCountdownRow from '../../CakeVaultCard/UnstakingFeeCountdownRow'
 import useUserDataInVaultPresenter from '../../LockedPool/hooks/useUserDataInVaultPresenter'
 
-const AutoHarvestAction: React.FunctionComponent<DeserializedPool> = ({
+const AutoHarvestAction: React.FunctionComponent<React.PropsWithChildren<DeserializedPool>> = ({
   userDataLoaded,
   earningTokenPrice,
   vaultKey,
@@ -21,36 +21,34 @@ const AutoHarvestAction: React.FunctionComponent<DeserializedPool> = ({
   const { account } = useWeb3React()
   const { isMobile } = useMatchBreakpointsContext()
 
+  const vaultData = useVaultPoolByKey(vaultKey)
   const {
-    userData: {
-      cakeAtLastUserAction,
-      userShares,
-      currentOverdueFee,
-      currentPerformanceFee,
-      locked,
-      lockEndTime,
-      lockStartTime,
-      userBoostedShare,
-    },
+    userData: { userShares, cakeAtLastUserAction },
     pricePerFullShare,
-  } = useVaultPoolByKey(vaultKey)
+  } = vaultData
   const { hasAutoEarnings, autoCakeToDisplay, autoUsdToDisplay } = getCakeVaultEarnings(
     account,
     cakeAtLastUserAction,
     userShares,
     pricePerFullShare,
     earningTokenPrice,
-    currentPerformanceFee.plus(currentOverdueFee).plus(userBoostedShare),
+    vaultKey === VaultKey.CakeVault
+      ? (vaultData as DeserializedLockedCakeVault).userData.currentPerformanceFee
+          .plus((vaultData as DeserializedLockedCakeVault).userData.currentOverdueFee)
+          .plus((vaultData as DeserializedLockedCakeVault).userData.userBoostedShare)
+      : null,
   )
 
   const { secondDuration, weekDuration } = useUserDataInVaultPresenter({
-    lockStartTime,
-    lockEndTime,
+    lockStartTime:
+      vaultKey === VaultKey.CakeVault ? (vaultData as DeserializedLockedCakeVault).userData?.lockStartTime ?? '0' : '0',
+    lockEndTime:
+      vaultKey === VaultKey.CakeVault ? (vaultData as DeserializedLockedCakeVault).userData?.lockEndTime ?? '0' : '0',
   })
 
   const { boostFactor } = useVaultApy({ duration: secondDuration })
 
-  const vaultPosition = getVaultPosition({ userShares, locked, lockEndTime })
+  const vaultPosition = getVaultPosition(vaultData.userData)
 
   const actionTitle = (
     <Text fontSize="12px" bold color="secondary" as="span" textTransform="uppercase">
@@ -120,7 +118,7 @@ const AutoHarvestAction: React.FunctionComponent<DeserializedPool> = ({
           </Flex>
         </ActionContent>
       </Box>
-      {!isMobile && locked && (
+      {!isMobile && vaultKey === VaultKey.CakeVault && (vaultData as DeserializedLockedCakeVault).userData.locked && (
         <Box minWidth="123px">
           <ActionTitles>
             <Text fontSize="12px" bold color="secondary" as="span" textTransform="uppercase">

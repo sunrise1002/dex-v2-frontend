@@ -15,9 +15,9 @@ import {
   Button,
   ArrowForwardIcon,
 } from '@pancakeswap/uikit'
-import { useTranslation } from 'contexts/Localization'
-import { useWeb3React } from '@web3-react/core'
-import tokens from 'config/constants/tokens'
+import { useWeb3React } from '@pancakeswap/wagmi'
+import { useTranslation } from '@pancakeswap/localization'
+import { bscTokens } from 'config/constants/tokens'
 import { getFullDisplayBalance } from 'utils/formatBalance'
 import { BIG_ZERO } from 'utils/bigNumber'
 import { useAppDispatch } from 'state'
@@ -39,8 +39,9 @@ import EditNumbersModal from './EditNumbersModal'
 import { useTicketsReducer } from './useTicketsReducer'
 
 const StyledModal = styled(Modal)`
-  min-width: 280px;
-  max-width: 320px;
+  ${({ theme }) => theme.mediaQueries.md} {
+    width: 280px;
+  }
 `
 
 const ShortcutButtonsWrapper = styled(Flex)<{ isVisible: boolean }>`
@@ -59,7 +60,7 @@ enum BuyingStage {
   EDIT = 'Edit',
 }
 
-const BuyTicketsModal: React.FC<BuyTicketsModalProps> = ({ onDismiss }) => {
+const BuyTicketsModal: React.FC<React.PropsWithChildren<BuyTicketsModalProps>> = ({ onDismiss }) => {
   const { account } = useWeb3React()
   const { t } = useTranslation()
   const { theme } = useTheme()
@@ -84,7 +85,7 @@ const BuyTicketsModal: React.FC<BuyTicketsModalProps> = ({ onDismiss }) => {
   const lotteryContract = useLotteryV2Contract()
   const { reader: cakeContractReader, signer: cakeContractApprover } = useCake()
   const { toastSuccess } = useToast()
-  const { balance: userCake, fetchStatus } = useTokenBalance(tokens.cake.address)
+  const { balance: userCake, fetchStatus } = useTokenBalance(bscTokens.cake.address)
   // balance from useTokenBalance causes rerenders in effects as a new BigNumber is instantiated on each render, hence memoising it using the stringified value below.
   const stringifiedUserCake = userCake.toJSON()
   const memoisedUserCake = useMemo(() => new BigNumber(stringifiedUserCake), [stringifiedUserCake])

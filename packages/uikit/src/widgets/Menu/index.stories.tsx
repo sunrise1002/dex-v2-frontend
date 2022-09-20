@@ -38,12 +38,12 @@ const langs: Language[] = [...Array(20)].map((_, i) => ({
   locale: `Locale${i}`,
 }));
 
-const UserMenuComponent: React.FC<{ variant?: Variant; text?: string; account?: string }> = ({
+const UserMenuComponent: React.FC<React.PropsWithChildren<{ variant?: Variant; text?: string; account?: string }>> = ({
   variant = variants.DEFAULT,
   text,
   account = "0x8b017905DC96B38f817473dc885F84D4C76bC113",
 }) => {
-  const accountEllipsis = account ? `${account.substring(0, 2)}...${account.substring(account.length - 4)}` : null;
+  const accountEllipsis = account ? `${account.substring(0, 2)}...${account.substring(account.length - 4)}` : undefined;
   return (
     <DropdownMenu items={userMenulinks} py="12px">
       <UserMenu account={text || accountEllipsis} avatarSrc="" variant={variant} />
@@ -51,14 +51,14 @@ const UserMenuComponent: React.FC<{ variant?: Variant; text?: string; account?: 
   );
 };
 
-const GlobalMenuModal: React.FC<ModalProps> = ({ title, onDismiss, ...props }) => (
+const GlobalMenuModal: React.FC<React.PropsWithChildren<ModalProps>> = ({ title, onDismiss, ...props }) => (
   <Modal title={title} onDismiss={onDismiss} {...props}>
     <Heading>{title}</Heading>
     <Button>This button Does nothing</Button>
   </Modal>
 );
 
-const GlobalMenuComponent: React.FC = () => {
+const GlobalMenuComponent: React.FC<React.PropsWithChildren> = () => {
   const [onPresent1] = useModal(<GlobalMenuModal title="Display Settings Modal" />);
   const [onPresent2] = useModal(<GlobalMenuModal title="Global Settings Modal" />);
 
@@ -91,14 +91,18 @@ const defaultProps = {
   subLinks: links[0].items,
   footerLinks,
   profile: null,
-  userMenu: <UserMenuComponent account="0xbdda50183d817c3289f895a4472eb475967dc980" />,
-  globalMenu: <GlobalMenuComponent />,
+  rightSide: (
+    <>
+      <GlobalMenuComponent />
+      <UserMenuComponent account="0xbdda50183d817c3289f895a4472eb475967dc980" />
+    </>
+  ),
   activeItem: "/swap",
   activeSubItem: "https://exchange.pancakeswap.finance",
   buyCakeLabel: "Buy CAKE",
 };
 
-const ConnectedTemplate: React.FC<NavProps> = (args) => {
+const ConnectedTemplate: React.FC<React.PropsWithChildren<NavProps>> = (args) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -185,7 +189,7 @@ ConnectedWithBanner.args = {
   ),
 };
 
-export const NotConnected: React.FC = () => {
+export const NotConnected: React.FC<React.PropsWithChildren> = () => {
   return (
     <BrowserRouter>
       <Menu
@@ -218,7 +222,7 @@ export const NotConnected: React.FC = () => {
   );
 };
 
-export const WithoutConnectButton: React.FC = () => {
+export const WithoutConnectButton: React.FC<React.PropsWithChildren> = () => {
   return (
     <BrowserRouter>
       <Menu
@@ -243,7 +247,7 @@ export const WithoutConnectButton: React.FC = () => {
   );
 };
 
-export const WithSubmenuSelected: React.FC = () => {
+export const WithSubmenuSelected: React.FC<React.PropsWithChildren> = () => {
   return (
     <MemoryRouter initialEntries={["/teams"]}>
       <Menu
@@ -270,7 +274,7 @@ export const WithSubmenuSelected: React.FC = () => {
   );
 };
 
-export const UserMenuWithVariants: React.FC = () => {
+export const UserMenuWithVariants: React.FC<React.PropsWithChildren> = () => {
   const [variant, setVariant] = useState<Variant>(variants.DEFAULT);
   const [text, setText] = useState(undefined);
 

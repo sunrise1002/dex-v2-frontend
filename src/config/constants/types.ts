@@ -2,9 +2,11 @@ import BigNumber from 'bignumber.js'
 import { Token, ChainId } from '@pancakeswap/sdk'
 
 // a list of tokens by chain
-export type ChainTokenList = {
-  readonly [chainId in ChainId]: Token[]
+export type ChainMap<T> = {
+  readonly [chainId in ChainId]: T
 }
+
+export type ChainTokenList = ChainMap<Token[]>
 
 export type TranslatableText =
   | string
@@ -17,6 +19,7 @@ export type TranslatableText =
 export interface Address {
   97?: string
   56: string
+  [chainId: number]: string
 }
 
 export interface SerializedToken {
@@ -58,6 +61,7 @@ export interface Ifo {
   twitterUrl?: string
   telegramUrl?: string
   version: number
+  vestingTitle?: string
   [PoolIds.poolBasic]?: IfoPoolInfo
   [PoolIds.poolUnlimited]: IfoPoolInfo
 }
@@ -100,7 +104,6 @@ interface PoolConfigBaseProps {
   contractAddress: Address
   poolCategory: PoolCategory
   tokenPerBlock: string
-  harvest?: boolean
   isFinished?: boolean
   enableEmergencyWithdraw?: boolean
   version?: number

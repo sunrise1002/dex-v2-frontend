@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { Text, Flex, AccountIcon, TeamBattleIcon, Box, useTooltip, LinkExternal } from '@pancakeswap/uikit'
-import { useWeb3React } from '@web3-react/core'
-import { useTranslation } from 'contexts/Localization'
+import { useWeb3React } from '@pancakeswap/wagmi'
+import { useTranslation } from '@pancakeswap/localization'
 
 import OkNFTIcon from './Icons/OkNFT'
 import OkProfilePointsIcon from './Icons/OkProfilePoints'
@@ -50,7 +50,7 @@ const NotOkProfilePoints = ({ pointThreshold }) => {
           <br />
           <LinkExternal
             style={{ display: 'inline' }}
-            href={`https://pancakeswap.finance/nfts/profile/${account}/achievements/`}
+            href={`https://pancakeswap.finance/profile/${account}/achievements/`}
           >
             {t('Pancake Profile')}
           </LinkExternal>
@@ -89,7 +89,7 @@ function Item({ type, isOk, isSingle, pointThreshold, admissionProfile }) {
   const Icon = isOk ? config[type]?.OkIcon : config[type]?.NotOkIcon
   const msg = isOk ? config[type]?.okMsg : config[type]?.notOkMsg
 
-  const { tooltipVisible, targetRef, tooltip } = useTooltip(msg, { placement: 'bottom', trigger: 'hover' })
+  const { tooltipVisible, targetRef, tooltip } = useTooltip(msg, { placement: 'bottom' })
 
   return (
     <Flex

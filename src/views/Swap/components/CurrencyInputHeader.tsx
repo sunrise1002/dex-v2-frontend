@@ -14,7 +14,9 @@ import TransactionsModal from 'components/App/Transactions/TransactionsModal'
 import GlobalSettings from 'components/Menu/GlobalSettings'
 import { useExpertModeManager } from 'state/user/hooks'
 import RefreshIcon from 'components/Svg/RefreshIcon'
+import { useCallback } from 'react'
 import { Color } from '@assets'
+import { SettingsMode } from '../../../components/Menu/GlobalSettings/types'
 
 interface Props {
   title: string
@@ -39,7 +41,7 @@ const ColoredIconButton = styled(IconButton)`
   color: ${({ theme }) => theme.colors.textSubtle};
 `
 
-const CurrencyInputHeader: React.FC<Props> = ({
+const CurrencyInputHeader: React.FC<React.PropsWithChildren<Props>> = ({
   title,
   subtitle,
   setIsChartDisplayed,
@@ -52,6 +54,7 @@ const CurrencyInputHeader: React.FC<Props> = ({
     setIsChartDisplayed((currentIsChartDisplayed) => !currentIsChartDisplayed)
   }
   const [onPresentTransactionsModal] = useModal(<TransactionsModal />)
+  const handleOnClick = useCallback(() => onRefreshPrice?.(), [onRefreshPrice])
 
   return (
     <CurrencyInputContainer>
@@ -66,12 +69,12 @@ const CurrencyInputHeader: React.FC<Props> = ({
         </Flex>
         <Flex>
           <NotificationDot show={expertMode}>
-            <GlobalSettings color={Color.baseColors.bayWharf} mr="0" />
+            <GlobalSettings color={Color.baseColors.bayWharf} mr="0" mode={SettingsMode.SWAP_LIQUIDITY} />
           </NotificationDot>
           <IconButton onClick={onPresentTransactionsModal} variant="text" scale="sm">
             <HistoryIcon color={Color.baseColors.bayWharf} width="24px" />
           </IconButton>
-          <IconButton variant="text" scale="sm" onClick={() => onRefreshPrice()}>
+          <IconButton variant="text" scale="sm" onClick={handleOnClick}>
             <RefreshIcon disabled={!hasAmount} color={Color.baseColors.bayWharf} width="27px" />
           </IconButton>
         </Flex>

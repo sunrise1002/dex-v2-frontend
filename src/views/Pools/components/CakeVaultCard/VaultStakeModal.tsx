@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import styled from 'styled-components'
 import {
   Modal,
@@ -14,8 +14,8 @@ import {
   Skeleton,
   Box,
 } from '@pancakeswap/uikit'
-import { useTranslation } from 'contexts/Localization'
-import { useWeb3React } from '@web3-react/core'
+import { useWeb3React } from '@pancakeswap/wagmi'
+import { useTranslation } from '@pancakeswap/localization'
 import { useAppDispatch } from 'state'
 
 import { usePriceCakeBusd } from 'state/farms/hooks'
@@ -30,7 +30,7 @@ import { getFullDisplayBalance, formatNumber, getDecimalAmount } from 'utils/for
 import useToast from 'hooks/useToast'
 import useCatchTxError from 'hooks/useCatchTxError'
 import { fetchCakeVaultUserData } from 'state/pools'
-import { DeserializedPool } from 'state/types'
+import { DeserializedPool, VaultKey } from 'state/types'
 import { getInterestBreakdown } from 'utils/compoundApyHelpers'
 import { ToastDescriptionWithTx } from 'components/Toast'
 import { vaultPoolConfig } from 'config/constants/pools'
@@ -39,9 +39,7 @@ import { getFullDecimalMultiplier } from 'utils/getFullDecimalMultiplier'
 import { VaultRoiCalculatorModal } from '../Vault/VaultRoiCalculatorModal'
 import ConvertToLock from '../LockedPool/Common/ConvertToLock'
 import FeeSummary from './FeeSummary'
-
-// min deposit and withdraw amount
-const MIN_AMOUNT = new BigNumber(10000000000000)
+import { MIN_LOCK_AMOUNT } from '../../helpers'
 
 interface VaultStakeModalProps {
   pool: DeserializedPool
@@ -67,7 +65,7 @@ const AnnualRoiDisplay = styled(Text)`
   text-overflow: ellipsis;
 `
 
-const VaultStakeModal: React.FC<VaultStakeModalProps> = ({
+const VaultStakeModal: React.FC<React.PropsWithChildren<VaultStakeModalProps>> = ({
   pool,
   stakingMax,
   performanceFee,
@@ -78,7 +76,7 @@ const VaultStakeModal: React.FC<VaultStakeModalProps> = ({
   const { stakingToken, earningTokenPrice, vaultKey } = pool
   const { account } = useWeb3React()
   const { fetchWithCatchTxError, loading: pendingTx } = useCatchTxError()
-  const vaultPoolContract = useVaultPoolContract()
+  const vaultPoolContract = useVaultPoolContract(pool.vaultKey)
   const { callWithGasPrice } = useCallWithGasPrice()
   const {
     userData: {
@@ -129,20 +127,27 @@ const VaultStakeModal: React.FC<VaultStakeModalProps> = ({
     setStakeAmount(input)
   }
 
-  const handleChangePercent = (sliderPercent: number) => {
-    if (sliderPercent > 0) {
-      const percentageOfStakingMax = stakingMax.dividedBy(100).multipliedBy(sliderPercent)
-      const amountToStake = getFullDisplayBalance(percentageOfStakingMax, stakingToken.decimals, stakingToken.decimals)
-      setStakeAmount(amountToStake)
-    } else {
-      setStakeAmount('')
-    }
-    setPercent(sliderPercent)
-  }
+  const handleChangePercent = useCallback(
+    (sliderPercent: number) => {
+      if (sliderPercent > 0) {
+        const percentageOfStakingMax = stakingMax.dividedBy(100).multipliedBy(sliderPercent)
+        const amountToStake = getFullDisplayBalance(
+          percentageOfStakingMax,
+          stakingToken.decimals,
+          stakingToken.decimals,
+        )
+        setStakeAmount(amountToStake)
+      } else {
+        setStakeAmount('')
+      }
+      setPercent(sliderPercent)
+    },
+    [stakingMax, stakingToken.decimals],
+  )
 
   const handleWithdrawal = async () => {
     // trigger withdrawAll function if the withdrawal will leave 0.00001 CAKE or less
-    const isWithdrawingAll = stakingMax.minus(convertedStakeAmount).lte(MIN_AMOUNT)
+    const isWithdrawingAll = stakingMax.minus(convertedStakeAmount).lte(MIN_LOCK_AMOUNT)
 
     const receipt = await fetchWithCatchTxError(() => {
       // .toString() being called to fix a BigNumber error in prod
@@ -168,7 +173,8 @@ const VaultStakeModal: React.FC<VaultStakeModalProps> = ({
     const receipt = await fetchWithCatchTxError(() => {
       // .toString() being called to fix a BigNumber error in prod
       // as suggested here https://github.com/ChainSafe/web3.js/issues/2077
-      const methodArgs = [convertedStakeAmount.toString(), lockDuration.toString()]
+      const extraArgs = pool.vaultKey === VaultKey.CakeVault ? [lockDuration.toString()] : []
+      const methodArgs = [convertedStakeAmount.toString(), ...extraArgs]
       return callWithGasPrice(vaultPoolContract, 'deposit', methodArgs, callOptions)
     })
 
@@ -280,7 +286,7 @@ const VaultStakeModal: React.FC<VaultStakeModalProps> = ({
           )}
         </Flex>
       )}
-      {cakeAsNumberBalance ? (
+      {pool.vaultKey === VaultKey.CakeVault && cakeAsNumberBalance ? (
         <Box mt="8px" maxWidth="370px">
           <ConvertToLock stakingToken={stakingToken} currentStakedAmount={cakeAsNumberBalance} />
         </Box>

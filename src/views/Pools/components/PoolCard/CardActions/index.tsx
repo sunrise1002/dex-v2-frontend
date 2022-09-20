@@ -3,7 +3,7 @@ import BigNumber from 'bignumber.js'
 import styled from 'styled-components'
 import { BIG_ZERO } from 'utils/bigNumber'
 import { Flex, Text, Box } from '@pancakeswap/uikit'
-import { useTranslation } from 'contexts/Localization'
+import { useTranslation } from '@pancakeswap/localization'
 import { PoolCategory } from 'config/constants/types'
 import { useProfileRequirement } from 'views/Pools/hooks/useProfileRequirement'
 import { DeserializedPool } from 'state/types'
@@ -21,9 +21,8 @@ interface CardActionsProps {
   stakedBalance: BigNumber
 }
 
-const CardActions: React.FC<CardActionsProps> = ({ pool, stakedBalance }) => {
-  const { sousId, stakingToken, earningToken, harvest, poolCategory, userData, earningTokenPrice, profileRequirement } =
-    pool
+const CardActions: React.FC<React.PropsWithChildren<CardActionsProps>> = ({ pool, stakedBalance }) => {
+  const { sousId, stakingToken, earningToken, poolCategory, userData, earningTokenPrice, profileRequirement } = pool
   // Pools using native BNB behave differently than pools using a token
   const isBnbPool = poolCategory === PoolCategory.BINANCE
   const { t } = useTranslation()
@@ -39,26 +38,24 @@ const CardActions: React.FC<CardActionsProps> = ({ pool, stakedBalance }) => {
   return (
     <Flex flexDirection="column">
       <Flex flexDirection="column">
-        {harvest && (
-          <>
-            <Box display="inline">
-              <InlineText color="secondary" textTransform="uppercase" bold fontSize="12px">
-                {`${earningToken.symbol} `}
-              </InlineText>
-              <InlineText color="textSubtle" textTransform="uppercase" bold fontSize="12px">
-                {t('Earned')}
-              </InlineText>
-            </Box>
-            <HarvestActions
-              earnings={earnings}
-              earningToken={earningToken}
-              sousId={sousId}
-              earningTokenPrice={earningTokenPrice}
-              isBnbPool={isBnbPool}
-              isLoading={isLoading}
-            />
-          </>
-        )}
+        <>
+          <Box display="inline">
+            <InlineText color="secondary" textTransform="uppercase" bold fontSize="12px">
+              {`${earningToken.symbol} `}
+            </InlineText>
+            <InlineText color="textSubtle" textTransform="uppercase" bold fontSize="12px">
+              {t('Earned')}
+            </InlineText>
+          </Box>
+          <HarvestActions
+            earnings={earnings}
+            earningToken={earningToken}
+            sousId={sousId}
+            earningTokenPrice={earningTokenPrice}
+            isBnbPool={isBnbPool}
+            isLoading={isLoading}
+          />
+        </>
         <Box display="inline">
           <InlineText color={isStaked ? 'secondary' : 'textSubtle'} textTransform="uppercase" bold fontSize="12px">
             {isStaked ? stakingToken.symbol : t('Stake')}{' '}

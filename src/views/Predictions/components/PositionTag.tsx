@@ -11,19 +11,23 @@ import {
   InfoIcon,
 } from '@pancakeswap/uikit'
 import { BetPosition } from 'state/types'
-import { useTranslation } from 'contexts/Localization'
+import { useTranslation } from '@pancakeswap/localization'
 
 interface TagProps extends FlexProps {
-  bg?: string
   startIcon?: ReactNode
 }
 
-const StyledTag = styled(Flex)<{ bg: TagProps['bg'] }>`
-  background-color: ${({ bg, theme }) => theme.colors[bg]};
+const StyledTag = styled(Flex)`
   display: inline-flex;
 `
 
-export const Tag: React.FC<TagProps> = ({ bg = 'success', startIcon, children, onClick, ...props }) => {
+export const Tag: React.FC<React.PropsWithChildren<TagProps>> = ({
+  bg = 'success',
+  startIcon,
+  children,
+  onClick,
+  ...props
+}) => {
   const icon = startIcon || <ArrowUpIcon color="white" />
 
   return (
@@ -50,7 +54,7 @@ interface PositionTagProps extends FlexProps {
   betPosition: BetPosition
 }
 
-const PositionTag: React.FC<PositionTagProps> = ({ betPosition, children, ...props }) => {
+const PositionTag: React.FC<React.PropsWithChildren<PositionTagProps>> = ({ betPosition, children, ...props }) => {
   const { t } = useTranslation()
   const isUpPosition = betPosition === BetPosition.BULL
   const icon = isUpPosition ? <ArrowUpIcon color="white" /> : <ArrowDownIcon color="white" />
@@ -65,7 +69,7 @@ const PositionTag: React.FC<PositionTagProps> = ({ betPosition, children, ...pro
         )}
       </Text>
     </>,
-    { placement: 'right' },
+    { placement: 'top' },
   )
 
   if (betPosition === BetPosition.HOUSE) {

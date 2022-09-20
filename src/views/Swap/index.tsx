@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import styled from 'styled-components'
-import { CurrencyAmount, Token, Trade } from '@pancakeswap/sdk'
+import { ChainId, Currency, CurrencyAmount, Token, Trade, TradeType } from '@pancakeswap/sdk'
 import { computeTradePriceBreakdown, warningSeverity } from 'utils/exchange'
 import {
   Button,
@@ -19,12 +19,12 @@ import { useIsTransactionUnsupported } from 'hooks/Trades'
 import UnsupportedCurrencyFooter from 'components/UnsupportedCurrencyFooter'
 import Footer from 'components/Menu/Footer'
 import { useRouter } from 'next/router'
-import { useTranslation } from 'contexts/Localization'
+import useActiveWeb3React from 'hooks/useActiveWeb3React'
+import { useTranslation } from '@pancakeswap/localization'
 import { EXCHANGE_DOCS_URLS } from 'config/constants'
 import { BIG_INT_ZERO } from 'config/constants/exchange'
 import { maxAmountSpend } from 'utils/maxAmountSpend'
 import shouldShowSwapWarning from 'utils/shouldShowSwapWarning'
-import { useWeb3React } from '@web3-react/core'
 import { useSwapActionHandlers } from 'state/swap/useSwapActionHandlers'
 import { Header } from '@components'
 import { Color } from '@assets'
@@ -66,6 +66,7 @@ import PriceChartContainer from './components/Chart/PriceChartContainer'
 import { AppBody, StyledInputCurrencyWrapper, StyledSwapContainer } from './styles'
 import CurrencyInputHeader from './components/CurrencyInputHeader'
 import ImportTokenWarningModal from '../../components/ImportTokenWarningModal'
+import { CommonBasesType } from '../../components/SearchModal/types'
 
 const Label = styled(Text)`
   font-size: 12px;
@@ -97,6 +98,13 @@ const TextButton = styled(Button)`
   color: ${Color.baseColors.bayWharf};
 `
 
+const StyledButton = styled(Button)`
+  background: ${Color.baseColors.freinachtBlack};
+  border-width: 0px;
+`
+
+const CHART_SUPPORT_CHAIN_IDS = [ChainId.BSC]
+
 export default function Swap() {
   const router = useRouter()
   const loadedUrlParams = useDefaultsFromURLSearch()
@@ -117,19 +125,19 @@ export default function Swap() {
     useCurrency(loadedUrlParams?.outputCurrencyId),
   ]
   const urlLoadedTokens: Token[] = useMemo(
-    () => [loadedInputCurrency, loadedOutputCurrency]?.filter((c): c is Token => c instanceof Token) ?? [],
+    () => [loadedInputCurrency, loadedOutputCurrency]?.filter((c): c is Token => c?.isToken) ?? [],
     [loadedInputCurrency, loadedOutputCurrency],
   )
+
+  const { account, chainId } = useActiveWeb3React()
 
   // dismiss warning if all imported tokens are in active lists
   const defaultTokens = useAllTokens()
   const importTokensNotInDefault =
     urlLoadedTokens &&
     urlLoadedTokens.filter((token: Token) => {
-      return !(token.address in defaultTokens)
+      return !(token.address in defaultTokens) && token.chainId === chainId
     })
-
-  const { account } = useWeb3React()
 
   // for expert mode
   const [isExpertMode] = useExpertModeManager()
@@ -194,7 +202,7 @@ export default function Swap() {
 
   // modal and loading
   const [{ tradeToConfirm, swapErrorMessage, attemptingTxn, txHash }, setSwapState] = useState<{
-    tradeToConfirm: Trade | undefined
+    tradeToConfirm: Trade<Currency, Currency, TradeType> | undefined
     attemptingTxn: boolean
     swapErrorMessage: string | undefined
     txHash: string | undefined
@@ -219,7 +227,7 @@ export default function Swap() {
   const noRoute = !route
 
   // check whether the user has approved the router on the input token
-  const [approval, approveCallback] = useApproveCallbackFromTrade(trade, allowedSlippage)
+  const [approval, approveCallback] = useApproveCallbackFromTrade(trade, allowedSlippage, chainId)
 
   // check if user has gone through approval process, used to show two step buttons, reset on token change
   const [approvalSubmitted, setApprovalSubmitted] = useState<boolean>(false)
@@ -231,7 +239,7 @@ export default function Swap() {
     }
   }, [approval, approvalSubmitted])
 
-  const maxAmountInput: CurrencyAmount | undefined = maxAmountSpend(currencyBalances[Field.INPUT])
+  const maxAmountInput: CurrencyAmount<Currency> | undefined = maxAmountSpend(currencyBalances[Field.INPUT])
   const atMaxAmountInput = Boolean(maxAmountInput && parsedAmounts[Field.INPUT]?.equalTo(maxAmountInput))
 
   // the callback to execute the swap
@@ -374,12 +382,19 @@ export default function Swap() {
     }
   }, [hasAmount, refreshBlockNumber])
 
+  const isChartSupported = useMemo(
+    () =>
+      // avoid layout shift, by default showing
+      !chainId || CHART_SUPPORT_CHAIN_IDS.includes(chainId),
+    [chainId],
+  )
+
   return (
     <>
       <Header />
       <Page removePadding={isChartExpanded} hideFooterOnDesktop={isChartExpanded}>
         <Flex width="100%" justifyContent="center" position="relative">
-          {!isMobile && (
+          {!isMobile && isChartSupported && (
             <PriceChartContainer
               inputCurrencyId={inputCurrencyId}
               inputCurrency={currencies[Field.INPUT]}
@@ -391,23 +406,25 @@ export default function Swap() {
               currentSwapPrice={singleTokenPrice}
             />
           )}
-          <BottomDrawer
-            content={
-              <PriceChartContainer
-                inputCurrencyId={inputCurrencyId}
-                inputCurrency={currencies[Field.INPUT]}
-                outputCurrencyId={outputCurrencyId}
-                outputCurrency={currencies[Field.OUTPUT]}
-                isChartExpanded={isChartExpanded}
-                setIsChartExpanded={setIsChartExpanded}
-                isChartDisplayed={isChartDisplayed}
-                currentSwapPrice={singleTokenPrice}
-                isMobile
-              />
-            }
-            isOpen={isChartDisplayed}
-            setIsOpen={setIsChartDisplayed}
-          />
+          {isChartSupported && (
+            <BottomDrawer
+              content={
+                <PriceChartContainer
+                  inputCurrencyId={inputCurrencyId}
+                  inputCurrency={currencies[Field.INPUT]}
+                  outputCurrencyId={outputCurrencyId}
+                  outputCurrency={currencies[Field.OUTPUT]}
+                  isChartExpanded={isChartExpanded}
+                  setIsChartExpanded={setIsChartExpanded}
+                  isChartDisplayed={isChartDisplayed}
+                  currentSwapPrice={singleTokenPrice}
+                  isMobile
+                />
+              }
+              isOpen={isChartDisplayed}
+              setIsOpen={setIsChartDisplayed}
+            />
+          )}
           <Flex flexDirection="column">
             <StyledSwapContainer $isChartExpanded={isChartExpanded}>
               <StyledInputCurrencyWrapper mt={isChartExpanded ? '24px' : '0'}>
@@ -434,6 +451,8 @@ export default function Swap() {
                         onCurrencySelect={handleInputSelect}
                         otherCurrency={currencies[Field.OUTPUT]}
                         id="swap-currency-input"
+                        showCommonBases
+                        commonBasesType={CommonBasesType.SWAP_LIMITORDER}
                       />
 
                       <AutoColumn justify="space-between">
@@ -471,6 +490,8 @@ export default function Swap() {
                         onCurrencySelect={handleOutputSelect}
                         otherCurrency={currencies[Field.INPUT]}
                         id="swap-currency-output"
+                        showCommonBases
+                        commonBasesType={CommonBasesType.SWAP_LIMITORDER}
                       />
 
                       {isExpertMode && recipient !== null && !showWrap ? (
@@ -549,7 +570,7 @@ export default function Swap() {
                               t('Enable %asset%', { asset: currencies[Field.INPUT]?.symbol ?? '' })
                             )}
                           </Button>
-                          <Button
+                          <StyledButton
                             variant={isValid && priceImpactSeverity > 2 ? 'danger' : 'primary'}
                             onClick={() => {
                               if (isExpertMode) {
@@ -577,10 +598,10 @@ export default function Swap() {
                               : priceImpactSeverity > 2
                               ? t('Swap Anyway')
                               : t('Swap')}
-                          </Button>
+                          </StyledButton>
                         </RowBetween>
                       ) : (
-                        <Button
+                        <StyledButton
                           variant={isValid && priceImpactSeverity > 2 && !swapCallbackError ? 'danger' : 'primary'}
                           onClick={() => {
                             if (isExpertMode) {
@@ -605,7 +626,7 @@ export default function Swap() {
                               : priceImpactSeverity > 2
                               ? t('Swap Anyway')
                               : t('Swap'))}
-                        </Button>
+                        </StyledButton>
                       )}
                       {showApproveFlow && (
                         <Column style={{ marginTop: '1rem' }}>

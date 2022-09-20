@@ -1,9 +1,9 @@
 import styled from 'styled-components'
 import { Box, Flex, Text, SearchIcon, Link } from '@pancakeswap/uikit'
-import { getBscScanLink } from 'utils'
+import { getBlockExploreLink } from 'utils'
 import { formatNumber } from 'utils/formatBalance'
 import uriToHttp from 'utils/uriToHttp'
-import { useTranslation } from 'contexts/Localization'
+import { useTranslation } from '@pancakeswap/localization'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import ExpandableCard from './ExpandableCard'
 
@@ -21,7 +21,12 @@ const LongTextContainer = styled(Text)`
   text-overflow: ellipsis;
 `
 
-const DetailsCard: React.FC<DetailsCardProps> = ({ contractAddress, ipfsJson, count, rarity }) => {
+const DetailsCard: React.FC<React.PropsWithChildren<DetailsCardProps>> = ({
+  contractAddress,
+  ipfsJson,
+  count,
+  rarity,
+}) => {
   const { t } = useTranslation()
   const { chainId } = useActiveWeb3React()
   const ipfsLink = ipfsJson ? uriToHttp(ipfsJson)[0] : null
@@ -31,7 +36,7 @@ const DetailsCard: React.FC<DetailsCardProps> = ({ contractAddress, ipfsJson, co
         <Text fontSize="12px" color="textSubtle" bold textTransform="uppercase">
           {t('Contract address')}
         </Text>
-        <Link external href={getBscScanLink(contractAddress, 'address', chainId)}>
+        <Link external href={getBlockExploreLink(contractAddress, 'address', chainId)}>
           <LongTextContainer bold>{contractAddress}</LongTextContainer>
         </Link>
       </Flex>

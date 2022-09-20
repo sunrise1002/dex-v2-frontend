@@ -3,11 +3,9 @@ import styled from 'styled-components'
 import SwiperCore, { Keyboard, Mousewheel, FreeMode } from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import 'swiper/css/bundle'
-import { Box } from '@pancakeswap/uikit'
 import { useGetSortedRoundsCurrentEpoch } from 'state/predictions/hooks'
 import delay from 'lodash/delay'
 import RoundCard from './components/RoundCard'
-import Menu from './components/Menu'
 import useSwiper from './hooks/useSwiper'
 import useOnNextRound from './hooks/useOnNextRound'
 import useOnViewChange from './hooks/useOnViewChange'
@@ -27,7 +25,7 @@ const StyledSwiper = styled.div`
   }
 `
 
-const Positions: React.FC<{ view?: PageView }> = ({ view }) => {
+const Positions: React.FC<React.PropsWithChildren<{ view?: PageView }>> = ({ view }) => {
   const { setSwiper, swiper } = useSwiper()
   const { currentEpoch, rounds } = useGetSortedRoundsCurrentEpoch()
   const previousEpoch = currentEpoch > 0 ? currentEpoch - 1 : currentEpoch
@@ -51,28 +49,26 @@ const Positions: React.FC<{ view?: PageView }> = ({ view }) => {
   const [isChangeTransition, setIsChangeTransition] = useState(false)
 
   return (
-    <Box overflow="hidden">
-      <Menu />
-      <StyledSwiper>
-        <Swiper
-          initialSlide={swiperIndex}
-          onSwiper={setSwiper}
-          spaceBetween={16}
-          slidesPerView="auto"
-          freeMode={{ enabled: true, sticky: true, momentumRatio: 0.25, momentumVelocityRatio: 0.5 }}
-          centeredSlides
-          mousewheel
-          keyboard
-          resizeObserver
-        >
-          {rounds.map((round) => (
-            <SwiperSlide key={round.epoch}>
-              {({ isActive }) => <RoundCard round={round} isActive={isChangeTransition && isActive} />}
-            </SwiperSlide>
-          ))}
-        </Swiper>
-      </StyledSwiper>
-    </Box>
+    <StyledSwiper>
+      <Swiper
+        initialSlide={swiperIndex}
+        onSwiper={setSwiper}
+        spaceBetween={16}
+        slidesPerView="auto"
+        onBeforeDestroy={() => setSwiper(null)}
+        freeMode={{ enabled: true, sticky: true, momentumRatio: 0.25, momentumVelocityRatio: 0.5 }}
+        centeredSlides
+        mousewheel
+        keyboard
+        resizeObserver
+      >
+        {rounds.map((round) => (
+          <SwiperSlide key={round.epoch}>
+            {({ isActive }) => <RoundCard round={round} isActive={isChangeTransition && isActive} />}
+          </SwiperSlide>
+        ))}
+      </Swiper>
+    </StyledSwiper>
   )
 }
 

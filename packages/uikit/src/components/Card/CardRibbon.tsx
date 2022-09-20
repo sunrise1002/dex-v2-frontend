@@ -11,13 +11,11 @@ const StyledCardRibbon = styled.div<Partial<StyledCardRibbonProps>>`
   background-color: ${({ variantColor = "secondary", theme }) => theme.colors[variantColor]};
   color: white;
   margin: 0;
-  padding: 0;
   padding: 8px 0;
   position: absolute;
   right: ${({ ribbonPosition }) => (ribbonPosition === "right" ? 0 : "auto")};
   top: 0;
   text-align: center;
-  transform: translateX(30%) translateY(0%) rotate(45deg);
   transform: ${({ ribbonPosition }) =>
     ribbonPosition === "right"
       ? "translateX(30%) translateY(0%) rotate(45deg)"
@@ -52,7 +50,12 @@ const StyledCardRibbon = styled.div<Partial<StyledCardRibbonProps>>`
   }
 `;
 
-const CardRibbon: React.FC<CardRibbonProps> = ({ variantColor, text, ribbonPosition, ...props }) => {
+const CardRibbon: React.FC<React.PropsWithChildren<CardRibbonProps>> = ({
+  variantColor,
+  text,
+  ribbonPosition,
+  ...props
+}) => {
   return (
     <StyledCardRibbon variantColor={variantColor} ribbonPosition={ribbonPosition} {...props}>
       <div title={text}>{text}</div>

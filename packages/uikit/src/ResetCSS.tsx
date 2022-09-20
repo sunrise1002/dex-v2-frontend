@@ -1,5 +1,4 @@
 import { createGlobalStyle } from "styled-components";
-import { Color } from '@assets';
 
 const ResetCSS = createGlobalStyle`
   /* prettier-ignore */
@@ -45,7 +44,6 @@ const ResetCSS = createGlobalStyle`
   blockquote:after,
   q:before,
   q:after {
-    content: "";
     content: none;
   }
   table {
@@ -85,11 +83,11 @@ const ResetCSS = createGlobalStyle`
     width: 8px;
   }
   ::-webkit-scrollbar-thumb {
-    background: ${Color.baseColors.bayWharf}; 
+    background: ${({ theme }) => theme.colors.textSubtle}; 
     border-radius: 8px;
   }
   ::-webkit-scrollbar-track {
-    box-shadow: inset 0 0 5px ${Color.baseColors.bayWharf}; 
+    box-shadow: inset 0 0 5px ${({ theme }) => theme.colors.input}; 
     border-radius: 10px;
   }
 

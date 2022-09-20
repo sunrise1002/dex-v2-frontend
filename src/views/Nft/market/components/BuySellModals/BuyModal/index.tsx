@@ -2,16 +2,15 @@ import { useEffect, useState } from 'react'
 import { InjectedModalProps } from '@pancakeswap/uikit'
 import { MaxUint256, Zero } from '@ethersproject/constants'
 import useTheme from 'hooks/useTheme'
-import { useTranslation, TranslateFunction } from 'contexts/Localization'
+import { useTranslation, TranslateFunction } from '@pancakeswap/localization'
 import useTokenBalance, { useGetBnbBalance } from 'hooks/useTokenBalance'
 import { getBalanceNumber } from 'utils/formatBalance'
 import { ethersToBigNumber } from 'utils/bigNumber'
-import tokens from 'config/constants/tokens'
-import { CHAIN_ID } from 'config/constants/networks'
+import { bscTokens } from 'config/constants/tokens'
 import { ChainId } from '@pancakeswap/sdk'
 import { parseUnits, formatEther } from '@ethersproject/units'
 import { useERC20, useNftMarketContract } from 'hooks/useContract'
-import { useWeb3React } from '@web3-react/core'
+import { useWeb3React } from '@pancakeswap/wagmi'
 import { useCallWithGasPrice } from 'hooks/useCallWithGasPrice'
 import useApproveConfirmTransaction from 'hooks/useApproveConfirmTransaction'
 import { requiresApproval } from 'utils/requiresApproval'
@@ -37,10 +36,9 @@ interface BuyModalProps extends InjectedModalProps {
 }
 
 // NFT WBNB in testnet contract is different
-const wbnbAddress =
-  CHAIN_ID === String(ChainId.MAINNET) ? tokens.wbnb.address : '0x094616f0bdfb0b526bd735bf66eca0ad254ca81f'
+const TESTNET_WBNB_NFT_ADDRESS = '0x094616f0bdfb0b526bd735bf66eca0ad254ca81f'
 
-const BuyModal: React.FC<BuyModalProps> = ({ nftToBuy, onDismiss }) => {
+const BuyModal: React.FC<React.PropsWithChildren<BuyModalProps>> = ({ nftToBuy, onDismiss }) => {
   const [stage, setStage] = useState(BuyingStage.REVIEW)
   const [confirmedTxHash, setConfirmedTxHash] = useState('')
   const [paymentCurrency, setPaymentCurrency] = useState<PaymentCurrency>(PaymentCurrency.BNB)
@@ -49,7 +47,8 @@ const BuyModal: React.FC<BuyModalProps> = ({ nftToBuy, onDismiss }) => {
   const { t } = useTranslation()
   const { callWithGasPrice } = useCallWithGasPrice()
 
-  const { account } = useWeb3React()
+  const { account, chainId } = useWeb3React()
+  const wbnbAddress = chainId === ChainId.BSC_TESTNET ? TESTNET_WBNB_NFT_ADDRESS : bscTokens.wbnb.address
   const wbnbContractReader = useERC20(wbnbAddress, false)
   const wbnbContractApprover = useERC20(wbnbAddress)
   const nftMarketContract = useNftMarketContract()

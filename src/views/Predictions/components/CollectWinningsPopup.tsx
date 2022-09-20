@@ -1,9 +1,9 @@
 import { memo, useEffect, useRef, useState } from 'react'
-import { useWeb3React } from '@web3-react/core'
+import { useWeb3React } from '@pancakeswap/wagmi'
 import styled, { css, keyframes } from 'styled-components'
 import { Button, CloseIcon, IconButton, TrophyGoldIcon } from '@pancakeswap/uikit'
 import { CSSTransition } from 'react-transition-group'
-import { useTranslation } from 'contexts/Localization'
+import { useTranslation } from '@pancakeswap/localization'
 import { getBetHistory } from 'state/predictions/helpers'
 import { useGetPredictionsStatus, useIsHistoryPaneOpen } from 'state/predictions/hooks'
 import useLocalDispatch from 'contexts/LocalRedux/useLocalDispatch'
@@ -128,7 +128,7 @@ const CollectWinningsPopup = () => {
   const predictionStatus = useGetPredictionsStatus()
   const isHistoryPaneOpen = useIsHistoryPaneOpen()
   const dispatch = useLocalDispatch()
-  const { api } = useConfig()
+  const { api, token } = useConfig()
 
   const handleOpenHistory = () => {
     dispatch(setHistoryPaneState(true))
@@ -144,7 +144,13 @@ const CollectWinningsPopup = () => {
     let isCancelled = false
     if (account) {
       timer.current = setInterval(async () => {
-        const bets = await getBetHistory({ user: account.toLowerCase(), claimed: false }, undefined, undefined, api)
+        const bets = await getBetHistory(
+          { user: account.toLowerCase(), claimed: false },
+          undefined,
+          undefined,
+          api,
+          token.symbol,
+        )
 
         if (!isCancelled) {
           // Filter out bets that were not winners
@@ -163,7 +169,7 @@ const CollectWinningsPopup = () => {
       clearInterval(timer.current)
       isCancelled = true
     }
-  }, [account, timer, predictionStatus, setIsOpen, isHistoryPaneOpen, api])
+  }, [account, timer, predictionStatus, setIsOpen, isHistoryPaneOpen, api, token.symbol])
 
   // Any time the history pane is open make sure the popup closes
   useEffect(() => {

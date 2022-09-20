@@ -1,8 +1,7 @@
 import styled from 'styled-components'
 import { Flex, Heading, Text, Link, useTooltip } from '@pancakeswap/uikit'
-import { useTranslation } from 'contexts/Localization'
-import { ContextApi } from 'contexts/Localization/types'
-import { getBscScanLink } from 'utils'
+import { getBlockExploreLink } from 'utils'
+import { useTranslation, ContextApi } from '@pancakeswap/localization'
 
 export interface TimerProps {
   prefix?: string
@@ -66,13 +65,13 @@ const TooltipContent = ({ blockNumber, t }: { blockNumber: number; t: ContextApi
     <Text color="body" mb="10px" fontWeight="600">
       {t('Block %num%', { num: blockNumber })}
     </Text>
-    <Link external href={getBscScanLink(blockNumber, 'block')}>
+    <Link external href={getBlockExploreLink(blockNumber, 'block')}>
       {t('View on BscScan')}
     </Link>
   </>
 )
 
-const Wrapper: React.FC<TimerProps> = ({
+const Wrapper: React.FC<React.PropsWithChildren<TimerProps>> = ({
   prefix,
   suffix,
   minutes,

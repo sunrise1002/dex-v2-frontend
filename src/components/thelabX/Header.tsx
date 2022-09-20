@@ -2,7 +2,7 @@ import { useCallback } from 'react'
 import { Color } from '@assets'
 import { FarmIcon, LanguageIcon, LiquidityHomeIcon, SettingIcon, SwapHomeIcon } from '@components'
 import { useRouter } from 'next/router'
-import { useTranslation } from 'contexts/Localization'
+import { useTranslation } from '@pancakeswap/localization'
 import styled from 'styled-components'
 
 const Container = styled.div<StyledProps>`

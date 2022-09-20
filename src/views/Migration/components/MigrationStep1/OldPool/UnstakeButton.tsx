@@ -1,6 +1,5 @@
 import React, { useMemo } from 'react'
-import useActiveWeb3React from 'hooks/useActiveWeb3React'
-import { useTranslation } from 'contexts/Localization'
+import { useTranslation } from '@pancakeswap/localization'
 import { Button, AutoRenewIcon } from '@pancakeswap/uikit'
 import BigNumber from 'bignumber.js'
 import { DeserializedPool, VaultKey } from 'state/types'
@@ -8,8 +7,9 @@ import { useCallWithGasPrice } from 'hooks/useCallWithGasPrice'
 import { ToastDescriptionWithTx } from 'components/Toast'
 import useCatchTxError from 'hooks/useCatchTxError'
 import useToast from 'hooks/useToast'
-import { useWeb3React } from '@web3-react/core'
+import { useWeb3React } from '@pancakeswap/wagmi'
 import { vaultPoolConfig } from 'config/constants/pools'
+import { useSigner } from 'wagmi'
 import ifoPoolAbi from 'config/abi/ifoPool.json'
 import cakeVaultAbi from 'config/abi/cakeVaultV2.json'
 import { getContract } from 'utils/contractHelpers'
@@ -22,11 +22,11 @@ export interface UnstakeButtonProps {
   pool: DeserializedPool
 }
 
-const UnstakeButton: React.FC<UnstakeButtonProps> = ({ pool }) => {
+const UnstakeButton: React.FC<React.PropsWithChildren<UnstakeButtonProps>> = ({ pool }) => {
   const { sousId, stakingToken, earningToken, userData, vaultKey } = pool
   const { t } = useTranslation()
   const { account } = useWeb3React()
-  const { library } = useActiveWeb3React()
+  const { data: signer } = useSigner()
   const { fetchWithCatchTxError, loading: pendingTx } = useCatchTxError()
   const { callWithGasPrice } = useCallWithGasPrice()
   const { toastSuccess } = useToast()
@@ -37,13 +37,13 @@ const UnstakeButton: React.FC<UnstakeButtonProps> = ({ pool }) => {
 
   const vaultPoolContract = useMemo(() => {
     return vaultKey === VaultKey.CakeVaultV1
-      ? getContract(cakeVaultAbi, cakeVaultAddress, library.getSigner())
-      : getContract(ifoPoolAbi, ifoPoolV1Contract, library.getSigner())
-  }, [library, vaultKey])
+      ? getContract(cakeVaultAbi, cakeVaultAddress, signer)
+      : getContract(ifoPoolAbi, ifoPoolV1Contract, signer)
+  }, [signer, vaultKey])
 
   const { onUnstake } = useUnstakePool(sousId, pool.enableEmergencyWithdraw)
 
-  const isNeedUnstake = vaultKey ? userShares && userShares.gt(0) : new BigNumber(userData.stakedBalance).gt(0)
+  const isNeedUnstake = vaultKey ? userShares?.gt(0) : new BigNumber(userData.stakedBalance).gt(0)
 
   const handleUnstake = (event: React.MouseEvent<HTMLElement>) => {
     event.stopPropagation()

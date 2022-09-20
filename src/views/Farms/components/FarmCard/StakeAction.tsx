@@ -1,10 +1,10 @@
-import { useWeb3React } from '@web3-react/core'
+import { useWeb3React } from '@pancakeswap/wagmi'
 import styled from 'styled-components'
 import { Button, Flex, IconButton, AddIcon, MinusIcon, useModal } from '@pancakeswap/uikit'
 import useToast from 'hooks/useToast'
 import useCatchTxError from 'hooks/useCatchTxError'
 import { ToastDescriptionWithTx } from 'components/Toast'
-import { useTranslation } from 'contexts/Localization'
+import { useTranslation } from '@pancakeswap/localization'
 import { useAppDispatch } from 'state'
 import { fetchFarmUserDataAsync } from 'state/farms'
 import { useRouter } from 'next/router'
@@ -29,7 +29,7 @@ const IconButtonWrapper = styled.div`
   }
 `
 
-const StakeAction: React.FC<FarmCardActionsProps> = ({
+const StakeAction: React.FC<React.PropsWithChildren<FarmCardActionsProps>> = ({
   quoteToken,
   token,
   lpSymbol,

@@ -1,6 +1,6 @@
 import React, { useMemo, useCallback } from 'react'
 import BigNumber from 'bignumber.js'
-import { useWeb3React } from '@web3-react/core'
+import { useWeb3React } from '@pancakeswap/wagmi'
 import { getFarmApr } from 'utils/apr'
 import { RowType } from '@pancakeswap/uikit'
 import { ChainId } from '@pancakeswap/sdk'
@@ -9,12 +9,12 @@ import { useFarmsV1 } from 'state/farmsV1/hooks'
 import { DeserializedFarm } from 'state/types'
 import { getBalanceNumber } from 'utils/formatBalance'
 import { FarmWithStakedValue } from 'views/Farms/components/types'
-import { getDisplayApr } from 'views/Farms/Farms'
+import { getDisplayApr } from 'views/Farms/components/getDisplayApr'
 import OldFarm from './FarmTable'
 import { RowProps } from './FarmRow'
 import { DesktopV2ColumnSchema } from '../../types'
 
-const OldFarmStep1: React.FC = () => {
+const OldFarmStep1: React.FC<React.PropsWithChildren> = () => {
   const { account } = useWeb3React()
   const { data: farmsLP, userDataLoaded, regularCakePerBlock } = useFarms()
   const { data: farmsV1LP } = useFarmsV1()
@@ -54,7 +54,7 @@ const OldFarmStep1: React.FC = () => {
           new BigNumber(farm.poolWeight),
           cakePrice,
           totalLiquidity,
-          farm.lpAddresses[ChainId.MAINNET],
+          farm.lpAddresses[ChainId.BSC],
           regularCakePerBlock,
         )
         return { ...farm, apr: cakeRewardsApr, lpRewardsApr, liquidity: totalLiquidity }
@@ -116,8 +116,7 @@ const OldFarmStep1: React.FC = () => {
   })
 
   const renderContent = (): JSX.Element => {
-    const columnSchema = DesktopV2ColumnSchema
-    const columns = columnSchema.map((column) => ({
+    const columns = DesktopV2ColumnSchema.map((column) => ({
       id: column.id,
       name: column.name,
       label: column.label,

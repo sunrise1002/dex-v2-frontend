@@ -1,7 +1,7 @@
 import { useEffect, useCallback, useState, useMemo, useRef, createContext } from 'react'
 import BigNumber from 'bignumber.js'
-import { useWeb3React } from '@web3-react/core'
-import { Image, Heading, RowType, Toggle, Text, Button, ArrowForwardIcon, Flex, Link } from '@pancakeswap/uikit'
+import { useWeb3React } from '@pancakeswap/wagmi'
+import { Image, Heading, Toggle, Text, Button, ArrowForwardIcon, Flex, Link } from '@pancakeswap/uikit'
 import { ChainId } from '@pancakeswap/sdk'
 import { NextLinkFromReactRouter } from 'components/NextLink'
 import styled from 'styled-components'
@@ -10,8 +10,7 @@ import Page from 'components/Layout/Page'
 import { useFarms, usePollFarmsWithUserData, usePriceCakeBusd } from 'state/farms/hooks'
 import useIntersectionObserver from 'hooks/useIntersectionObserver'
 import { DeserializedFarm } from 'state/types'
-import { useTranslation } from 'contexts/Localization'
-import { getBalanceNumber } from 'utils/formatBalance'
+import { useTranslation } from '@pancakeswap/localization'
 import { getFarmApr } from 'utils/apr'
 import orderBy from 'lodash/orderBy'
 import { latinise } from 'utils/latinise'
@@ -25,8 +24,7 @@ import Loading from 'components/Loading'
 import ToggleView from 'components/ToggleView/ToggleView'
 import Table from './components/FarmTable/FarmTable'
 import FarmTabButtons from './components/FarmTabButtons'
-import { RowProps } from './components/FarmTable/Row'
-import { DesktopColumnSchema, FarmWithStakedValue } from './components/types'
+import { FarmWithStakedValue } from './components/types'
 
 const ControlContainer = styled.div`
   display: flex;
@@ -117,22 +115,16 @@ const FinishedTextLink = styled(Link)`
 
 const NUMBER_OF_FARMS_VISIBLE = 12
 
-export const getDisplayApr = (cakeRewardsApr?: number, lpRewardsApr?: number) => {
-  if (cakeRewardsApr && lpRewardsApr) {
-    return (cakeRewardsApr + lpRewardsApr).toLocaleString('en-US', { maximumFractionDigits: 2 })
-  }
-  if (cakeRewardsApr) {
-    return cakeRewardsApr.toLocaleString('en-US', { maximumFractionDigits: 2 })
-  }
-  return null
-}
-
-const Farms: React.FC = ({ children }) => {
-  const { pathname } = useRouter()
+const Farms: React.FC<React.PropsWithChildren> = ({ children }) => {
+  const { pathname, query: urlQuery } = useRouter()
   const { t } = useTranslation()
   const { data: farmsLP, userDataLoaded, poolLength, regularCakePerBlock } = useFarms()
   const cakePrice = usePriceCakeBusd()
-  const [query, setQuery] = useState('')
+
+  const [_query, setQuery] = useState('')
+  const normalizedUrlSearch = useMemo(() => (typeof urlQuery?.search === 'string' ? urlQuery.search : ''), [urlQuery])
+  const query = normalizedUrlSearch && !_query ? normalizedUrlSearch : _query
+
   const [viewMode, setViewMode] = useUserFarmsViewMode()
   const { account } = useWeb3React()
   const [sortOption, setSortOption] = useState('hot')
@@ -181,7 +173,7 @@ const Farms: React.FC = ({ children }) => {
               new BigNumber(farm.poolWeight),
               cakePrice,
               totalLiquidity,
-              farm.lpAddresses[ChainId.MAINNET],
+              farm.lpAddresses[ChainId.BSC],
               regularCakePerBlock,
             )
           : { cakeRewardsApr: 0, lpRewardsApr: 0 }
@@ -274,80 +266,6 @@ const Farms: React.FC = ({ children }) => {
     }
   }, [isIntersecting])
 
-  const rowData = chosenFarmsMemoized.map((farm) => {
-    const { token, quoteToken } = farm
-    const tokenAddress = token.address
-    const quoteTokenAddress = quoteToken.address
-    const lpLabel = farm.lpSymbol && farm.lpSymbol.split(' ')[0].toUpperCase().replace('PANCAKE', '')
-
-    const row: RowProps = {
-      apr: {
-        value: getDisplayApr(farm.apr, farm.lpRewardsApr),
-        pid: farm.pid,
-        multiplier: farm.multiplier,
-        lpLabel,
-        lpSymbol: farm.lpSymbol,
-        tokenAddress,
-        quoteTokenAddress,
-        cakePrice,
-        originalValue: farm.apr,
-      },
-      farm: {
-        label: lpLabel,
-        pid: farm.pid,
-        token: farm.token,
-        quoteToken: farm.quoteToken,
-      },
-      earned: {
-        earnings: getBalanceNumber(new BigNumber(farm.userData.earnings)),
-        pid: farm.pid,
-      },
-      liquidity: {
-        liquidity: farm.liquidity,
-      },
-      multiplier: {
-        multiplier: farm.multiplier,
-      },
-      type: farm.isCommunity ? 'community' : 'core',
-      details: farm,
-    }
-
-    return row
-  })
-
-  const renderContent = (): JSX.Element => {
-    if (viewMode === ViewMode.TABLE && rowData.length) {
-      const columnSchema = DesktopColumnSchema
-
-      const columns = columnSchema.map((column) => ({
-        id: column.id,
-        name: column.name,
-        label: column.label,
-        sort: (a: RowType<RowProps>, b: RowType<RowProps>) => {
-          switch (column.name) {
-            case 'farm':
-              return b.id - a.id
-            case 'apr':
-              if (a.original.apr.value && b.original.apr.value) {
-                return Number(a.original.apr.value) - Number(b.original.apr.value)
-              }
-
-              return 0
-            case 'earned':
-              return a.original.earned.earnings - b.original.earned.earnings
-            default:
-              return 1
-          }
-        },
-        sortable: column.sortable,
-      }))
-
-      return <Table data={rowData} columns={columns} userDataReady={userDataReady} />
-    }
-
-    return <FlexLayout>{children}</FlexLayout>
-  }
-
   const handleSortOptionChange = (option: OptionProps): void => {
     setSortOption(option.value)
   }
@@ -373,7 +291,7 @@ const Farms: React.FC = ({ children }) => {
       <Page>
         <ControlContainer>
           <ViewControls>
-            <ToggleView idPrefix="clickFarm" viewMode={viewMode} onToggle={(mode: ViewMode) => setViewMode(mode)} />
+            <ToggleView idPrefix="clickFarm" viewMode={viewMode} onToggle={setViewMode} />
             <ToggleWrapper>
               <Toggle
                 id="staked-only-farms"
@@ -420,7 +338,7 @@ const Farms: React.FC = ({ children }) => {
             </LabelWrapper>
             <LabelWrapper style={{ marginLeft: 16 }}>
               <Text textTransform="uppercase">{t('Search')}</Text>
-              <SearchInput onChange={handleChangeQuery} placeholder="Search Farms" />
+              <SearchInput initialValue={normalizedUrlSearch} onChange={handleChangeQuery} placeholder="Search Farms" />
             </LabelWrapper>
           </FilterContainer>
         </ControlContainer>
@@ -447,7 +365,11 @@ const Farms: React.FC = ({ children }) => {
             </Flex>
           </FinishedTextContainer>
         )}
-        {renderContent()}
+        {viewMode === ViewMode.TABLE ? (
+          <Table farms={chosenFarmsMemoized} cakePrice={cakePrice} userDataReady={userDataReady} />
+        ) : (
+          <FlexLayout>{children}</FlexLayout>
+        )}
         {account && !userDataLoaded && stakedOnly && (
           <Flex justifyContent="center">
             <Loading />

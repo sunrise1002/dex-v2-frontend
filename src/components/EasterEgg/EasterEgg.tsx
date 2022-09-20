@@ -1,7 +1,13 @@
 import { useState, useCallback, memo } from 'react'
-import { FallingBunnies, FallingBunniesProps, useKonamiCheatCode } from '@pancakeswap/uikit'
+import { FallingBunniesProps, useKonamiCheatCode } from '@pancakeswap/uikit'
+import dynamic from 'next/dynamic'
 
-const EasterEgg: React.FC<FallingBunniesProps> = (props) => {
+const FallingBunnies = dynamic<FallingBunniesProps>(
+  () => import('@pancakeswap/uikit').then((mod) => mod.FallingBunnies),
+  { ssr: false },
+)
+
+const EasterEgg: React.FC<React.PropsWithChildren<FallingBunniesProps>> = (props) => {
   const [show, setShow] = useState(false)
   const startFalling = useCallback(() => setShow(true), [setShow])
   useKonamiCheatCode(startFalling)

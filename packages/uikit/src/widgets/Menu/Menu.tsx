@@ -63,11 +63,10 @@ const Inner = styled.div<{ isPushed: boolean; showMenu: boolean }>`
   max-width: 100%;
 `;
 
-const Menu: React.FC<NavProps> = ({
+const Menu: React.FC<React.PropsWithChildren<NavProps>> = ({
   linkComponent = "a",
-  userMenu,
   banner,
-  globalMenu,
+  rightSide,
   isDark,
   toggleTheme,
   currentLang,
@@ -151,7 +150,7 @@ const Menu: React.FC<NavProps> = ({
                   hideLanguage
                 />
               </Box>
-              {globalMenu} {userMenu}
+              {rightSide}
             </Flex>
           </StyledNav>
         </FixedContainer>

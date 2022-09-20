@@ -12,7 +12,7 @@ import {
   Box,
 } from '@pancakeswap/uikit'
 import styled from 'styled-components'
-import { useTranslation } from 'contexts/Localization'
+import { useTranslation } from '@pancakeswap/localization'
 import { useUserPredictionChainlinkChartDisclaimerShow } from 'state/user/hooks'
 
 const Ul = styled.ul`
@@ -26,7 +26,7 @@ const Ul = styled.ul`
   }
 `
 
-const ChartDisclaimer: FC<InjectedModalProps> = ({ onDismiss }) => {
+const ChartDisclaimer: FC<React.PropsWithChildren<InjectedModalProps>> = ({ onDismiss }) => {
   const [showDisclaimer, setShowDisclaimer] = useUserPredictionChainlinkChartDisclaimerShow()
   const { t } = useTranslation()
 
@@ -35,7 +35,7 @@ const ChartDisclaimer: FC<InjectedModalProps> = ({ onDismiss }) => {
   }
 
   return (
-    <ModalContainer minWidth="320px">
+    <ModalContainer $minWidth="320px">
       <ModalBody p="24px" maxWidth="400px">
         <Flex justifyContent="center" mb="32px">
           <Image src="/images/predictions/chartwarning2.svg" width={190} height={118} />
@@ -44,7 +44,7 @@ const ChartDisclaimer: FC<InjectedModalProps> = ({ onDismiss }) => {
           {t('Currently showing charts from Chainlink oracle')}
         </Heading>
         <Text color="textSubtle" fontSize="14px" my="24px">
-          {t('The price you see come directly from the Chainlink BNB/USD oracle, which powers the Prediction game.')}
+          {t('The price you see come directly from the Chainlink oracle, which powers the Prediction game.')}
         </Text>
         <Ul>
           <li>{t('Oracle price refreshes every ~20 seconds.')}</li>

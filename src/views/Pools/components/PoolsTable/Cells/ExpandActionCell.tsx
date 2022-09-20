@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 import { Text, ChevronDownIcon } from '@pancakeswap/uikit'
-import { useTranslation } from 'contexts/Localization'
+import { useTranslation } from '@pancakeswap/localization'
 import BaseCell from './BaseCell'
 
 interface ExpandActionCellProps {
@@ -27,7 +27,7 @@ const ArrowIcon = styled(ChevronDownIcon)<{ toggled: boolean }>`
   height: 24px;
 `
 
-const TotalStakedCell: React.FC<ExpandActionCellProps> = ({ expanded, isFullLayout }) => {
+const ExpandActionCell: React.FC<React.PropsWithChildren<ExpandActionCellProps>> = ({ expanded, isFullLayout }) => {
   const { t } = useTranslation()
   return (
     <StyledCell role="cell">
@@ -41,4 +41,4 @@ const TotalStakedCell: React.FC<ExpandActionCellProps> = ({ expanded, isFullLayo
   )
 }
 
-export default TotalStakedCell
+export default ExpandActionCell

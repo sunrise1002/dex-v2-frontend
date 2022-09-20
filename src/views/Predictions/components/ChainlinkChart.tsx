@@ -2,12 +2,11 @@ import { useCallback, useEffect, useMemo } from 'react'
 import { ResponsiveContainer, XAxis, YAxis, Tooltip, AreaChart, Area, Dot } from 'recharts'
 import useTheme from 'hooks/useTheme'
 import { LineChartLoader } from 'views/Info/components/ChartLoaders'
-import { useTranslation } from 'contexts/Localization'
+import { useTranslation } from '@pancakeswap/localization'
 import { laggyMiddleware, useSWRContract, useSWRMulticall } from 'hooks/useSWRContract'
 import useSWRImmutable from 'swr/immutable'
 import { useSWRConfig } from 'swr'
 import { useChainlinkOracleContract } from 'hooks/useContract'
-import { getChainlinkOracleAddress } from 'utils/addressHelpers'
 import { ChainlinkOracle } from 'config/abi/types'
 import chainlinkOracleAbi from 'config/abi/chainlinkOracle.json'
 import { FlexGap } from 'components/Layout/Flex'
@@ -39,19 +38,19 @@ function useChainlinkLatestRound() {
   return lastRound
 }
 
-const chainlinkAddress = getChainlinkOracleAddress()
 function useChainlinkRoundDataSet() {
   const lastRound = useChainlinkLatestRound()
+  const { chainlinkOracleAddress } = useConfig()
 
   const calls = useMemo(() => {
     return lastRound.data
       ? Array.from({ length: 50 }).map((_, i) => ({
-          address: chainlinkAddress,
+          address: chainlinkOracleAddress,
           name: 'getRoundData',
           params: [lastRound.data.sub(i)],
         }))
       : null
-  }, [lastRound.data])
+  }, [lastRound.data, chainlinkOracleAddress])
 
   const { data, error } = useSWRMulticall<Awaited<ReturnType<ChainlinkOracle['getRoundData']>>[]>(
     chainlinkOracleAbi,
@@ -67,7 +66,7 @@ function useChainlinkRoundDataSet() {
         ?.filter((d) => !!d && d.answer.gt(0))
         .map(({ answer, roundId, startedAt }) => {
           return {
-            answer: formatBigNumberToFixed(answer, 3, 8),
+            answer: formatBigNumberToFixed(answer, 4, 8),
             roundId: roundId.toString(),
             startedAt: startedAt.toNumber(),
           }
@@ -132,7 +131,7 @@ const HoverData = ({ rounds }: { rounds: { [key: string]: NodeRound } }) => {
   return (
     <PairPriceDisplay
       width="100%"
-      value={hoverData ? hoverData.answer : formatBigNumberToFixed(answerAsBigNumber, 3, 8)}
+      value={hoverData ? hoverData.answer : formatBigNumberToFixed(answerAsBigNumber, 4, 8)}
       inputSymbol={token.symbol}
       outputSymbol="USD"
       format={false}

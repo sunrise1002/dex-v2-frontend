@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 import { ModalBody, ModalContainer, Message, ModalHeader, Box, Heading } from '@pancakeswap/uikit'
 import useTheme from 'hooks/useTheme'
-import { useTranslation } from 'contexts/Localization'
+import { useTranslation } from '@pancakeswap/localization'
 import { WrappedTokenInfo } from 'state/types'
 import SwapWarningTokensConfig from 'config/constants/swapWarningTokens'
 import SafemoonWarning from './SafemoonWarning'
@@ -11,6 +11,7 @@ import Acknowledgement from './Acknowledgement'
 import CcarWarning from './CcarWarning'
 import BTTWarning from './BTTWarning'
 import RugPullWarning from './RugPullWarning'
+import FREEWarning from './FREEWarning'
 
 const StyledModalContainer = styled(ModalContainer)`
   max-width: 440px;
@@ -26,7 +27,7 @@ interface SwapWarningModalProps {
   onDismiss?: () => void
 }
 
-const SwapWarningModal: React.FC<SwapWarningModalProps> = ({ swapCurrency, onDismiss }) => {
+const SwapWarningModal: React.FC<React.PropsWithChildren<SwapWarningModalProps>> = ({ swapCurrency, onDismiss }) => {
   const { t } = useTranslation()
   const { theme } = useTheme()
 
@@ -55,12 +56,16 @@ const SwapWarningModal: React.FC<SwapWarningModalProps> = ({ swapCurrency, onDis
       symbol: SwapWarningTokensConfig.pokemoney.symbol,
       component: <RugPullWarning />,
     },
+    [SwapWarningTokensConfig.free.address]: {
+      symbol: SwapWarningTokensConfig.free.symbol,
+      component: <FREEWarning />,
+    },
   }
 
   const SWAP_WARNING = TOKEN_WARNINGS[swapCurrency.address]
 
   return (
-    <StyledModalContainer minWidth="280px">
+    <StyledModalContainer $minWidth="280px">
       <ModalHeader background={theme.colors.gradients.cardHeader}>
         <Heading p="12px 24px">{t('Notice for trading %symbol%', { symbol: SWAP_WARNING.symbol })}</Heading>
       </ModalHeader>

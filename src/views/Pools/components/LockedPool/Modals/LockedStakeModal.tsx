@@ -2,23 +2,22 @@ import { useState } from 'react'
 import { Modal, Box } from '@pancakeswap/uikit'
 import useTheme from 'hooks/useTheme'
 import { useBUSDCakeAmount } from 'hooks/useBUSDPrice'
-import { useTranslation } from 'contexts/Localization'
+import { useTranslation } from '@pancakeswap/localization'
 import _toNumber from 'lodash/toNumber'
 import BigNumber from 'bignumber.js'
-
 import { GenericModalProps } from '../types'
 import BalanceField from '../Common/BalanceField'
 import LockedBodyModal from '../Common/LockedModalBody'
 import RoiCalculatorModalProvider from './RoiCalculatorModalProvider'
 
-const LockedStakeModal: React.FC<GenericModalProps> = ({
+const LockedStakeModal: React.FC<React.PropsWithChildren<GenericModalProps>> = ({
   onDismiss,
   currentBalance,
   stakingToken,
   stakingTokenBalance,
 }) => {
   const { theme } = useTheme()
-  const [lockedAmount, setLockedAmount] = useState('0')
+  const [lockedAmount, setLockedAmount] = useState('')
   const { t } = useTranslation()
 
   const usdValueStaked = useBUSDCakeAmount(_toNumber(lockedAmount))

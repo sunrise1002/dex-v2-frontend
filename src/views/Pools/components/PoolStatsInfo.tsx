@@ -1,15 +1,15 @@
-import { Button, Flex, Link, LinkExternal, MetamaskIcon, Skeleton, Text, TimerIcon } from '@pancakeswap/uikit'
+import { Flex, Link, LinkExternal, Skeleton, Text, TimerIcon } from '@pancakeswap/uikit'
 import Balance from 'components/Balance'
+import AddToWalletButton, { AddToWalletTextOptions } from 'components/AddToWallet/AddToWalletButton'
 import { BASE_BSC_SCAN_URL } from 'config'
-import { useTranslation } from 'contexts/Localization'
+import { useTranslation } from '@pancakeswap/localization'
 import { memo } from 'react'
 import { useCurrentBlock } from 'state/block/hooks'
 import { useVaultPoolByKey } from 'state/pools/hooks'
-import { DeserializedPool } from 'state/types'
-import { getBscScanLink } from 'utils'
+import { DeserializedPool, VaultKey } from 'state/types'
+import { getBlockExploreLink } from 'utils'
 import { getAddress, getVaultPoolAddress } from 'utils/addressHelpers'
 import { BIG_ZERO } from 'utils/bigNumber'
-import { registerToken } from 'utils/wallet'
 import { getPoolBlockInfo } from 'views/Pools/helpers'
 import MaxStakeRow from './MaxStakeRow'
 import { AprInfo, DurationAvg, PerformanceFee, TotalLocked, TotalStaked } from './Stat'
@@ -21,7 +21,7 @@ interface ExpandedFooterProps {
   alignLinksToRight?: boolean
 }
 
-const PoolStatsInfo: React.FC<ExpandedFooterProps> = ({
+const PoolStatsInfo: React.FC<React.PropsWithChildren<ExpandedFooterProps>> = ({
   pool,
   account,
   showTotalStaked = true,
@@ -57,7 +57,6 @@ const PoolStatsInfo: React.FC<ExpandedFooterProps> = ({
   const tokenAddress = earningToken.address || ''
   const poolContractAddress = getAddress(contractAddress)
   const cakeVaultContractAddress = getVaultPoolAddress(vaultKey)
-  const isMetaMaskInScope = !!window.ethereum?.isMetaMask
 
   const { shouldShowBlockCountdown, blocksUntilStart, blocksRemaining, hasPoolStarted, blocksToDisplay } =
     getPoolBlockInfo(pool, currentBlock)
@@ -81,8 +80,8 @@ const PoolStatsInfo: React.FC<ExpandedFooterProps> = ({
       {showTotalStaked && (
         <TotalStaked totalStaked={vaultKey ? totalCakeInVault : totalStaked} stakingToken={stakingToken} />
       )}
-      {vaultKey && <TotalLocked totalLocked={totalLockedAmount} lockedToken={stakingToken} />}
-      {vaultKey && <DurationAvg />}
+      {vaultKey === VaultKey.CakeVault && <TotalLocked totalLocked={totalLockedAmount} lockedToken={stakingToken} />}
+      {vaultKey === VaultKey.CakeVault && <DurationAvg />}
       {!isFinished && stakingLimit && stakingLimit.gt(0) && (
         <MaxStakeRow
           small
@@ -98,7 +97,7 @@ const PoolStatsInfo: React.FC<ExpandedFooterProps> = ({
           <Text small>{hasPoolStarted ? t('Ends in') : t('Starts in')}:</Text>
           {blocksRemaining || blocksUntilStart ? (
             <Flex alignItems="center">
-              <Link external href={getBscScanLink(hasPoolStarted ? endBlock : startBlock, 'countdown')}>
+              <Link external href={getBlockExploreLink(hasPoolStarted ? endBlock : startBlock, 'countdown')}>
                 <Balance small value={blocksToDisplay} decimals={0} color="primary" />
                 <Text small ml="4px" color="primary" textTransform="lowercase">
                   {t('Blocks')}
@@ -142,26 +141,20 @@ const PoolStatsInfo: React.FC<ExpandedFooterProps> = ({
           </LinkExternal>
         </Flex>
       )}
-      {account && isMetaMaskInScope && tokenAddress && (
+      {account && tokenAddress && (
         <Flex justifyContent={alignLinksToRight ? 'flex-end' : 'flex-start'}>
-          <Button
+          <AddToWalletButton
             variant="text"
             p="0"
             height="auto"
-            onClick={() =>
-              registerToken(
-                tokenAddress,
-                earningToken.symbol,
-                earningToken.decimals,
-                `https://tokens.pancakeswap.finance/images/${tokenAddress}.png`,
-              )
-            }
-          >
-            <Text color="primary" fontSize="14px">
-              {t('Add to Metamask')}
-            </Text>
-            <MetamaskIcon ml="4px" />
-          </Button>
+            style={{ fontSize: '14px', fontWeight: '400', lineHeight: 'normal' }}
+            marginTextBetweenLogo="4px"
+            textOptions={AddToWalletTextOptions.TEXT}
+            tokenAddress={tokenAddress}
+            tokenSymbol={earningToken.symbol}
+            tokenDecimals={earningToken.decimals}
+            tokenLogo={`https://tokens.pancakeswap.finance/images/${tokenAddress}.png`}
+          />
         </Flex>
       )}
     </>

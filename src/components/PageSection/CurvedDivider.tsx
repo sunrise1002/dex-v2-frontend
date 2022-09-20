@@ -36,7 +36,7 @@ const ComponentWrapper = styled.div<WrapperProps>`
   transform: translate(-50%, -50%);
 `
 
-const CurvedDivider: React.FC<CurvedDividerProps> = ({
+const CurvedDivider: React.FC<React.PropsWithChildren<CurvedDividerProps>> = ({
   index,
   dividerPosition,
   dividerComponent,
@@ -49,29 +49,17 @@ const CurvedDivider: React.FC<CurvedDividerProps> = ({
   const showConcaveTop = dividerPosition === 'top' && concave
   const showConcaveBottom = dividerPosition === 'bottom' && concave
 
-  const getConcaveDivider = () => {
-    return (
+  return (
+    <Wrapper index={index} dividerFill={dividerFill}>
+      {dividerComponent && <ComponentWrapper index={index}>{dividerComponent}</ComponentWrapper>}
       <>
         {showConcaveTop && <ConcaveTop clipFill={clipFill} />}
         {showConcaveBottom && <ConcaveBottom clipFill={clipFill} />}
       </>
-    )
-  }
-
-  const getConvexDivider = () => {
-    return (
       <>
         {showConvexTop && <ConvexTop clipFill={clipFill} />}
         {showConvexBottom && <ConvexBottom clipFill={clipFill} />}
       </>
-    )
-  }
-
-  return (
-    <Wrapper index={index} dividerFill={dividerFill}>
-      {dividerComponent && <ComponentWrapper index={index}>{dividerComponent}</ComponentWrapper>}
-      {getConcaveDivider()}
-      {getConvexDivider()}
     </Wrapper>
   )
 }

@@ -4,8 +4,7 @@ import {
   TokenImage as UIKitTokenImage,
   ImageProps,
 } from '@pancakeswap/uikit'
-import tokens from 'config/constants/tokens'
-import { Token } from '@pancakeswap/sdk'
+import { Token, ChainId } from '@pancakeswap/sdk'
 
 interface TokenPairImageProps extends Omit<UIKitTokenPairImageProps, 'primarySrc' | 'secondarySrc'> {
   primaryToken: Token
@@ -13,11 +12,18 @@ interface TokenPairImageProps extends Omit<UIKitTokenPairImageProps, 'primarySrc
 }
 
 const getImageUrlFromToken = (token: Token) => {
-  const address = token.symbol === 'BNB' ? tokens.wbnb.address : token.address
+  const address = token?.isNative ? token.wrapped.address : token.address
+  if (token.chainId !== ChainId.BSC) {
+    return `/images/${token.chainId}/tokens/${address}.png`
+  }
   return `/images/tokens/${address}.png`
 }
 
-export const TokenPairImage: React.FC<TokenPairImageProps> = ({ primaryToken, secondaryToken, ...props }) => {
+export const TokenPairImage: React.FC<React.PropsWithChildren<TokenPairImageProps>> = ({
+  primaryToken,
+  secondaryToken,
+  ...props
+}) => {
   return (
     <UIKitTokenPairImage
       primarySrc={getImageUrlFromToken(primaryToken)}
@@ -31,6 +37,6 @@ interface TokenImageProps extends ImageProps {
   token: Token
 }
 
-export const TokenImage: React.FC<TokenImageProps> = ({ token, ...props }) => {
+export const TokenImage: React.FC<React.PropsWithChildren<TokenImageProps>> = ({ token, ...props }) => {
   return <UIKitTokenImage src={getImageUrlFromToken(token)} {...props} />
 }

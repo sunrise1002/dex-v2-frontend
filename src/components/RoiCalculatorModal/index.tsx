@@ -13,10 +13,10 @@ import {
   useTooltip,
 } from '@pancakeswap/uikit'
 import BigNumber from 'bignumber.js'
-import { useTranslation } from 'contexts/Localization'
+import { useTranslation } from '@pancakeswap/localization'
 import { getBalanceNumber } from 'utils/formatBalance'
 
-import { useWeb3React } from '@web3-react/core'
+import { useWeb3React } from '@pancakeswap/wagmi'
 import RoiCalculatorFooter from './RoiCalculatorFooter'
 import RoiCard from './RoiCard'
 import useRoiCalculatorReducer, {
@@ -50,9 +50,12 @@ export interface RoiCalculatorModalProps {
 }
 
 const StyledModal = styled(Modal)`
-  width: 380px;
   & > :nth-child(2) {
     padding: 0;
+  }
+
+  ${({ theme }) => theme.mediaQueries.md} {
+    width: 380px;
   }
 `
 
@@ -75,7 +78,7 @@ const FullWidthButtonMenu = styled(ButtonMenu)<{ disabled?: boolean }>`
   opacity: ${({ disabled }) => (disabled ? 0.5 : 1)};
 `
 
-const RoiCalculatorModal: React.FC<RoiCalculatorModalProps> = ({
+const RoiCalculatorModal: React.FC<React.PropsWithChildren<RoiCalculatorModalProps>> = ({
   onDismiss,
   onBack,
   earningTokenPrice,

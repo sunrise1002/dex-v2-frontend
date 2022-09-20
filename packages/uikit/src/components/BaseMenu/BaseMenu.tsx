@@ -5,7 +5,7 @@ import { ClickableElementContainer } from "./styles";
 import { BaseMenuProps } from "./types";
 import getPortalRoot from "../../util/getPortalRoot";
 
-const BaseMenu: React.FC<BaseMenuProps> = ({ component, options, children, isOpen = false }) => {
+const BaseMenu: React.FC<BaseMenuProps & { children: any }> = ({ component, options, children, isOpen = false }) => {
   const [targetElement, setTargetElement] = useState<HTMLElement | null>(null);
   const [menuElement, setMenuElement] = useState<HTMLElement | null>(null);
   const placement = options?.placement ?? "bottom";
@@ -32,24 +32,18 @@ const BaseMenu: React.FC<BaseMenuProps> = ({ component, options, children, isOpe
   }, [isOpen, setIsMenuOpen]);
 
   useEffect(() => {
-    const handleClickOutside = ({ target }: Event) => {
-      if (target instanceof Node) {
-        if (
-          menuElement !== null &&
-          targetElement !== null &&
-          !menuElement.contains(target) &&
-          !targetElement.contains(target)
-        ) {
+    if (menuElement !== null && targetElement !== null) {
+      const handleClickOutside = ({ target }: Event) => {
+        if (target instanceof Node && !menuElement.contains(target) && !targetElement.contains(target)) {
           setIsMenuOpen(false);
         }
-      }
-    };
-    if (menuElement !== null) {
+      };
       document.addEventListener("click", handleClickOutside);
+      return () => {
+        document.removeEventListener("click", handleClickOutside);
+      };
     }
-    return () => {
-      document.removeEventListener("click", handleClickOutside);
-    };
+    return undefined;
   }, [menuElement, targetElement]);
 
   const { styles, attributes } = usePopper(targetElement, menuElement, {

@@ -50,7 +50,7 @@ const RightContainer = styled.div`
   }
 `
 
-const PoolRow: React.FC<PoolRowProps> = ({ pool, account }) => {
+const PoolRow: React.FC<React.PropsWithChildren<PoolRowProps>> = ({ pool, account }) => {
   const { isMobile, isXl, isXxl } = useMatchBreakpointsContext()
   const isLargerScreen = isXl || isXxl
   const [expanded, setExpanded] = useState(false)
@@ -81,7 +81,7 @@ const PoolRow: React.FC<PoolRowProps> = ({ pool, account }) => {
     )
     earningTokenBalance = autoCakeToDisplay
   }
-  const hasEarnings = account && cakeAtLastUserAction && cakeAtLastUserAction.gt(0) && userShares && userShares.gt(0)
+  const hasEarnings = account && cakeAtLastUserAction?.gt(0) && userShares?.gt(0)
 
   const toggleExpanded = () => {
     if (!isLargerScreen) {

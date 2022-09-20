@@ -1,7 +1,7 @@
 import { Flex, LinkExternal, Text, Tag, CheckmarkCircleIcon } from '@pancakeswap/uikit'
 import truncateHash from 'utils/truncateHash'
-import { getBscScanLink } from 'utils'
-import { useTranslation } from 'contexts/Localization'
+import { getBlockExploreLink } from 'utils'
+import { useTranslation } from '@pancakeswap/localization'
 import { Vote } from 'state/types'
 import { IPFS_GATEWAY } from '../../config'
 import TextEllipsis from '../TextEllipsis'
@@ -12,7 +12,7 @@ interface VoteRowProps {
   isVoter: boolean
 }
 
-const VoteRow: React.FC<VoteRowProps> = ({ vote, isVoter }) => {
+const VoteRow: React.FC<React.PropsWithChildren<VoteRowProps>> = ({ vote, isVoter }) => {
   const { t } = useTranslation()
   const hasVotingPower = !!vote.metadata?.votingPower
 
@@ -27,7 +27,7 @@ const VoteRow: React.FC<VoteRowProps> = ({ vote, isVoter }) => {
     <Row>
       <AddressColumn>
         <Flex alignItems="center">
-          <LinkExternal href={getBscScanLink(vote.voter, 'address')}>{truncateHash(vote.voter)}</LinkExternal>
+          <LinkExternal href={getBlockExploreLink(vote.voter, 'address')}>{truncateHash(vote.voter)}</LinkExternal>
           {isVoter && (
             <Tag variant="success" outline ml="8px">
               <CheckmarkCircleIcon mr="4px" /> {t('Voted')}

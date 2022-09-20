@@ -1,11 +1,9 @@
 import { useState } from 'react'
 import { Box, Modal } from '@pancakeswap/uikit'
-import { useWeb3React } from '@web3-react/core'
-import { useTranslation } from 'contexts/Localization'
+import { useWeb3React, useSignMessage } from '@pancakeswap/wagmi'
+import { useTranslation } from '@pancakeswap/localization'
 import { SnapshotCommand } from 'state/types'
-import { signMessage } from 'utils/web3React'
 import useToast from 'hooks/useToast'
-import useWeb3Provider from 'hooks/useActiveWeb3React'
 import useTheme from 'hooks/useTheme'
 import { CastVoteModalProps, ConfirmVoteView } from './types'
 import MainView from './MainView'
@@ -13,14 +11,20 @@ import DetailsView from './DetailsView'
 import { generatePayloadData, Message, sendSnapshotData } from '../../helpers'
 import useGetVotingPower from '../../hooks/useGetVotingPower'
 
-const CastVoteModal: React.FC<CastVoteModalProps> = ({ onSuccess, proposalId, vote, block, onDismiss }) => {
+const CastVoteModal: React.FC<React.PropsWithChildren<CastVoteModalProps>> = ({
+  onSuccess,
+  proposalId,
+  vote,
+  block,
+  onDismiss,
+}) => {
   const [view, setView] = useState<ConfirmVoteView>(ConfirmVoteView.MAIN)
   const [modalIsOpen, setModalIsOpen] = useState(true)
   const [isPending, setIsPending] = useState(false)
   const { account } = useWeb3React()
   const { t } = useTranslation()
+  const { signMessageAsync } = useSignMessage()
   const { toastError } = useToast()
-  const { library, connector } = useWeb3Provider()
   const { theme } = useTheme()
   const {
     isLoading,
@@ -32,6 +36,8 @@ const CastVoteModal: React.FC<CastVoteModalProps> = ({ onSuccess, proposalId, vo
     poolsBalance,
     cakeBnbLpBalance,
     ifoPoolBalance,
+    lockedCakeBalance,
+    lockedEndTime,
   } = useGetVotingPower(block, modalIsOpen)
 
   const isStartView = view === ConfirmVoteView.MAIN
@@ -60,7 +66,7 @@ const CastVoteModal: React.FC<CastVoteModalProps> = ({ onSuccess, proposalId, vo
         },
       })
 
-      const sig = await signMessage(connector, library, account, voteMsg)
+      const sig = await signMessageAsync({ message: voteMsg })
       const msg: Message = { address: account, msg: voteMsg, sig }
 
       // Save proposal to snapshot
@@ -85,7 +91,7 @@ const CastVoteModal: React.FC<CastVoteModalProps> = ({ onSuccess, proposalId, vo
       hideCloseButton={!isStartView}
       headerBackground={theme.colors.gradients.cardHeader}
     >
-      <Box mb="24px" width="320px">
+      <Box mb="24px">
         {view === ConfirmVoteView.MAIN && (
           <MainView
             vote={vote}
@@ -93,6 +99,8 @@ const CastVoteModal: React.FC<CastVoteModalProps> = ({ onSuccess, proposalId, vo
             isLoading={isLoading}
             isPending={isPending}
             total={total}
+            lockedCakeBalance={lockedCakeBalance}
+            lockedEndTime={lockedEndTime}
             onConfirm={handleConfirmVote}
             onViewDetails={handleViewDetails}
             onDismiss={handleDismiss}
@@ -108,6 +116,8 @@ const CastVoteModal: React.FC<CastVoteModalProps> = ({ onSuccess, proposalId, vo
             poolsBalance={poolsBalance}
             cakeBnbLpBalance={cakeBnbLpBalance}
             block={block}
+            lockedCakeBalance={lockedCakeBalance}
+            lockedEndTime={lockedEndTime}
           />
         )}
       </Box>

@@ -2,19 +2,18 @@ import { useCallback } from 'react'
 import styled from 'styled-components'
 import { Text, Link } from '@pancakeswap/uikit'
 import { isAddress } from 'utils'
-import { useTranslation } from 'contexts/Localization'
-import { Color } from '@assets'
+import { useTranslation } from '@pancakeswap/localization'
 import useActiveWeb3React from '../../../hooks/useActiveWeb3React'
 import { AutoColumn } from '../../../components/Layout/Column'
 import { RowBetween } from '../../../components/Layout/Row'
-import { getBscScanLink } from '../../../utils'
+import { getBlockExploreLink, getBlockExploreName } from '../../../utils'
 
 const InputPanel = styled.div`
   display: flex;
   flex-flow: column nowrap;
   position: relative;
   border-radius: 1.25rem;
-  background-color: transparent;
+  background-color: ${({ theme }) => theme.colors.backgroundAlt};
   z-index: 1;
   width: 100%;
 `
@@ -24,10 +23,10 @@ const ContainerRow = styled.div<{ error: boolean }>`
   justify-content: center;
   align-items: center;
   border-radius: 1.25rem;
-  border: 1px solid ${({ error, theme }) => (error ? theme.colors.failure : Color.baseColors.lagoonMirror)};
+  border: 1px solid ${({ error, theme }) => (error ? theme.colors.failure : theme.colors.background)};
   transition: border-color 300ms ${({ error }) => (error ? 'step-end' : 'step-start')},
     color 500ms ${({ error }) => (error ? 'step-end' : 'step-start')};
-  background-color: transparent;
+  background-color: ${({ theme }) => theme.colors.backgroundAlt};
 `
 
 const InputContainer = styled.div`
@@ -40,9 +39,9 @@ const Input = styled.input<{ error?: boolean }>`
   outline: none;
   border: none;
   flex: 1 1 auto;
-  background-color: transparent;
+  background-color: ${({ theme }) => theme.colors.backgroundAlt};
   transition: color 300ms ${({ error }) => (error ? 'step-end' : 'step-start')};
-  color: ${({ error, theme }) => (error ? theme.colors.failure : Color.baseColors.bayWharf)};
+  color: ${({ error, theme }) => (error ? theme.colors.failure : theme.colors.primary)};
   overflow: hidden;
   text-overflow: ellipsis;
   font-weight: 500;
@@ -63,7 +62,7 @@ const Input = styled.input<{ error?: boolean }>`
   }
 
   ::placeholder {
-    color: ${Color.baseColors.cistern};
+    color: ${({ theme }) => theme.colors.textDisabled};
   }
 `
 
@@ -101,10 +100,14 @@ export default function AddressInputPanel({
         <InputContainer>
           <AutoColumn gap="md">
             <RowBetween>
-              <Text color={Color.baseColors.bayWharf}>{t('Recipient')}</Text>
+              <Text>{t('Recipient')}</Text>
               {address && chainId && (
-                <Link external small href={getBscScanLink(address, 'address', chainId)}>
-                  ({t('View on BscScan')})
+                <Link external small href={getBlockExploreLink(address, 'address', chainId)}>
+                  (
+                  {t('View on %site%', {
+                    site: getBlockExploreName(chainId),
+                  })}
+                  )
                 </Link>
               )}
             </RowBetween>

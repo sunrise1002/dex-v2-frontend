@@ -1,12 +1,12 @@
 import { Currency, Token } from '@pancakeswap/sdk'
 import { Button, Text, Modal, useModal, InjectedModalProps, Link } from '@pancakeswap/uikit'
-import { useTranslation } from 'contexts/Localization'
+import { useTranslation } from '@pancakeswap/localization'
 import styled from 'styled-components'
 import { AutoRow } from 'components/Layout/Row'
 import { AutoColumn } from 'components/Layout/Column'
 import { CurrencyLogo } from 'components/Logo'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
-import { getBscScanLink } from 'utils'
+import { getBlockExploreLink } from 'utils'
 import { wrappedCurrency } from 'utils/wrappedCurrency'
 import { useUnsupportedTokens } from '../hooks/Tokens'
 
@@ -25,7 +25,7 @@ const DetailsFooter = styled.div`
   text-align: center;
 `
 
-const UnsupportedModal: React.FC<Props> = ({ currencies, onDismiss }) => {
+const UnsupportedModal: React.FC<React.PropsWithChildren<Props>> = ({ currencies, onDismiss }) => {
   const { chainId } = useActiveWeb3React()
   const { t } = useTranslation()
   const tokens =
@@ -51,7 +51,12 @@ const UnsupportedModal: React.FC<Props> = ({ currencies, onDismiss }) => {
                   <Text>{token.symbol}</Text>
                 </AutoRow>
                 {chainId && (
-                  <Link external small color="primaryDark" href={getBscScanLink(token.address, 'address', chainId)}>
+                  <Link
+                    external
+                    small
+                    color="primaryDark"
+                    href={getBlockExploreLink(token.address, 'address', chainId)}
+                  >
                     {token.address}
                   </Link>
                 )}

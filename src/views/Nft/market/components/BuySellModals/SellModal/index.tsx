@@ -1,14 +1,13 @@
 import { useState } from 'react'
 import { InjectedModalProps } from '@pancakeswap/uikit'
-import { useWeb3React } from '@web3-react/core'
+import { useWeb3React } from '@pancakeswap/wagmi'
 import { parseUnits } from '@ethersproject/units'
 import useTheme from 'hooks/useTheme'
 import useApproveConfirmTransaction from 'hooks/useApproveConfirmTransaction'
 import { useCallWithGasPrice } from 'hooks/useCallWithGasPrice'
 import useToast from 'hooks/useToast'
 import { ToastDescriptionWithTx } from 'components/Toast'
-import { useTranslation } from 'contexts/Localization'
-import { ContextApi } from 'contexts/Localization/types'
+import { useTranslation, ContextApi } from '@pancakeswap/localization'
 import { isAddress } from 'utils'
 import { useErc721CollectionContract, useNftMarketContract } from 'hooks/useContract'
 import { NftToken } from 'state/nftMarket/types'
@@ -77,7 +76,7 @@ interface SellModalProps extends InjectedModalProps {
   onSuccessEditProfile?: () => void
 }
 
-const SellModal: React.FC<SellModalProps> = ({
+const SellModal: React.FC<React.PropsWithChildren<SellModalProps>> = ({
   variant,
   nftToSell,
   onDismiss,

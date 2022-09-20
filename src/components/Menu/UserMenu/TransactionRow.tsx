@@ -1,8 +1,9 @@
 import { BlockIcon, CheckmarkCircleIcon, Flex, Link, OpenNewIcon, RefreshIcon } from '@pancakeswap/uikit'
 import styled from 'styled-components'
+import { useTranslation } from '@pancakeswap/localization'
 import { TransactionDetails } from 'state/transactions/reducer'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
-import { getBscScanLink } from 'utils'
+import { getBlockExploreLink } from 'utils'
 
 interface TransactionRowProps {
   txn: TransactionDetails
@@ -43,7 +44,8 @@ const renderIcon = (txn: TransactionDetails) => {
   )
 }
 
-const TransactionRow: React.FC<TransactionRowProps> = ({ txn }) => {
+const TransactionRow: React.FC<React.PropsWithChildren<TransactionRowProps>> = ({ txn }) => {
+  const { t } = useTranslation()
   const { chainId } = useActiveWeb3React()
 
   if (!txn) {
@@ -51,9 +53,13 @@ const TransactionRow: React.FC<TransactionRowProps> = ({ txn }) => {
   }
 
   return (
-    <TxnLink href={getBscScanLink(txn.hash, 'transaction', chainId)} external>
+    <TxnLink href={getBlockExploreLink(txn.hash, 'transaction', chainId)} external>
       <TxnIcon>{renderIcon(txn)}</TxnIcon>
-      <Summary>{txn.summary ?? txn.hash}</Summary>
+      <Summary>
+        {txn.translatableSummary
+          ? t(txn.translatableSummary.text, txn.translatableSummary.data)
+          : txn.summary ?? txn.hash}
+      </Summary>
       <TxnIcon>
         <OpenNewIcon width="24px" color="primary" />
       </TxnIcon>

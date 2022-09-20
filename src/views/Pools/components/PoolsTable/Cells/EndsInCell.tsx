@@ -1,10 +1,10 @@
 import styled from 'styled-components'
 import { Flex, Link, Skeleton, Text, TimerIcon } from '@pancakeswap/uikit'
-import { getBscScanLink } from 'utils'
+import { getBlockExploreLink } from 'utils'
 import { DeserializedPool } from 'state/types'
 import { useCurrentBlock } from 'state/block/hooks'
 import Balance from 'components/Balance'
-import { useTranslation } from 'contexts/Localization'
+import { useTranslation } from '@pancakeswap/localization'
 import { getPoolBlockInfo } from 'views/Pools/helpers'
 import BaseCell, { CellContent } from './BaseCell'
 
@@ -16,7 +16,7 @@ const StyledCell = styled(BaseCell)`
   flex: 2 0 100px;
 `
 
-const EndsInCell: React.FC<FinishCellProps> = ({ pool }) => {
+const EndsInCell: React.FC<React.PropsWithChildren<FinishCellProps>> = ({ pool }) => {
   const { sousId, totalStaked, startBlock, endBlock, isFinished } = pool
   const currentBlock = useCurrentBlock()
   const { t } = useTranslation()
@@ -37,7 +37,7 @@ const EndsInCell: React.FC<FinishCellProps> = ({ pool }) => {
       <Flex flex="1">
         <Link
           external
-          href={getBscScanLink(hasPoolStarted ? endBlock : startBlock, 'countdown')}
+          href={getBlockExploreLink(hasPoolStarted ? endBlock : startBlock, 'countdown')}
           onClick={(e) => e.stopPropagation()}
         >
           <TimerIcon ml="4px" />

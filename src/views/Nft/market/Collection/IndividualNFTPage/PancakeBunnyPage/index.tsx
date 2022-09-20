@@ -30,7 +30,9 @@ const IndividualPancakeBunnyPage = (props: IndividualPancakeBunnyPageProps) => {
   return <IndividualPancakeBunnyPageBase {...props} />
 }
 
-const IndividualPancakeBunnyPageBase: React.FC<IndividualPancakeBunnyPageProps> = ({ bunnyId }) => {
+const IndividualPancakeBunnyPageBase: React.FC<React.PropsWithChildren<IndividualPancakeBunnyPageProps>> = ({
+  bunnyId,
+}) => {
   const collection = useGetCollection(pancakeBunniesAddress)
   const totalBunnyCount = Number(collection?.totalSupply)
   const [nothingForSaleBunny, setNothingForSaleBunny] = useState<NftToken>(null)
@@ -113,7 +115,7 @@ const IndividualPancakeBunnyPageBase: React.FC<IndividualPancakeBunnyPageProps> 
         nothingForSaleBunny={nothingForSaleBunny}
         onSuccessSale={refreshCheapestNft}
       />
-      <TwoColumnsContainer flexDirection={['column', 'column', 'row']}>
+      <TwoColumnsContainer flexDirection={['column', 'column', 'column', 'row']}>
         <Flex flexDirection="column" width="100%">
           <ManageNftsCard
             collection={collection}

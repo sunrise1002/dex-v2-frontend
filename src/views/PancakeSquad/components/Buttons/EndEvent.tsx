@@ -1,6 +1,6 @@
 import { NextLinkFromReactRouter } from 'components/NextLink'
 import { Button, Flex } from '@pancakeswap/uikit'
-import { ContextApi } from 'contexts/Localization/types'
+import { ContextApi } from '@pancakeswap/localization'
 import { SaleStatusEnum, UserStatusEnum } from '../../types'
 
 type EndEventProps = {
@@ -13,7 +13,7 @@ type EndEventProps = {
   numberTokensOfUser: number
 }
 
-const EndEventButtons: React.FC<EndEventProps> = ({
+const EndEventButtons: React.FC<React.PropsWithChildren<EndEventProps>> = ({
   t,
   account,
   saleStatus,
@@ -33,7 +33,7 @@ const EndEventButtons: React.FC<EndEventProps> = ({
       )}
       {hasSquad && (
         <Button>
-          <NextLinkFromReactRouter to={`/nfts/profile/${account}`}>
+          <NextLinkFromReactRouter to={`/profile/${account}`}>
             {t('Your Squad (%tokens%)', { tokens: numberTokensOfUser })}
           </NextLinkFromReactRouter>
         </Button>

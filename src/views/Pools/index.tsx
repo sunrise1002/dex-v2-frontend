@@ -3,11 +3,11 @@ import styled from 'styled-components'
 import { BigNumber as EthersBigNumber } from '@ethersproject/bignumber'
 import { formatUnits } from '@ethersproject/units'
 import BigNumber from 'bignumber.js'
-import { useWeb3React } from '@web3-react/core'
+import { useWeb3React } from '@pancakeswap/wagmi'
 import { Heading, Flex, Image, Text, Link } from '@pancakeswap/uikit'
 import orderBy from 'lodash/orderBy'
 import partition from 'lodash/partition'
-import { useTranslation } from 'contexts/Localization'
+import { useTranslation } from '@pancakeswap/localization'
 import useIntersectionObserver from 'hooks/useIntersectionObserver'
 import { usePoolsPageFetch, usePoolsWithVault } from 'state/pools/hooks'
 import { latinise } from 'utils/latinise'
@@ -16,7 +16,7 @@ import Page from 'components/Layout/Page'
 import PageHeader from 'components/PageHeader'
 import SearchInput from 'components/SearchInput'
 import Select, { OptionProps } from 'components/Select/Select'
-import { DeserializedPool, DeserializedPoolVault } from 'state/types'
+import { DeserializedPool, DeserializedPoolVault, VaultKey, DeserializedPoolLockedVault } from 'state/types'
 import { useUserPoolStakedOnly, useUserPoolsViewMode } from 'state/user/hooks'
 import { ViewMode } from 'state/user/actions'
 import { useRouter } from 'next/router'
@@ -105,17 +105,21 @@ const sortPools = (account: string, sortOption: string, pools: DeserializedPool[
           }
 
           if (pool.vaultKey) {
-            const vault = pool as DeserializedPoolVault
-            if (!vault.userData || !vault.userData.userShares) {
+            const { userData, pricePerFullShare } = pool as DeserializedPoolVault
+            if (!userData || !userData.userShares) {
               return 0
             }
             return getCakeVaultEarnings(
               account,
-              vault.userData.cakeAtLastUserAction,
-              vault.userData.userShares,
-              vault.pricePerFullShare,
-              vault.earningTokenPrice,
-              vault.userData.currentOverdueFee.plus(vault.userData.currentPerformanceFee),
+              userData.cakeAtLastUserAction,
+              userData.userShares,
+              pricePerFullShare,
+              pool.earningTokenPrice,
+              pool.vaultKey === VaultKey.CakeVault
+                ? (pool as DeserializedPoolLockedVault).userData.currentPerformanceFee.plus(
+                    (pool as DeserializedPoolLockedVault).userData.currentOverdueFee,
+                  )
+                : null,
             ).autoUsdToDisplay
           }
           return pool.userData.pendingReward.times(pool.earningTokenPrice).toNumber()
@@ -153,7 +157,7 @@ const sortPools = (account: string, sortOption: string, pools: DeserializedPool[
 
 const POOL_START_BLOCK_THRESHOLD = (60 / BSC_BLOCK_TIME) * 4
 
-const Pools: React.FC = () => {
+const Pools: React.FC<React.PropsWithChildren> = () => {
   const router = useRouter()
   const { t } = useTranslation()
   const { account } = useWeb3React()
@@ -162,7 +166,12 @@ const Pools: React.FC = () => {
   const [viewMode, setViewMode] = useUserPoolsViewMode()
   const [numberOfPoolsVisible, setNumberOfPoolsVisible] = useState(NUMBER_OF_POOLS_VISIBLE)
   const { observerRef, isIntersecting } = useIntersectionObserver()
-  const [searchQuery, setSearchQuery] = useState('')
+  const normalizedUrlSearch = useMemo(
+    () => (typeof router?.query?.search === 'string' ? router.query.search : ''),
+    [router.query],
+  )
+  const [_searchQuery, setSearchQuery] = useState('')
+  const searchQuery = normalizedUrlSearch && !_searchQuery ? normalizedUrlSearch : _searchQuery
   const [sortOption, setSortOption] = useState('hot')
   const chosenPoolsLength = useRef(0)
   const initialBlock = useInitialBlock()
@@ -182,7 +191,7 @@ const Pools: React.FC = () => {
       finishedPools.filter((pool) => {
         if (pool.vaultKey) {
           const vault = pool as DeserializedPoolVault
-          return vault.userData.userShares && vault.userData.userShares.gt(0)
+          return vault.userData.userShares.gt(0)
         }
         return pool.userData && new BigNumber(pool.userData.stakedBalance).isGreaterThan(0)
       }),
@@ -192,7 +201,7 @@ const Pools: React.FC = () => {
     return openPoolsWithStartBlockFilter.filter((pool) => {
       if (pool.vaultKey) {
         const vault = pool as DeserializedPoolVault
-        return vault.userData.userShares && vault.userData.userShares.gt(0)
+        return vault.userData.userShares.gt(0)
       }
       return pool.userData && new BigNumber(pool.userData.stakedBalance).isGreaterThan(0)
     })
@@ -211,7 +220,6 @@ const Pools: React.FC = () => {
       })
     }
   }, [isIntersecting])
-
   const showFinishedPools = router.pathname.includes('history')
 
   const handleChangeSearchQuery = useCallback(
@@ -251,7 +259,7 @@ const Pools: React.FC = () => {
     </CardLayout>
   )
 
-  const tableLayout = <PoolsTable pools={chosenPools} account={account} />
+  const tableLayout = <PoolsTable urlSearch={normalizedUrlSearch} pools={chosenPools} account={account} />
 
   return (
     <>
@@ -316,7 +324,7 @@ const Pools: React.FC = () => {
               <Text fontSize="12px" bold color="textSubtle" textTransform="uppercase">
                 {t('Search')}
               </Text>
-              <SearchInput onChange={handleChangeSearchQuery} placeholder="Search Pools" />
+              <SearchInput initialValue={searchQuery} onChange={handleChangeSearchQuery} placeholder="Search Pools" />
             </LabelWrapper>
           </FilterContainer>
         </PoolControls>

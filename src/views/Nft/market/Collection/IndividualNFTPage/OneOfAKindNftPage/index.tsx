@@ -26,7 +26,10 @@ const OwnerActivityContainer = styled(Flex)`
   gap: 22px;
 `
 
-const IndividualNFTPage: React.FC<IndividualNFTPageProps> = ({ collectionAddress, tokenId }) => {
+const IndividualNFTPage: React.FC<React.PropsWithChildren<IndividualNFTPageProps>> = ({
+  collectionAddress,
+  tokenId,
+}) => {
   const collection = useGetCollection(collectionAddress)
   const { data: distributionData, isFetching: isFetchingDistribution } = useGetCollectionDistribution(collectionAddress)
   const { combinedNft: nft, isOwn: isOwnNft, isProfilePic, refetch } = useCompleteNft(collectionAddress, tokenId)
@@ -59,7 +62,7 @@ const IndividualNFTPage: React.FC<IndividualNFTPageProps> = ({ collectionAddress
   return (
     <Page>
       <MainNFTCard nft={nft} isOwnNft={isOwnNft} nftIsProfilePic={isProfilePic} onSuccess={refetch} />
-      <TwoColumnsContainer flexDirection={['column', 'column', 'row']}>
+      <TwoColumnsContainer flexDirection={['column', 'column', 'column', 'column', 'row']}>
         <Flex flexDirection="column" width="100%">
           <ManageNFTsCard collection={collection} tokenId={tokenId} onSuccess={isOwnNft ? refetch : noop} />
           <PropertiesCard properties={properties} rarity={attributesRarity} />

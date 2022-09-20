@@ -1,8 +1,10 @@
-import { Button, useWalletModal, ButtonProps } from '@pancakeswap/uikit'
-import useAuth from 'hooks/useAuth'
+import { Button, ButtonProps } from '@pancakeswap/uikit'
+import { useWallet } from 'hooks/useWallet'
 import styled from 'styled-components'
-import { useTranslation } from 'contexts/Localization'
+// @ts-ignore
+// eslint-disable-next-line import/extensions
 import { Color } from '@assets'
+import { useActiveHandle } from 'hooks/useEagerConnect.bmp'
 import Trans from './Trans'
 
 const ButtonWrapper = styled(Button)`
@@ -11,9 +13,16 @@ const ButtonWrapper = styled(Button)`
 `
 
 const ConnectWalletButton = ({ children, ...props }: ButtonProps) => {
-  const { t } = useTranslation()
-  const { login, logout } = useAuth()
-  const { onPresentConnectModal } = useWalletModal(login, logout, t)
+  const handleActive = useActiveHandle()
+  const { onPresentConnectModal } = useWallet()
+
+  const handleClick = () => {
+    if (typeof __NEZHA_BRIDGE__ !== 'undefined') {
+      handleActive()
+    } else {
+      onPresentConnectModal()
+    }
+  }
 
   return (
     <ButtonWrapper onClick={onPresentConnectModal} {...props}>

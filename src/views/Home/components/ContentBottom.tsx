@@ -1,5 +1,5 @@
 import { Color, Images } from '@assets'
-import { useTranslation } from 'contexts/Localization'
+import { useTranslation } from '@pancakeswap/localization'
 import styled from 'styled-components'
 
 const Container = styled.div`

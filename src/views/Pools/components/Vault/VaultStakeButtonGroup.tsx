@@ -1,6 +1,6 @@
 import { Box, Button, TooltipText, useTooltip } from '@pancakeswap/uikit'
 import { FlexGap } from 'components/Layout/Flex'
-import { useTranslation } from 'contexts/Localization'
+import { useTranslation } from '@pancakeswap/localization'
 
 export const VaultStakeButtonGroup = ({
   onFlexibleClick,
@@ -24,14 +24,18 @@ export const VaultStakeButtonGroup = ({
         <Button style={{ flex: 1 }} onClick={onFlexibleClick}>
           {t('Flexible')}
         </Button>
-        <Button style={{ flex: 1 }} onClick={onLockedClick}>
-          {t('Locked')}
-        </Button>
+        {onLockedClick && (
+          <Button style={{ flex: 1 }} onClick={onLockedClick}>
+            {t('Locked')}
+          </Button>
+        )}
       </FlexGap>
       {tooltipVisible && tooltip}
-      <TooltipText mt="16px" small ref={targetRef}>
-        {t('What’s the difference?')}
-      </TooltipText>
+      {onLockedClick && (
+        <TooltipText mt="16px" small ref={targetRef}>
+          {t('What’s the difference?')}
+        </TooltipText>
+      )}
     </Box>
   )
 }

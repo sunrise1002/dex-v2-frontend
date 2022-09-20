@@ -8,7 +8,7 @@ import {
 } from 'state/predictions/hooks'
 import { filterNextPageLeaderboard } from 'state/predictions'
 import { LEADERBOARD_RESULTS_PER_PAGE } from 'state/predictions/helpers'
-import { useTranslation } from 'contexts/Localization'
+import { useTranslation } from '@pancakeswap/localization'
 import Container from 'components/Layout/Container'
 import { FetchStatus } from 'config/constants/types'
 import DesktopResults from './DesktopResults'
@@ -36,9 +36,9 @@ const Results = () => {
           gridGap={['16px', null, null, null, null, '24px']}
           gridTemplateColumns={['1fr', null, null, null, null, 'repeat(3, 1fr)']}
         >
-          <RankingCard rank={1} user={first} />
-          <RankingCard rank={2} user={second} />
-          <RankingCard rank={3} user={third} />
+          {first && <RankingCard rank={1} user={first} />}
+          {second && <RankingCard rank={2} user={second} />}
+          {third && <RankingCard rank={3} user={third} />}
         </Grid>
       </Container>
       {isDesktop ? <DesktopResults results={rest} /> : <MobileResults results={rest} />}

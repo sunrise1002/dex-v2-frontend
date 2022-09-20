@@ -26,7 +26,7 @@ import { laggyMiddleware } from 'hooks/useSWRContract'
 import { FetchStatus } from 'config/constants/types'
 import { useGetShuffledCollections } from 'state/nftMarket/hooks'
 import Select, { OptionProps } from 'components/Select/Select'
-import { useTranslation } from 'contexts/Localization'
+import { useTranslation } from '@pancakeswap/localization'
 import Page from 'components/Layout/Page'
 import PageHeader from 'components/PageHeader'
 import { nftsBaseUrl } from 'views/Nft/market/constants'
@@ -178,11 +178,7 @@ const Collectible = () => {
               pl={['4px', null, '0']}
               mb="8px"
             >
-              <ToggleView
-                idPrefix="clickCollection"
-                viewMode={viewMode}
-                onToggle={(mode: ViewMode) => setViewMode(mode)}
-              />
+              <ToggleView idPrefix="clickCollection" viewMode={viewMode} onToggle={setViewMode} />
               <Flex width="max-content" style={{ gap: '4px' }} flexDirection="column">
                 <Text fontSize="12px" textTransform="uppercase" color="textSubtle" fontWeight={600}>
                   {t('Sort By')}

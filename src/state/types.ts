@@ -36,9 +36,11 @@ export class WrappedTokenInfo extends Token {
   }
 }
 
-export type TokenAddressMap = Readonly<{
-  [chainId in ChainId]: Readonly<{ [tokenAddress: string]: { token: WrappedTokenInfo; list: TokenList } }>
-}>
+export type TokenAddressMap = Readonly<
+  {
+    [chainId in ChainId]: Readonly<{ [tokenAddress: string]: { token: WrappedTokenInfo; list: TokenList } }>
+  }
+>
 
 type TagDetails = Tags[keyof Tags]
 export interface TagInfo extends TagDetails {
@@ -49,8 +51,11 @@ export interface TagInfo extends TagDetails {
  * An empty result, useful as a default.
  */
 export const EMPTY_LIST: TokenAddressMap = {
-  [ChainId.MAINNET]: {},
-  [ChainId.TESTNET]: {},
+  [ChainId.ETHEREUM]: {},
+  [ChainId.RINKEBY]: {},
+  [ChainId.GOERLI]: {},
+  [ChainId.BSC]: {},
+  [ChainId.BSC_TESTNET]: {},
 }
 
 export enum GAS_PRICE {
@@ -68,6 +73,7 @@ export const GAS_PRICE_GWEI = {
 }
 
 export type DeserializedPoolVault = DeserializedPool & DeserializedCakeVault
+export type DeserializedPoolLockedVault = DeserializedPool & DeserializedLockedCakeVault
 
 export interface BigNumberToJson {
   type: 'BigNumber'
@@ -117,6 +123,7 @@ export interface DeserializedFarm extends DeserializedFarmConfig {
 export enum VaultKey {
   CakeVaultV1 = 'cakeVaultV1',
   CakeVault = 'cakeVault',
+  CakeFlexibleSideVault = 'cakeFlexibleSideVault',
   IfoPool = 'ifoPool',
 }
 
@@ -205,7 +212,7 @@ export interface DeserializedVaultFees extends SerializedVaultFees {
   performanceFeeAsDecimal: number
 }
 
-interface SerializedVaultUser {
+export interface SerializedVaultUser {
   isLoading: boolean
   userShares: SerializedBigNumber
   cakeAtLastUserAction: SerializedBigNumber
@@ -229,6 +236,11 @@ export interface DeserializedVaultUser {
   cakeAtLastUserAction: BigNumber
   lastDepositedTime: string
   lastUserActionTime: string
+  balance: {
+    cakeAsNumberBalance: number
+    cakeAsBigNumber: BigNumber
+    cakeAsDisplayBalance: string
+  }
 }
 
 export interface DeserializedLockedVaultUser extends DeserializedVaultUser {
@@ -236,20 +248,12 @@ export interface DeserializedLockedVaultUser extends DeserializedVaultUser {
   lastUserActionTime: string
   lockStartTime: string
   lockEndTime: string
+  burnStartTime: string
   userBoostedShare: BigNumber
   locked: boolean
   lockedAmount: BigNumber
-  balance: {
-    cakeAsNumberBalance: number
-    cakeAsBigNumber: BigNumber
-    cakeAsDisplayBalance: string
-  }
   currentPerformanceFee: BigNumber
   currentOverdueFee: BigNumber
-}
-
-export interface DeserializedIfoVaultUser extends DeserializedVaultUser {
-  credit: string
 }
 
 export interface DeserializedCakeVault {
@@ -258,21 +262,41 @@ export interface DeserializedCakeVault {
   pricePerFullShare?: BigNumber
   totalCakeInVault?: BigNumber
   fees?: DeserializedVaultFees
+  userData?: DeserializedVaultUser
+}
+
+export interface DeserializedLockedCakeVault extends Omit<DeserializedCakeVault, 'userData'> {
+  totalLockedAmount?: BigNumber
   userData?: DeserializedLockedVaultUser
+}
+
+export interface SerializedLockedCakeVault extends Omit<SerializedCakeVault, 'userData'> {
+  totalLockedAmount?: SerializedBigNumber
+  userData?: SerializedLockedVaultUser
 }
 
 export interface SerializedCakeVault {
   totalShares?: SerializedBigNumber
-  totalLockedAmount?: SerializedBigNumber
   pricePerFullShare?: SerializedBigNumber
   totalCakeInVault?: SerializedBigNumber
   fees?: SerializedVaultFees
-  userData?: SerializedLockedVaultUser
+  userData?: SerializedVaultUser
+}
+
+// Ifo
+export interface IfoState extends PublicIfoData {
+  credit: string
+}
+
+export interface PublicIfoData {
+  ceiling: string
 }
 
 export interface PoolsState {
   data: SerializedPool[]
-  cakeVault: SerializedCakeVault
+  ifo: IfoState
+  cakeVault: SerializedLockedCakeVault
+  cakeFlexibleSideVault: SerializedCakeVault
   userDataLoaded: boolean
 }
 
@@ -303,6 +327,11 @@ export enum PredictionStatus {
   LIVE = 'live',
   PAUSED = 'paused',
   ERROR = 'error',
+}
+
+export enum PredictionSupportedSymbol {
+  BNB = 'BNB',
+  CAKE = 'CAKE',
 }
 
 export enum PredictionsChartView {
@@ -624,7 +653,90 @@ export interface PredictionConfig {
   address: string
   api: string
   chainlinkOracleAddress: string
+  minPriceUsdDisplayed: EthersBigNumber
   token: Token
+}
+
+// Pottery
+export interface PotteryState {
+  lastVaultAddress: string
+  publicData: SerializedPotteryPublicData
+  userData: SerializedPotteryUserData
+  finishedRoundInfo: PotteryRoundInfo
+}
+
+export interface SerializedPotteryPublicData {
+  lastDrawId: string
+  totalPrize: string
+  getStatus: PotteryDepositStatus
+  totalLockCake: string
+  totalSupply: string
+  lockStartTime: string
+  totalLockedValue: string
+  latestRoundId: string
+  maxTotalDeposit: string
+}
+
+export interface DeserializedPublicData {
+  lastDrawId: string
+  totalPrize: BigNumber
+  getStatus: PotteryDepositStatus
+  totalLockCake: BigNumber
+  totalSupply: BigNumber
+  lockStartTime: string
+  totalLockedValue: BigNumber
+  latestRoundId: string
+  maxTotalDeposit: BigNumber
+}
+
+export interface SerializedPotteryUserData {
+  isLoading?: boolean
+  allowance: string
+  previewDepositBalance: string
+  stakingTokenBalance: string
+  rewards: string
+  winCount: string
+  withdrawAbleData: PotteryWithdrawAbleData[]
+}
+
+export interface DeserializedPotteryUserData {
+  isLoading?: boolean
+  allowance: BigNumber
+  previewDepositBalance: BigNumber
+  stakingTokenBalance: BigNumber
+  rewards: BigNumber
+  winCount: string
+  withdrawAbleData: PotteryWithdrawAbleData[]
+}
+
+export interface PotteryRoundInfo {
+  isFetched: boolean
+  roundId: string
+  drawDate: string
+  prizePot: string
+  totalPlayers: string
+  txid: string
+  winners: Array<string>
+  lockDate: string
+}
+
+export enum PotteryDepositStatus {
+  BEFORE_LOCK = 0,
+  LOCK = 1,
+  UNLOCK = 2,
+}
+
+export interface PotteryWithdrawAbleData {
+  id: string
+  shares: string
+  depositDate: string
+  previewRedeem: string
+  status: PotteryDepositStatus
+  potteryVaultAddress: string
+  totalSupply: string
+  totalLockCake: string
+  lockedDate: string
+  balanceOf: string
 }
 
 // Global state
@@ -636,4 +748,5 @@ export interface State {
   predictions: PredictionsState
   lottery: LotteryState
   nftMarket: NftMarketState
+  pottery: PotteryState
 }

@@ -2,19 +2,21 @@ import { FC } from "react";
 import { SvgProps } from "../../components/Svg/types";
 
 export enum ConnectorNames {
+  MetaMask = "metaMask",
   Injected = "injected",
-  WalletConnect = "walletconnect",
+  WalletConnect = "walletConnect",
   BSC = "bsc",
   Blocto = "blocto",
-  WalletLink = "walletlink",
+  WalletLink = "coinbaseWallet",
 }
 
 export type Login = (connectorId: ConnectorNames) => void;
 
 export interface Config {
   title: string;
-  icon: FC<SvgProps>;
+  icon: FC<React.PropsWithChildren<SvgProps>>;
   connectorId: ConnectorNames;
   priority: number | (() => number);
   href?: string;
+  installed?: boolean;
 }

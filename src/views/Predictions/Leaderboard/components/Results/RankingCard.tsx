@@ -16,9 +16,9 @@ import {
 import { PredictionUser } from 'state/types'
 import { useProfileForAddress } from 'state/profile/hooks'
 import styled from 'styled-components'
-import { getBscScanLink } from 'utils'
+import { getBlockExploreLink } from 'utils'
 import truncateHash from 'utils/truncateHash'
-import { useTranslation } from 'contexts/Localization'
+import { useTranslation } from '@pancakeswap/localization'
 import { useStatModalProps } from 'state/predictions/hooks'
 import { useConfig } from 'views/Predictions/context/ConfigProvider'
 import WalletStatsModal from '../WalletStatsModal'
@@ -49,7 +49,7 @@ const getRankingColor = (rank: number) => {
   return 'gold'
 }
 
-const RankingCard: React.FC<RankingCardProps> = ({ rank, user }) => {
+const RankingCard: React.FC<React.PropsWithChildren<RankingCardProps>> = ({ rank, user }) => {
   const { t } = useTranslation()
   const rankColor = getRankingColor(rank)
   const { profile } = useProfileForAddress(user.id)
@@ -91,7 +91,7 @@ const RankingCard: React.FC<RankingCardProps> = ({ rank, user }) => {
             options={{ placement: 'bottom' }}
           >
             <SubMenuItem onClick={onPresentWalletStatsModal}>{t('View Stats')}</SubMenuItem>
-            <SubMenuItem as={Link} href={getBscScanLink(user.id, 'address')} bold={false} color="text" external>
+            <SubMenuItem as={Link} href={getBlockExploreLink(user.id, 'address')} bold={false} color="text" external>
               {t('View on BscScan')}
             </SubMenuItem>
           </SubMenu>
