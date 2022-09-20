@@ -2,10 +2,10 @@ import { Text, TokenPairImage as UITokenPairImage, useMatchBreakpointsContext } 
 import BigNumber from 'bignumber.js'
 import { TokenPairImage } from 'components/TokenImage'
 import { vaultPoolConfig } from 'config/constants/pools'
-import { useTranslation } from 'contexts/Localization'
+import { useTranslation } from '@pancakeswap/localization'
 import { memo } from 'react'
 import { useVaultPoolByKey } from 'state/pools/hooks'
-import { DeserializedPool } from 'state/types'
+import { DeserializedPool, VaultKey, DeserializedLockedCakeVault } from 'state/types'
 import styled from 'styled-components'
 import { BIG_ZERO } from 'utils/bigNumber'
 import { getVaultPosition, VaultPosition, VaultPositionParams } from 'utils/cakePool'
@@ -25,14 +25,15 @@ const StyledCell = styled(BaseCell)`
   }
 `
 
-const NameCell: React.FC<NameCellProps> = ({ pool }) => {
+const NameCell: React.FC<React.PropsWithChildren<NameCellProps>> = ({ pool }) => {
   const { t } = useTranslation()
   const { isMobile } = useMatchBreakpointsContext()
   const { sousId, stakingToken, earningToken, userData, isFinished, vaultKey } = pool
+  const vaultData = useVaultPoolByKey(pool.vaultKey)
   const {
-    userData: { userShares, lockEndTime, locked },
-  } = useVaultPoolByKey(pool.vaultKey)
-  const hasVaultShares = userShares && userShares.gt(0)
+    userData: { userShares },
+  } = vaultData
+  const hasVaultShares = userShares.gt(0)
 
   const stakingTokenSymbol = stakingToken.symbol
   const earningTokenSymbol = earningToken.symbol
@@ -60,8 +61,12 @@ const NameCell: React.FC<NameCellProps> = ({ pool }) => {
       )}
       <CellContent>
         {showStakedTag &&
-          (vaultKey ? (
-            <StakedCakeStatus userShares={userShares} locked={locked} lockEndTime={lockEndTime} />
+          (vaultKey === VaultKey.CakeVault ? (
+            <StakedCakeStatus
+              userShares={userShares}
+              locked={(vaultData as DeserializedLockedCakeVault).userData.locked}
+              lockEndTime={(vaultData as DeserializedLockedCakeVault).userData.lockEndTime}
+            />
           ) : (
             <Text fontSize="12px" bold color={isFinished ? 'failure' : 'secondary'} textTransform="uppercase">
               {t('Staked')}
@@ -90,12 +95,14 @@ const stakedStatus = {
   [VaultPosition.Flexible]: { text: 'Flexible', color: 'success' },
 }
 
-export const StakedCakeStatus: React.FC<VaultPositionParams> = memo(({ userShares, locked, lockEndTime }) => {
-  const vaultPosition = getVaultPosition({ userShares, locked, lockEndTime })
-  const { t } = useTranslation()
-  return (
-    <Text fontSize="12px" bold color={stakedStatus[vaultPosition].color} textTransform="uppercase">
-      {t(stakedStatus[vaultPosition].text)}
-    </Text>
-  )
-})
+export const StakedCakeStatus: React.FC<React.PropsWithChildren<VaultPositionParams>> = memo(
+  ({ userShares, locked, lockEndTime }) => {
+    const vaultPosition = getVaultPosition({ userShares, locked, lockEndTime })
+    const { t } = useTranslation()
+    return (
+      <Text fontSize="12px" bold color={stakedStatus[vaultPosition].color} textTransform="uppercase">
+        {t(stakedStatus[vaultPosition].text)}
+      </Text>
+    )
+  },
+)

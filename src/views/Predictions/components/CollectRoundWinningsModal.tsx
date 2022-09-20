@@ -19,11 +19,11 @@ import {
 import { AnyAction, AsyncThunkAction } from '@reduxjs/toolkit'
 import { Token } from '@pancakeswap/sdk'
 
-import { useWeb3React } from '@web3-react/core'
+import { useWeb3React } from '@pancakeswap/wagmi'
 import { REWARD_RATE } from 'state/predictions/config'
 import { fetchNodeHistory, markAsCollected } from 'state/predictions'
 import { Bet } from 'state/types'
-import { useTranslation } from 'contexts/Localization'
+import { useTranslation } from '@pancakeswap/localization'
 import useBUSDPrice from 'hooks/useBUSDPrice'
 import useToast from 'hooks/useToast'
 import { usePredictionsContract } from 'hooks/useContract'
@@ -41,6 +41,7 @@ interface CollectRoundWinningsModalProps extends InjectedModalProps {
   isLoadingHistory: boolean
   predictionsAddress: string
   token: Token
+  isV1Claim?: boolean
 }
 
 const Modal = styled(ModalContainer)`
@@ -82,7 +83,7 @@ const calculateClaimableRounds = (history): ClaimableRounds => {
   )
 }
 
-const CollectRoundWinningsModal: React.FC<CollectRoundWinningsModalProps> = ({
+const CollectRoundWinningsModal: React.FC<React.PropsWithChildren<CollectRoundWinningsModalProps>> = ({
   onDismiss,
   onSuccess,
   history,
@@ -90,38 +91,43 @@ const CollectRoundWinningsModal: React.FC<CollectRoundWinningsModalProps> = ({
   dispatch,
   predictionsAddress,
   token,
+  isV1Claim,
 }) => {
   const { account } = useWeb3React()
   const { t } = useTranslation()
   const { toastSuccess } = useToast()
   const { fetchWithCatchTxError, loading: isPendingTx } = useCatchTxError()
   const { callWithGasPrice } = useCallWithGasPrice()
-  const predictionsContract = usePredictionsContract(predictionsAddress)
+  const predictionsContract = usePredictionsContract(predictionsAddress, token.symbol)
   const bnbBusdPrice = useBUSDPrice(token)
 
   const { epochs, total } = calculateClaimableRounds(history)
   const totalBnb = multiplyPriceByAmount(bnbBusdPrice, total)
 
+  const isLoading = isLoadingHistory || !epochs?.length
+
   useEffect(() => {
     // Fetch history if they have not opened the history pane yet
-    if (history.length === 0) {
+    if (history.length === 0 && !isV1Claim) {
       dispatch(fetchNodeHistory({ account }))
     }
-  }, [account, history, dispatch])
+  }, [account, history, dispatch, isV1Claim])
 
   const handleClick = async () => {
     const receipt = await fetchWithCatchTxError(() => {
       return callWithGasPrice(predictionsContract, 'claim', [epochs])
     })
     if (receipt?.status) {
-      // Immediately mark rounds as claimed
-      dispatch(
-        markAsCollected(
-          epochs.reduce((accum, epoch) => {
-            return { ...accum, [epoch]: true }
-          }, {}),
-        ),
-      )
+      if (!isV1Claim) {
+        // Immediately mark rounds as claimed
+        dispatch(
+          markAsCollected(
+            epochs.reduce((accum, epoch) => {
+              return { ...accum, [epoch]: true }
+            }, {}),
+          ),
+        )
+      }
 
       if (onSuccess) {
         await onSuccess()
@@ -138,7 +144,7 @@ const CollectRoundWinningsModal: React.FC<CollectRoundWinningsModalProps> = ({
   }
 
   return (
-    <Modal minWidth="288px" position="relative" mt="124px">
+    <Modal $minWidth="288px" position="relative" mt="124px">
       <BunnyDecoration>
         <img src="/images/decorations/prize-bunny.png" alt="bunny decoration" height="124px" width="168px" />
       </BunnyDecoration>
@@ -160,7 +166,7 @@ const CollectRoundWinningsModal: React.FC<CollectRoundWinningsModalProps> = ({
           </Box>
         </Flex>
         <Flex alignItems="start" justifyContent="center" mb="24px">
-          {isLoadingHistory ? (
+          {isLoading ? (
             <Skeleton height="21" width="140px" />
           ) : (
             <Text color="textSubtle" fontSize="14px">
@@ -174,7 +180,7 @@ const CollectRoundWinningsModal: React.FC<CollectRoundWinningsModalProps> = ({
           width="100%"
           mb="8px"
           onClick={handleClick}
-          isLoading={isPendingTx || isLoadingHistory}
+          isLoading={isPendingTx || isLoading}
           endIcon={isPendingTx ? <AutoRenewIcon spin color="currentColor" /> : null}
         >
           {t('Confirm')}

@@ -1,10 +1,9 @@
-import { useTranslation } from 'contexts/Localization'
+import { useTranslation } from '@pancakeswap/localization'
 import { Button } from '@pancakeswap/uikit'
-import { useWeb3React } from '@web3-react/core'
+import { useWeb3React } from '@pancakeswap/wagmi'
 import { NextLinkFromReactRouter } from 'components/NextLink'
 import { Ifo, PoolIds } from 'config/constants/types'
 import { WalletIfoData, PublicIfoData } from 'views/Ifos/types'
-import { nftsBaseUrl } from 'views/Nft/market/constants'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import ContributeButton from './ContributeButton'
 import ClaimButton from './ClaimButton'
@@ -22,7 +21,7 @@ interface Props {
   enableStatus: EnableStatus
 }
 
-const IfoCardActions: React.FC<Props> = ({
+const IfoCardActions: React.FC<React.PropsWithChildren<Props>> = ({
   poolId,
   ifo,
   publicIfoData,
@@ -46,7 +45,7 @@ const IfoCardActions: React.FC<Props> = ({
 
   if (!hasProfile) {
     return (
-      <Button as={NextLinkFromReactRouter} to={`${nftsBaseUrl}/profile/${account.toLowerCase()}`} width="100%">
+      <Button as={NextLinkFromReactRouter} to={`/profile/${account.toLowerCase()}`} width="100%">
         {t('Activate your Profile')}
       </Button>
     )
@@ -64,7 +63,7 @@ const IfoCardActions: React.FC<Props> = ({
 
   if (
     (enableStatus !== EnableStatus.ENABLED && publicIfoData.status === 'coming_soon') ||
-    (ifo.version === 3.1 && poolId === PoolIds.poolBasic && !isEligible)
+    (ifo.version >= 3.1 && poolId === PoolIds.poolBasic && !isEligible)
   ) {
     return null
   }

@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo } from 'react'
-import { useWeb3React } from '@web3-react/core'
+import { useWeb3React } from '@pancakeswap/wagmi'
 import { useCakeVault, usePoolsWithVault } from 'state/pools/hooks'
 import { useFastRefreshEffect } from 'hooks/useRefreshEffect'
 import { useAppDispatch } from 'state'
@@ -9,10 +9,14 @@ import {
   fetchCakeVaultPublicData,
   fetchCakeVaultUserData,
   fetchCakePoolPublicDataAsync,
+  fetchCakeFlexibleSideVaultPublicData,
+  fetchCakeFlexibleSideVaultUserData,
+  fetchCakeFlexibleSideVaultFees,
 } from 'state/pools'
+import { batch } from 'react-redux'
 import PoolsTable from './PoolTable'
 
-const NewPool: React.FC = () => {
+const NewPool: React.FC<React.PropsWithChildren> = () => {
   const { account } = useWeb3React()
   const { pools } = usePoolsWithVault()
   const cakeVault = useCakeVault()
@@ -27,16 +31,23 @@ const NewPool: React.FC = () => {
   const dispatch = useAppDispatch()
 
   useFastRefreshEffect(() => {
-    dispatch(fetchCakeVaultPublicData())
-    dispatch(fetchCakePoolPublicDataAsync())
-    if (account) {
-      dispatch(fetchCakeVaultUserData({ account }))
-      dispatch(fetchCakePoolUserDataAsync(account))
-    }
+    batch(() => {
+      dispatch(fetchCakeVaultPublicData())
+      dispatch(fetchCakeFlexibleSideVaultPublicData())
+      dispatch(fetchCakePoolPublicDataAsync())
+      if (account) {
+        dispatch(fetchCakeVaultUserData({ account }))
+        dispatch(fetchCakeFlexibleSideVaultUserData({ account }))
+        dispatch(fetchCakePoolUserDataAsync(account))
+      }
+    })
   }, [account, dispatch])
 
   useEffect(() => {
-    dispatch(fetchCakeVaultFees())
+    batch(() => {
+      dispatch(fetchCakeVaultFees())
+      dispatch(fetchCakeFlexibleSideVaultFees())
+    })
   }, [dispatch])
 
   return <PoolsTable pools={stakedOnlyOpenPools} account={account} userDataReady={userDataReady} />

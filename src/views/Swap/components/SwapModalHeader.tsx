@@ -1,8 +1,8 @@
 import { useMemo } from 'react'
-import { Trade, TradeType } from '@pancakeswap/sdk'
+import { Trade, TradeType, Currency } from '@pancakeswap/sdk'
 import { Button, Text, ErrorIcon, ArrowDownIcon } from '@pancakeswap/uikit'
 import { Field } from 'state/swap/actions'
-import { useTranslation } from 'contexts/Localization'
+import { useTranslation } from '@pancakeswap/localization'
 import { computeTradePriceBreakdown, warningSeverity, computeSlippageAdjustedAmounts } from 'utils/exchange'
 import { AutoColumn } from 'components/Layout/Column'
 import { CurrencyLogo } from 'components/Logo'
@@ -17,7 +17,7 @@ export default function SwapModalHeader({
   showAcceptChanges,
   onAcceptChanges,
 }: {
-  trade: Trade
+  trade: Trade<Currency, Currency, TradeType>
   allowedSlippage: number
   recipient: string | null
   showAcceptChanges: boolean
@@ -62,8 +62,8 @@ export default function SwapModalHeader({
   return (
     <AutoColumn gap="md">
       <RowBetween align="flex-end">
-        <RowFixed gap="0px">
-          <CurrencyLogo currency={trade.inputAmount.currency} size="24px" style={{ marginRight: '12px' }} />
+        <RowFixed gap="4px">
+          <CurrencyLogo currency={trade.inputAmount.currency} size="24px" />
           <TruncatedText
             fontSize="24px"
             color={showAcceptChanges && trade.tradeType === TradeType.EXACT_OUTPUT ? 'primary' : 'text'}
@@ -81,8 +81,8 @@ export default function SwapModalHeader({
         <ArrowDownIcon width="16px" ml="4px" />
       </RowFixed>
       <RowBetween align="flex-end">
-        <RowFixed gap="0px">
-          <CurrencyLogo currency={trade.outputAmount.currency} size="24px" style={{ marginRight: '12px' }} />
+        <RowFixed gap="4px">
+          <CurrencyLogo currency={trade.outputAmount.currency} size="24px" />
           <TruncatedText
             fontSize="24px"
             color={

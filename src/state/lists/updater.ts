@@ -1,6 +1,7 @@
+import { useRouter } from 'next/router'
 import { useAllLists } from 'state/lists/hooks'
 import { getVersionUpgrade, VersionUpgrade } from '@uniswap/token-lists'
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
 import { UNSUPPORTED_LIST_URLS } from 'config/constants/lists'
 import useWeb3Provider from 'hooks/useActiveWeb3React'
 import useFetchListCallback from 'hooks/useFetchListCallback'
@@ -11,9 +12,15 @@ import { acceptListUpdate } from './actions'
 import { useActiveListUrls } from './hooks'
 
 export default function Updater(): null {
-  const { library } = useWeb3Provider()
+  const { provider } = useWeb3Provider()
   const dispatch = useAppDispatch()
   const isWindowVisible = useIsWindowVisible()
+  const router = useRouter()
+  const includeListUpdater = useMemo(() => {
+    return ['/swap', '/limit-orders', 'liquidity', '/add', '/find', '/remove'].some((item) => {
+      return router.pathname.startsWith(item)
+    })
+  }, [router.pathname])
 
   // get all loaded lists, and the active urls
   const lists = useAllLists()
@@ -27,8 +34,8 @@ export default function Updater(): null {
     )
   }, [fetchList, isWindowVisible, lists])
 
-  // fetch all lists every 10 minutes, but only after we initialize library
-  useInterval(fetchAllListsCallback, library ? 1000 * 60 * 10 : null)
+  // fetch all lists every 10 minutes, but only after we initialize library and page has currency input
+  useInterval(fetchAllListsCallback, provider ? 1000 * 60 * 10 : null, true, includeListUpdater)
 
   // whenever a list is not loaded and not loading, try again to load it
   useEffect(() => {
@@ -38,7 +45,7 @@ export default function Updater(): null {
         fetchList(listUrl).catch((error) => console.debug('list added fetching error', error))
       }
     })
-  }, [dispatch, fetchList, library, lists])
+  }, [dispatch, fetchList, provider, lists])
 
   // if any lists from unsupported lists are loaded, check them too (in case new updates since last visit)
   useEffect(() => {
@@ -48,7 +55,7 @@ export default function Updater(): null {
         fetchList(listUrl).catch((error) => console.debug('list added fetching error', error))
       }
     })
-  }, [dispatch, fetchList, library, lists])
+  }, [dispatch, fetchList, provider, lists])
 
   // automatically update lists if versions are minor/patch
   useEffect(() => {

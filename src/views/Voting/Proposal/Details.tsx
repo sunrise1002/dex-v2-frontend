@@ -2,8 +2,8 @@ import { Box, Card, CardBody, CardHeader, Flex, Heading, LinkExternal, Text } fr
 import styled from 'styled-components'
 import { format } from 'date-fns'
 import { Proposal } from 'state/types'
-import { useTranslation } from 'contexts/Localization'
-import { getBscScanLink } from 'utils'
+import { getBlockExploreLink } from 'utils'
+import { useTranslation } from '@pancakeswap/localization'
 import truncateHash from 'utils/truncateHash'
 import { IPFS_GATEWAY } from '../config'
 import { ProposalStateTag } from '../components/Proposals/tags'
@@ -18,7 +18,7 @@ const DetailBox = styled(Box)`
   border-radius: 16px;
 `
 
-const Details: React.FC<DetailsProps> = ({ proposal }) => {
+const Details: React.FC<React.PropsWithChildren<DetailsProps>> = ({ proposal }) => {
   const { t } = useTranslation()
   const startDate = new Date(proposal.start * 1000)
   const endDate = new Date(proposal.end * 1000)
@@ -39,13 +39,13 @@ const Details: React.FC<DetailsProps> = ({ proposal }) => {
         </Flex>
         <Flex alignItems="center" mb="8px">
           <Text color="textSubtle">{t('Creator')}</Text>
-          <LinkExternal href={getBscScanLink(proposal.author, 'address')} ml="8px">
+          <LinkExternal href={getBlockExploreLink(proposal.author, 'address')} ml="8px">
             {truncateHash(proposal.author)}
           </LinkExternal>
         </Flex>
         <Flex alignItems="center" mb="16px">
           <Text color="textSubtle">{t('Snapshot')}</Text>
-          <LinkExternal href={getBscScanLink(proposal.snapshot, 'block')} ml="8px">
+          <LinkExternal href={getBlockExploreLink(proposal.snapshot, 'block')} ml="8px">
             {proposal.snapshot}
           </LinkExternal>
         </Flex>

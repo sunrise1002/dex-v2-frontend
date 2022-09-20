@@ -11,7 +11,7 @@ import {
   useTooltip,
   WaitIcon,
 } from '@pancakeswap/uikit'
-import { useWeb3React } from '@web3-react/core'
+import { useWeb3React } from '@pancakeswap/wagmi'
 import styled from 'styled-components'
 import useLocalDispatch from 'contexts/LocalRedux/useLocalDispatch'
 import { Bet, PredictionStatus } from 'state/types'
@@ -19,7 +19,7 @@ import { REWARD_RATE } from 'state/predictions/config'
 import { useGetCurrentEpoch, useGetIsClaimable, useGetPredictionsStatus } from 'state/predictions/hooks'
 import { fetchLedgerData, markAsCollected } from 'state/predictions'
 import { getRoundResult, Result } from 'state/predictions/helpers'
-import { useTranslation } from 'contexts/Localization'
+import { useTranslation } from '@pancakeswap/localization'
 import { formatBnb, getNetPayout } from './helpers'
 import CollectWinningsButton from '../CollectWinningsButton'
 import ReclaimPositionButton from '../ReclaimPositionButton'
@@ -39,7 +39,7 @@ const YourResult = styled(Box)`
   flex: 1;
 `
 
-const HistoricalBet: React.FC<BetProps> = ({ bet }) => {
+const HistoricalBet: React.FC<React.PropsWithChildren<BetProps>> = ({ bet }) => {
   const [isOpen, setIsOpen] = useState(false)
   const { amount, round } = bet
   const { t } = useTranslation()
@@ -54,7 +54,7 @@ const HistoricalBet: React.FC<BetProps> = ({ bet }) => {
         )}
       </Text>
     </>,
-    { placement: 'right' },
+    { placement: 'top' },
   )
 
   const currentEpoch = useGetCurrentEpoch()

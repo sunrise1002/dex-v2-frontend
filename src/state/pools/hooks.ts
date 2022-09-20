@@ -1,9 +1,11 @@
 import { useEffect, useMemo } from 'react'
-import { useWeb3React } from '@web3-react/core'
+import { useWeb3React } from '@pancakeswap/wagmi'
 import { batch, useSelector } from 'react-redux'
 import { useAppDispatch } from 'state'
 import { useFastRefreshEffect, useSlowRefreshEffect } from 'hooks/useRefreshEffect'
 import farmsConfig from 'config/constants/farms'
+import { livePools } from 'config/constants/pools'
+
 import {
   fetchPoolsPublicDataAsync,
   fetchPoolsUserDataAsync,
@@ -11,10 +13,34 @@ import {
   fetchCakeVaultUserData,
   fetchCakeVaultFees,
   fetchPoolsStakingLimitsAsync,
+  fetchUserIfoCreditDataAsync,
+  fetchIfoPublicDataAsync,
+  fetchCakeFlexibleSideVaultPublicData,
+  fetchCakeFlexibleSideVaultUserData,
+  fetchCakeFlexibleSideVaultFees,
 } from '.'
 import { DeserializedPool, VaultKey } from '../types'
 import { fetchFarmsPublicDataAsync } from '../farms'
-import { makePoolWithUserDataLoadingSelector, makeVaultPoolByKey, poolsWithVaultSelector } from './selectors'
+import {
+  makePoolWithUserDataLoadingSelector,
+  makeVaultPoolByKey,
+  poolsWithVaultSelector,
+  ifoCreditSelector,
+  ifoCeilingSelector,
+  makeVaultPoolWithKeySelector,
+} from './selectors'
+
+const lPoolAddresses = livePools.filter(({ sousId }) => sousId !== 0).map(({ earningToken }) => earningToken.address)
+
+// Only fetch farms for live pools
+const activeFarms = farmsConfig
+  .filter(
+    ({ token, pid, quoteToken }) =>
+      pid !== 0 &&
+      ((token.symbol === 'BUSD' && quoteToken.symbol === 'WBNB') ||
+        lPoolAddresses.find((poolAddress) => poolAddress === token.address)),
+  )
+  .map((farm) => farm.pid)
 
 export const useFetchPublicPoolsData = () => {
   const dispatch = useAppDispatch()
@@ -22,8 +48,8 @@ export const useFetchPublicPoolsData = () => {
   useSlowRefreshEffect(
     (currentBlock) => {
       const fetchPoolsDataWithFarms = async () => {
-        const activeFarms = farmsConfig.filter((farm) => farm.pid !== 0)
-        await dispatch(fetchFarmsPublicDataAsync(activeFarms.map((farm) => farm.pid)))
+        await dispatch(fetchFarmsPublicDataAsync(activeFarms))
+
         batch(() => {
           dispatch(fetchPoolsPublicDataAsync(currentBlock))
           dispatch(fetchPoolsStakingLimitsAsync())
@@ -45,6 +71,12 @@ export const usePoolsWithVault = () => {
   return useSelector(poolsWithVaultSelector)
 }
 
+export const useDeserializedPoolByVaultKey = (vaultKey) => {
+  const vaultPoolWithKeySelector = useMemo(() => makeVaultPoolWithKeySelector(vaultKey), [vaultKey])
+
+  return useSelector(vaultPoolWithKeySelector)
+}
+
 export const usePoolsPageFetch = () => {
   const { account } = useWeb3React()
   const dispatch = useAppDispatch()
@@ -53,9 +85,12 @@ export const usePoolsPageFetch = () => {
   useFastRefreshEffect(() => {
     batch(() => {
       dispatch(fetchCakeVaultPublicData())
+      dispatch(fetchCakeFlexibleSideVaultPublicData())
+      dispatch(fetchIfoPublicDataAsync())
       if (account) {
         dispatch(fetchPoolsUserDataAsync(account))
         dispatch(fetchCakeVaultUserData({ account }))
+        dispatch(fetchCakeFlexibleSideVaultUserData({ account }))
       }
     })
   }, [account, dispatch])
@@ -63,7 +98,29 @@ export const usePoolsPageFetch = () => {
   useEffect(() => {
     batch(() => {
       dispatch(fetchCakeVaultFees())
+      dispatch(fetchCakeFlexibleSideVaultFees())
     })
+  }, [dispatch])
+}
+
+export const useFetchIfo = () => {
+  const { account } = useWeb3React()
+  const dispatch = useAppDispatch()
+
+  useFastRefreshEffect(() => {
+    batch(() => {
+      dispatch(fetchCakeVaultPublicData())
+      dispatch(fetchIfoPublicDataAsync())
+      if (account) {
+        dispatch(fetchPoolsUserDataAsync(account))
+        dispatch(fetchCakeVaultUserData({ account }))
+        dispatch(fetchUserIfoCreditDataAsync(account))
+      }
+    })
+  }, [dispatch, account])
+
+  useEffect(() => {
+    dispatch(fetchCakeVaultFees())
   }, [dispatch])
 }
 
@@ -71,18 +128,16 @@ export const useCakeVault = () => {
   return useVaultPoolByKey(VaultKey.CakeVault)
 }
 
-export const useVaultPools = () => {
-  const cakeVault = useVaultPoolByKey(VaultKey.CakeVault)
-  const vaults = useMemo(() => {
-    return {
-      [VaultKey.CakeVault]: cakeVault,
-    }
-  }, [cakeVault])
-  return vaults
-}
-
 export const useVaultPoolByKey = (key: VaultKey) => {
   const vaultPoolByKey = useMemo(() => makeVaultPoolByKey(key), [key])
 
   return useSelector(vaultPoolByKey)
+}
+
+export const useIfoCredit = () => {
+  return useSelector(ifoCreditSelector)
+}
+
+export const useIfoCeiling = () => {
+  return useSelector(ifoCeilingSelector)
 }

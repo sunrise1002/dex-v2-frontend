@@ -40,8 +40,7 @@ const Step = styled.div<{ confirmed?: boolean; disabled?: boolean; canHover?: bo
     left: 16px;
     z-index: 0;
     pointer-events: none;
-    border: solid 1px;
-    border-color: ${({ theme, confirmed }) => (confirmed ? theme.colors.secondary : theme.colors.textDisabled)};
+    background-color: ${({ theme, confirmed }) => (confirmed ? theme.colors.secondary : theme.colors.textDisabled)};
   }
 
   &:hover {
@@ -142,7 +141,7 @@ interface ProgressArrayProps {
   onClick?: (id: ProgressStepsType) => void
 }
 
-const ProgressSteps: React.FC<ProgressArrayProps> = ({ pickedStep, steps, onClick }) => {
+const ProgressSteps: React.FC<React.PropsWithChildren<ProgressArrayProps>> = ({ pickedStep, steps, onClick }) => {
   return (
     <ProgressWrap>
       {steps.map((step: Step, index: number) => {

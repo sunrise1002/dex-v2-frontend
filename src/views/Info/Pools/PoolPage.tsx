@@ -17,12 +17,12 @@ import {
 } from '@pancakeswap/uikit'
 import Page from 'components/Layout/Page'
 import { NextLinkFromReactRouter } from 'components/NextLink'
-import { useTranslation } from 'contexts/Localization'
+import { useTranslation } from '@pancakeswap/localization'
 import { useState } from 'react'
 import { usePoolChartData, usePoolDatas, usePoolTransactions } from 'state/info/hooks'
 import { useWatchlistPools } from 'state/user/hooks'
 import styled from 'styled-components'
-import { getBscScanLink } from 'utils'
+import { getBlockExploreLink } from 'utils'
 import { CurrencyLogo, DoubleCurrencyLogo } from 'views/Info/components/CurrencyLogo'
 import ChartCard from 'views/Info/components/InfoCharts/ChartCard'
 import TransactionTable from 'views/Info/components/InfoTables/TransactionsTable'
@@ -61,7 +61,7 @@ const LockedTokensContainer = styled(Flex)`
   max-width: 280px;
 `
 
-const PoolPage: React.FC<{ address: string }> = ({ address: routeAddress }) => {
+const PoolPage: React.FC<React.PropsWithChildren<{ address: string }>> = ({ address: routeAddress }) => {
   const { isXs, isSm } = useMatchBreakpointsContext()
   const { t } = useTranslation()
   const [showWeeklyData, setShowWeeklyData] = useState(0)
@@ -96,7 +96,7 @@ const PoolPage: React.FC<{ address: string }> = ({ address: routeAddress }) => {
               </Flex>
             </Breadcrumbs>
             <Flex justifyContent={[null, null, 'flex-end']} mt={['8px', '8px', 0]}>
-              <LinkExternal mr="8px" href={getBscScanLink(address, 'address')}>
+              <LinkExternal mr="8px" href={getBlockExploreLink(address, 'address')}>
                 {t('View on BscScan')}
               </LinkExternal>
               <SaveIcon fill={watchlistPools.includes(address)} onClick={() => addPoolToWatchlist(address)} />

@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { useWeb3React } from '@web3-react/core'
+import { useState, useCallback } from 'react'
+import { useWeb3React } from '@pancakeswap/wagmi'
 import styled from 'styled-components'
 import {
   CardHeader,
@@ -13,7 +13,7 @@ import {
   Skeleton,
   Box,
 } from '@pancakeswap/uikit'
-import { useTranslation } from 'contexts/Localization'
+import { useTranslation } from '@pancakeswap/localization'
 import { LotteryStatus } from 'config/constants/types'
 import { useGetUserLotteriesGraphData, useLottery } from 'state/lottery/hooks'
 import { fetchLottery } from 'state/lottery/helpers'
@@ -47,7 +47,10 @@ const StyledCardBody = styled(CardBody)`
   min-height: 240px;
 `
 
-const YourHistoryCard: React.FC<YourHistoryCardProps> = ({ handleShowMoreClick, numUserRoundsRequested }) => {
+const YourHistoryCard: React.FC<React.PropsWithChildren<YourHistoryCardProps>> = ({
+  handleShowMoreClick,
+  numUserRoundsRequested,
+}) => {
   const {
     t,
     currentLanguage: { locale },
@@ -72,17 +75,17 @@ const YourHistoryCard: React.FC<YourHistoryCardProps> = ({ handleShowMoreClick, 
     setSelectedLotteryNodeData(processedLotteryData)
   }
 
-  const clearState = () => {
+  const clearState = useCallback(() => {
     setShouldShowRoundDetail(false)
     setSelectedLotteryNodeData(null)
     setSelectedLotteryId(null)
-  }
+  }, [])
 
   const getHeader = () => {
     if (shouldShowRoundDetail) {
       return (
         <Flex alignItems="center">
-          <ArrowBackIcon cursor="pointer" onClick={() => clearState()} mr="20px" />
+          <ArrowBackIcon cursor="pointer" onClick={clearState} mr="20px" />
           <Flex flexDirection="column" alignItems="flex-start" justifyContent="center">
             <Heading scale="md" mb="4px">
               {t('Round')} {selectedLotteryId || ''}

@@ -1,7 +1,7 @@
 import { BigNumber } from '@ethersproject/bignumber'
 import { Contract } from '@ethersproject/contracts'
-import { SwapParameters, Trade } from '@pancakeswap/sdk'
-import { TranslateFunction, useTranslation } from 'contexts/Localization'
+import { SwapParameters, Trade, Currency, TradeType } from '@pancakeswap/sdk'
+import { useTranslation } from '@pancakeswap/localization'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { useMemo } from 'react'
 import { useGasPrice } from 'state/user/hooks'
@@ -11,6 +11,8 @@ import { useTransactionAdder } from '../state/transactions/hooks'
 import { calculateGasMargin, isAddress } from '../utils'
 import isZero from '../utils/isZero'
 import { useSwapCallArguments } from './useSwapCallArguments'
+import { transactionErrorToUserReadableMessage } from '../utils/transactionErrorToUserReadableMessage'
+import { basisPointsToPercent } from '../utils/exchange'
 
 export enum SwapCallbackState {
   INVALID,
@@ -38,11 +40,11 @@ interface SwapCallEstimate {
 // returns a function that will execute a swap, if the parameters are all valid
 // and the user has approved the slippage adjusted input amount for the trade
 export function useSwapCallback(
-  trade: Trade | undefined, // trade to execute, required
+  trade: Trade<Currency, Currency, TradeType> | undefined, // trade to execute, required
   allowedSlippage: number = INITIAL_ALLOWED_SLIPPAGE, // in bips
   recipientAddress: string | null, // the address of the recipient of the trade, or null if swap should be returned to sender
 ): { state: SwapCallbackState; callback: null | (() => Promise<string>); error: string | null } {
-  const { account, chainId, library } = useActiveWeb3React()
+  const { account, chainId } = useActiveWeb3React()
   const gasPrice = useGasPrice()
 
   const swapCalls = useSwapCallArguments(trade, allowedSlippage, recipientAddress)
@@ -54,7 +56,7 @@ export function useSwapCallback(
   const recipient = recipientAddress === null ? account : recipientAddress
 
   return useMemo(() => {
-    if (!trade || !library || !account || !chainId) {
+    if (!trade || !account || !chainId) {
       return { state: SwapCallbackState.INVALID, callback: null, error: 'Missing dependencies' }
     }
     if (!recipient) {
@@ -93,7 +95,7 @@ export function useSwapCallback(
                   .catch((callError) => {
                     console.error('Call threw error', call, callError)
 
-                    return { call, error: swapErrorToUserReadableMessage(callError, t) }
+                    return { call, error: transactionErrorToUserReadableMessage(callError, t) }
                   })
               })
           }),
@@ -127,19 +129,48 @@ export function useSwapCallback(
           .then((response: any) => {
             const inputSymbol = trade.inputAmount.currency.symbol
             const outputSymbol = trade.outputAmount.currency.symbol
-            const inputAmount = trade.inputAmount.toSignificant(3)
-            const outputAmount = trade.outputAmount.toSignificant(3)
+            const pct = basisPointsToPercent(allowedSlippage)
+            const inputAmount =
+              trade.tradeType === TradeType.EXACT_INPUT
+                ? trade.inputAmount.toSignificant(3)
+                : trade.maximumAmountIn(pct).toSignificant(3)
+            const outputAmount =
+              trade.tradeType === TradeType.EXACT_OUTPUT
+                ? trade.outputAmount.toSignificant(3)
+                : trade.minimumAmountOut(pct).toSignificant(3)
 
-            const base = `Swap ${inputAmount} ${inputSymbol} for ${outputAmount} ${outputSymbol}`
-            const withRecipient =
-              recipient === account
-                ? base
-                : `${base} to ${
-                    recipientAddress && isAddress(recipientAddress) ? truncateHash(recipientAddress) : recipientAddress
-                  }`
+            const base = `Swap ${
+              trade.tradeType === TradeType.EXACT_OUTPUT ? 'max.' : ''
+            } ${inputAmount} ${inputSymbol} for ${
+              trade.tradeType === TradeType.EXACT_INPUT ? 'min.' : ''
+            } ${outputAmount} ${outputSymbol}`
+
+            const recipientAddressText =
+              recipientAddress && isAddress(recipientAddress) ? truncateHash(recipientAddress) : recipientAddress
+
+            const withRecipient = recipient === account ? base : `${base} to ${recipientAddressText}`
+
+            const translatableWithRecipient =
+              trade.tradeType === TradeType.EXACT_OUTPUT
+                ? recipient === account
+                  ? 'Swap max. %inputAmount% %inputSymbol% for %outputAmount% %outputSymbol%'
+                  : 'Swap max. %inputAmount% %inputSymbol% for %outputAmount% %outputSymbol% to %recipientAddress%'
+                : recipient === account
+                ? 'Swap %inputAmount% %inputSymbol% for min. %outputAmount% %outputSymbol%'
+                : 'Swap %inputAmount% %inputSymbol% for min. %outputAmount% %outputSymbol% to %recipientAddress%'
 
             addTransaction(response, {
               summary: withRecipient,
+              translatableSummary: {
+                text: translatableWithRecipient,
+                data: {
+                  inputAmount,
+                  inputSymbol,
+                  outputAmount,
+                  outputSymbol,
+                  ...(recipient !== account && { recipientAddress: recipientAddressText }),
+                },
+              },
               type: 'swap',
             })
 
@@ -152,53 +183,11 @@ export function useSwapCallback(
             } else {
               // otherwise, the error was unexpected and we need to convey that
               console.error(`Swap failed`, error, methodName, args, value)
-              throw new Error(t('Swap failed: %message%', { message: swapErrorToUserReadableMessage(error, t) }))
+              throw new Error(t('Swap failed: %message%', { message: transactionErrorToUserReadableMessage(error, t) }))
             }
           })
       },
       error: null,
     }
-  }, [trade, library, account, chainId, recipient, recipientAddress, swapCalls, gasPrice, t, addTransaction])
-}
-
-/**
- * This is hacking out the revert reason from the ethers provider thrown error however it can.
- * This object seems to be undocumented by ethers.
- * @param error an error from the ethers provider
- */
-function swapErrorToUserReadableMessage(error: any, t: TranslateFunction) {
-  let reason: string | undefined
-  while (error) {
-    reason = error.reason ?? error.data?.message ?? error.message ?? reason
-    // eslint-disable-next-line no-param-reassign
-    error = error.error ?? error.data?.originalError
-  }
-
-  if (reason?.indexOf('execution reverted: ') === 0) reason = reason.substring('execution reverted: '.length)
-
-  switch (reason) {
-    case 'PancakeRouter: EXPIRED':
-      return t(
-        'The transaction could not be sent because the deadline has passed. Please check that your transaction deadline is not too low.',
-      )
-    case 'PancakeRouter: INSUFFICIENT_OUTPUT_AMOUNT':
-    case 'PancakeRouter: EXCESSIVE_INPUT_AMOUNT':
-      return t(
-        'This transaction will not succeed either due to price movement or fee on transfer. Try increasing your slippage tolerance.',
-      )
-    case 'TransferHelper: TRANSFER_FROM_FAILED':
-      return t('The input token cannot be transferred. There may be an issue with the input token.')
-    case 'Pancake: TRANSFER_FAILED':
-      return t('The output token cannot be transferred. There may be an issue with the output token.')
-    default:
-      if (reason?.indexOf('undefined is not an object') !== -1) {
-        console.error(error, reason)
-        return t(
-          'An error occurred when trying to execute this swap. You may need to increase your slippage tolerance. If that does not work, there may be an incompatibility with the token you are trading.',
-        )
-      }
-      return t('Unknown error%reason%. Try increasing your slippage tolerance.', {
-        reason: reason ? `: "${reason}"` : '',
-      })
-  }
+  }, [trade, account, chainId, recipient, recipientAddress, swapCalls, gasPrice, t, addTransaction, allowedSlippage])
 }

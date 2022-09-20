@@ -3,10 +3,9 @@ import { differenceInSeconds } from 'date-fns'
 import { convertTimeToSeconds } from 'utils/timeHelper'
 import { Modal, Box, MessageText, Message, Checkbox, Flex, Text } from '@pancakeswap/uikit'
 import _noop from 'lodash/noop'
-import { useTranslation } from 'contexts/Localization'
+import { useTranslation } from '@pancakeswap/localization'
 import BigNumber from 'bignumber.js'
-import _toNumber from 'lodash/toNumber'
-
+import { useIfoCeiling } from 'state/pools/hooks'
 import useTheme from 'hooks/useTheme'
 import { useBUSDCakeAmount } from 'hooks/useBUSDPrice'
 import { getBalanceNumber, getDecimalAmount, getBalanceAmount } from 'utils/formatBalance'
@@ -27,7 +26,7 @@ const RenewDuration = ({ setCheckedState, checkedState }) => {
     <>
       {!checkedState && (
         <Message variant="warning" mb="16px">
-          <MessageText>
+          <MessageText maxWidth="320px">
             {t(
               'Adding more CAKE will renew your lock, setting it to remaining duration. Due to shorter lock period, benefits decrease. To keep similar benefits, extend your lock.',
             )}
@@ -43,10 +42,10 @@ const RenewDuration = ({ setCheckedState, checkedState }) => {
     </>
   )
 }
-// add 60s buffer in order to make sure minium duration by pass on renew extension
+// add 60s buffer in order to make sure minimum duration by pass on renew extension
 const MIN_DURATION_BUFFER = 60
 
-const AddAmountModal: React.FC<AddAmountModalProps> = ({
+const AddAmountModal: React.FC<React.PropsWithChildren<AddAmountModalProps>> = ({
   onDismiss,
   currentBalance,
   currentLockedAmount,
@@ -56,6 +55,7 @@ const AddAmountModal: React.FC<AddAmountModalProps> = ({
   stakingTokenBalance,
 }) => {
   const { theme } = useTheme()
+  const ceiling = useIfoCeiling()
   const [lockedAmount, setLockedAmount] = useState('')
   const [checkedState, setCheckedState] = useState(false)
   const { t } = useTranslation()
@@ -98,6 +98,7 @@ const AddAmountModal: React.FC<AddAmountModalProps> = ({
         newLockedAmount={totalLockedAmount}
         usdValueStaked={usdValueNewStaked}
         lockEndTime={lockEndTime}
+        ceiling={ceiling}
       />
     ),
     [
@@ -108,6 +109,7 @@ const AddAmountModal: React.FC<AddAmountModalProps> = ({
       totalLockedAmount,
       usdValueNewStaked,
       lockEndTime,
+      ceiling,
     ],
   )
 

@@ -11,12 +11,12 @@ import {
   Flex,
   ExpandableLabel,
 } from '@pancakeswap/uikit'
-import { SubgraphHealthIndicator } from 'components/SubgraphHealthIndicator'
-import { useTranslation } from 'contexts/Localization'
+import SubgraphHealthIndicator from 'components/SubgraphHealthIndicator'
+import { useTranslation } from '@pancakeswap/localization'
 import { TeamRanksProps } from '../../../types'
 import TopTradersGrid from './TopTradersGrid'
 
-const TopTradersCard: React.FC<TeamRanksProps & { subgraphName?: string }> = ({
+const TopTradersCard: React.FC<React.PropsWithChildren<TeamRanksProps & { subgraphName?: string }>> = ({
   team1LeaderboardInformation,
   team2LeaderboardInformation,
   team3LeaderboardInformation,

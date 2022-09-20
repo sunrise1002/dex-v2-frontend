@@ -1,13 +1,14 @@
 import { useRef } from 'react'
 import styled from 'styled-components'
 import { Button, ChevronUpIcon } from '@pancakeswap/uikit'
-import { useTranslation } from 'contexts/Localization'
+import { useTranslation } from '@pancakeswap/localization'
 import { DeserializedPool } from 'state/types'
-import PoolRow from './PoolRow'
+import PoolRow, { VaultPoolRow } from './PoolRow'
 
 interface PoolsTableProps {
   pools: DeserializedPool[]
   account: string
+  urlSearch?: string
 }
 
 const StyledTable = styled.div`
@@ -34,20 +35,37 @@ const ScrollButtonContainer = styled.div`
   padding-bottom: 5px;
 `
 
-const PoolsTable: React.FC<PoolsTableProps> = ({ pools, account }) => {
+const PoolsTable: React.FC<React.PropsWithChildren<PoolsTableProps>> = ({ pools, account, urlSearch }) => {
   const { t } = useTranslation()
   const tableWrapperEl = useRef<HTMLDivElement>(null)
+
   const scrollToTop = (): void => {
-    tableWrapperEl.current.scrollIntoView({
+    window.scrollTo({
+      top: tableWrapperEl.current.offsetTop,
       behavior: 'smooth',
     })
   }
+
   return (
     <StyledTableBorder>
       <StyledTable id="pools-table" role="table" ref={tableWrapperEl}>
-        {pools.map((pool) => (
-          <PoolRow key={pool.vaultKey ?? pool.sousId} pool={pool} account={account} />
-        ))}
+        {pools.map((pool) =>
+          pool.vaultKey ? (
+            <VaultPoolRow
+              initialActivity={urlSearch.toLowerCase() === pool.earningToken.symbol?.toLowerCase()}
+              key={pool.vaultKey}
+              vaultKey={pool.vaultKey}
+              account={account}
+            />
+          ) : (
+            <PoolRow
+              initialActivity={urlSearch.toLowerCase() === pool.earningToken.symbol?.toLowerCase()}
+              key={pool.sousId}
+              sousId={pool.sousId}
+              account={account}
+            />
+          ),
+        )}
         <ScrollButtonContainer>
           <Button variant="text" onClick={scrollToTop}>
             {t('To Top')}

@@ -6,6 +6,11 @@ import { getApy } from 'utils/compoundApyHelpers'
 import { getBalanceNumber, getFullDisplayBalance, getDecimalAmount } from 'utils/formatBalance'
 import memoize from 'lodash/memoize'
 
+// min deposit and withdraw amount
+export const MIN_LOCK_AMOUNT = new BigNumber(10000000000000)
+
+export const ENABLE_EXTEND_LOCK_AMOUNT = new BigNumber(100000000000000)
+
 export const convertSharesToCake = (
   shares: BigNumber,
   cakePerFullShare: BigNumber,
@@ -60,8 +65,7 @@ export const getCakeVaultEarnings = (
   earningTokenPrice: number,
   fee?: BigNumber,
 ) => {
-  const hasAutoEarnings =
-    account && cakeAtLastUserAction && cakeAtLastUserAction.gt(0) && userShares && userShares.gt(0)
+  const hasAutoEarnings = account && cakeAtLastUserAction?.gt(0) && userShares?.gt(0)
   const { cakeAsBigNumber } = convertSharesToCake(userShares, pricePerFullShare)
   const autoCakeProfit = cakeAsBigNumber.minus(fee || BIG_ZERO).minus(cakeAtLastUserAction)
   const autoCakeToDisplay = autoCakeProfit.gte(0) ? getBalanceNumber(autoCakeProfit, 18) : 0
@@ -83,3 +87,8 @@ export const getPoolBlockInfo = memoize(
   },
   (pool, currentBlock) => `${pool.startBlock}#${pool.endBlock}#${pool.isFinished}#${currentBlock}`,
 )
+
+export const getICakeWeekDisplay = (ceiling: BigNumber) => {
+  const weeks = new BigNumber(ceiling).div(60).div(60).div(24).div(7)
+  return Math.round(weeks.toNumber())
+}

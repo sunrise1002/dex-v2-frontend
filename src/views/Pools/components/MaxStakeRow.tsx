@@ -1,8 +1,8 @@
 import React from 'react'
 import { Flex, Link, Text, TimerIcon } from '@pancakeswap/uikit'
-import { getBscScanLink } from 'utils'
+import { getBlockExploreLink } from 'utils'
 import BigNumber from 'bignumber.js'
-import { useTranslation } from 'contexts/Localization'
+import { useTranslation } from '@pancakeswap/localization'
 import Balance from 'components/Balance'
 import { getFullDisplayBalance } from 'utils/formatBalance'
 import { Token } from '@pancakeswap/sdk'
@@ -16,7 +16,7 @@ interface MaxStakeRowProps {
   hasPoolStarted: boolean
 }
 
-const MaxStakeRow: React.FC<MaxStakeRowProps> = ({
+const MaxStakeRow: React.FC<React.PropsWithChildren<MaxStakeRowProps>> = ({
   small = false,
   stakingLimit,
   currentBlock,
@@ -37,7 +37,7 @@ const MaxStakeRow: React.FC<MaxStakeRowProps> = ({
       {hasPoolStarted && (
         <Flex justifyContent="space-between" alignItems="center">
           <Text small={small}>{t('Max. stake limit ends in')}:</Text>
-          <Link external href={getBscScanLink(stakingLimitEndBlock, 'countdown')}>
+          <Link external href={getBlockExploreLink(stakingLimitEndBlock, 'countdown')}>
             <Balance
               small={small}
               value={Math.max(stakingLimitEndBlock - currentBlock, 0)}

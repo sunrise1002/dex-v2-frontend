@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 import { Modal } from '@pancakeswap/uikit'
-import { useTranslation } from 'contexts/Localization'
+import { useTranslation } from '@pancakeswap/localization'
 import { LotteryStatus } from 'config/constants/types'
 import { useLottery } from 'state/lottery/hooks'
 import useTheme from 'hooks/useTheme'
@@ -8,8 +8,9 @@ import PreviousRoundTicketsInner from './PreviousRoundTicketsInner'
 import CurrentRoundTicketsInner from './CurrentRoundTicketsInner'
 
 const StyledModal = styled(Modal)`
-  min-width: 280px;
-  max-width: 320px;
+  ${({ theme }) => theme.mediaQueries.md} {
+    width: 280px;
+  }
 `
 
 interface ViewTicketsModalProps {
@@ -18,7 +19,11 @@ interface ViewTicketsModalProps {
   onDismiss?: () => void
 }
 
-const ViewTicketsModal: React.FC<ViewTicketsModalProps> = ({ onDismiss, roundId, roundStatus }) => {
+const ViewTicketsModal: React.FC<React.PropsWithChildren<ViewTicketsModalProps>> = ({
+  onDismiss,
+  roundId,
+  roundStatus,
+}) => {
   const { t } = useTranslation()
   const { theme } = useTheme()
   const { currentLotteryId } = useLottery()

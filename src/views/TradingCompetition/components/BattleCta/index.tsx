@@ -7,16 +7,16 @@ import {
   LaurelRightIcon,
   Button,
   CheckmarkCircleIcon,
-  useWalletModal,
   useModal,
   Text,
   Box,
   TwitterIcon,
 } from '@pancakeswap/uikit'
-import useAuth from 'hooks/useAuth'
-import { useTranslation } from 'contexts/Localization'
+import { useWallet } from 'hooks/useWallet'
+import { useTranslation } from '@pancakeswap/localization'
 import { FINISHED, OVER } from 'config/constants/trading-competition/phases'
 import { useRouter } from 'next/router'
+import { useCallback } from 'react'
 import RegisterModal from '../RegisterModal'
 import ClaimModal from '../ClaimModal'
 import { Heading2Text } from '../CompetitionHeadingText'
@@ -57,7 +57,7 @@ const StyledHeadingText = styled(Heading2Text)`
   padding: 0px 10px;
 `
 
-const BattleCta: React.FC<CompetitionProps> = ({
+const BattleCta: React.FC<React.PropsWithChildren<CompetitionProps>> = ({
   userTradingInformation,
   currentPhase,
   account,
@@ -74,8 +74,7 @@ const BattleCta: React.FC<CompetitionProps> = ({
 }) => {
   const router = useRouter()
   const { t } = useTranslation()
-  const { login, logout } = useAuth()
-  const { onPresentConnectModal } = useWalletModal(login, logout, t)
+  const { onPresentConnectModal } = useWallet()
   const [onPresentRegisterModal] = useModal(
     <RegisterModal profile={profile} onRegisterSuccess={onRegisterSuccess} />,
     false,
@@ -161,7 +160,7 @@ const BattleCta: React.FC<CompetitionProps> = ({
     return 'Whoopsie'
   }
 
-  const handleCtaClick = () => {
+  const handleCtaClick = useCallback(() => {
     // All conditions when button isn't disabled
 
     // No wallet connected
@@ -180,7 +179,16 @@ const BattleCta: React.FC<CompetitionProps> = ({
     if (hasRegistered && hasCompetitionEnded) {
       onPresentClaimModal()
     }
-  }
+  }, [
+    account,
+    hasCompetitionEnded,
+    hasRegistered,
+    isCompetitionLive,
+    onPresentClaimModal,
+    onPresentConnectModal,
+    onPresentRegisterModal,
+    router,
+  ])
 
   return (
     <StyledCard>
@@ -209,7 +217,7 @@ const BattleCta: React.FC<CompetitionProps> = ({
                   scale="sm"
                   variant="secondary"
                   onClick={() => {
-                    window.open('https://twitter.com/pancakeswap')
+                    window.open('https://twitter.com/pancakeswap', '_blank', 'noopener noreferrer')
                   }}
                 >
                   <TwitterIcon color="textSubtle" fontSize="12px" mr="5px" />
@@ -220,7 +228,7 @@ const BattleCta: React.FC<CompetitionProps> = ({
           )}
           {currentPhase.state !== FINISHED && (
             <Flex alignItems="flex-end">
-              <StyledButton disabled={isButtonDisabled} onClick={() => handleCtaClick()}>
+              <StyledButton disabled={isButtonDisabled} onClick={handleCtaClick}>
                 {getButtonText()}
               </StyledButton>
             </Flex>

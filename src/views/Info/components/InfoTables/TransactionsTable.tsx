@@ -5,11 +5,11 @@ import styled from 'styled-components'
 import { formatDistanceToNowStrict } from 'date-fns'
 import { Text, Flex, Box, Radio, Skeleton, LinkExternal, ArrowForwardIcon, ArrowBackIcon } from '@pancakeswap/uikit'
 import { formatAmount } from 'utils/formatInfoNumbers'
-import { getBscScanLink } from 'utils'
+import { getBlockExploreLink } from 'utils'
 import truncateHash from 'utils/truncateHash'
 import { Transaction, TransactionType } from 'state/info/types'
 import { ITEMS_PER_INFO_TABLE_PAGE } from 'config/constants/info'
-import { useTranslation } from 'contexts/Localization'
+import { useTranslation } from '@pancakeswap/localization'
 import { ClickableColumnHeader, TableWrapper, PageButtons, Arrow, Break } from './shared'
 
 const Wrapper = styled.div`
@@ -72,7 +72,7 @@ const SORT_FIELD = {
   amountToken1: 'amountToken1',
 }
 
-const TableLoader: React.FC = () => {
+const TableLoader: React.FC<React.PropsWithChildren> = () => {
   const loadingRow = (
     <ResponsiveGrid>
       <Skeleton />
@@ -92,7 +92,7 @@ const TableLoader: React.FC = () => {
   )
 }
 
-const DataRow: React.FC<{ transaction: Transaction }> = ({ transaction }) => {
+const DataRow: React.FC<React.PropsWithChildren<{ transaction: Transaction }>> = ({ transaction }) => {
   const { t } = useTranslation()
   const abs0 = Math.abs(transaction.amountToken0)
   const abs1 = Math.abs(transaction.amountToken1)
@@ -101,7 +101,7 @@ const DataRow: React.FC<{ transaction: Transaction }> = ({ transaction }) => {
 
   return (
     <ResponsiveGrid>
-      <LinkExternal href={getBscScanLink(transaction.hash, 'transaction')}>
+      <LinkExternal href={getBlockExploreLink(transaction.hash, 'transaction')}>
         <Text>
           {transaction.type === TransactionType.MINT
             ? t('Add %token0% and %token1%', { token0: transaction.token0Symbol, token1: transaction.token1Symbol })
@@ -117,7 +117,7 @@ const DataRow: React.FC<{ transaction: Transaction }> = ({ transaction }) => {
       <Text>
         <Text>{`${formatAmount(abs1)} ${transaction.token1Symbol}`}</Text>
       </Text>
-      <LinkExternal href={getBscScanLink(transaction.sender, 'address')}>
+      <LinkExternal href={getBlockExploreLink(transaction.sender, 'address')}>
         {truncateHash(transaction.sender)}
       </LinkExternal>
       <Text>{formatDistanceToNowStrict(parseInt(transaction.timestamp, 10) * 1000)}</Text>
@@ -125,9 +125,11 @@ const DataRow: React.FC<{ transaction: Transaction }> = ({ transaction }) => {
   )
 }
 
-const TransactionTable: React.FC<{
-  transactions: Transaction[]
-}> = ({ transactions }) => {
+const TransactionTable: React.FC<
+  React.PropsWithChildren<{
+    transactions: Transaction[]
+  }>
+> = ({ transactions }) => {
   const [sortField, setSortField] = useState(SORT_FIELD.timestamp)
   const [sortDirection, setSortDirection] = useState<boolean>(true)
 

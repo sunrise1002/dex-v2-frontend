@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Card, CardBody, Flex, PlayCircleOutlineIcon, Text, useTooltip } from '@pancakeswap/uikit'
 import { getNow } from 'utils/getNow'
-import { useTranslation } from 'contexts/Localization'
+import { useTranslation } from '@pancakeswap/localization'
 import { NodeRound, NodeLedger, BetPosition } from 'state/types'
 import { useGetBufferSeconds } from 'state/predictions/hooks'
 import { getHasRoundFailed } from 'state/predictions/helpers'
@@ -15,6 +15,7 @@ import CardHeader from './CardHeader'
 import CanceledRoundCard from './CanceledRoundCard'
 import CalculatingCard from './CalculatingCard'
 import LiveRoundPrice from './LiveRoundPrice'
+import { useConfig } from '../../context/ConfigProvider'
 
 interface LiveRoundCardProps {
   round: NodeRound
@@ -27,7 +28,7 @@ interface LiveRoundCardProps {
 
 const REFRESH_PRICE_BEFORE_SECONDS_TO_CLOSE = 2
 
-const LiveRoundCard: React.FC<LiveRoundCardProps> = ({
+const LiveRoundCard: React.FC<React.PropsWithChildren<LiveRoundCardProps>> = ({
   round,
   betAmount,
   hasEnteredUp,
@@ -39,6 +40,7 @@ const LiveRoundCard: React.FC<LiveRoundCardProps> = ({
   const { lockPrice, totalAmount, lockTimestamp, closeTimestamp } = round
   const { price, refresh } = usePollOraclePrice()
   const bufferSeconds = useGetBufferSeconds()
+  const { minPriceUsdDisplayed } = useConfig()
 
   const [isCalculatingPhase, setIsCalculatingPhase] = useState(false)
 
@@ -100,10 +102,10 @@ const LiveRoundCard: React.FC<LiveRoundCardProps> = ({
           </Text>
           <Flex alignItems="center" justifyContent="space-between" mb="16px" height="36px">
             <div ref={targetRef}>
-              <LiveRoundPrice isBull={isBull} />
+              <LiveRoundPrice isBull={isBull} price={price} />
             </div>
             <PositionTag betPosition={isBull ? BetPosition.BULL : BetPosition.BEAR}>
-              {formatUsdv2(priceDifference)}
+              {formatUsdv2(priceDifference, minPriceUsdDisplayed)}
             </PositionTag>
           </Flex>
           {lockPrice && <LockPriceRow lockPrice={lockPrice} />}

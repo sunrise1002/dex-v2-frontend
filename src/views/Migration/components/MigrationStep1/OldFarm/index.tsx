@@ -1,6 +1,6 @@
 import React, { useMemo, useCallback } from 'react'
 import BigNumber from 'bignumber.js'
-import { useWeb3React } from '@web3-react/core'
+import { useWeb3React } from '@pancakeswap/wagmi'
 import { getFarmApr } from 'utils/apr'
 import { RowType } from '@pancakeswap/uikit'
 import { ChainId } from '@pancakeswap/sdk'
@@ -13,7 +13,7 @@ import OldFarm from './FarmTable'
 import { RowProps } from './FarmRow'
 import { DesktopColumnSchema } from '../../types'
 
-const OldFarmStep1: React.FC = () => {
+const OldFarmStep1: React.FC<React.PropsWithChildren> = () => {
   const { account } = useWeb3React()
   const { data: farmsLP, userDataLoaded } = useFarmsV1()
   const cakePrice = usePriceCakeBusd()
@@ -41,7 +41,7 @@ const OldFarmStep1: React.FC = () => {
           new BigNumber(farm.poolWeight),
           cakePrice,
           totalLiquidity,
-          farm.lpAddresses[ChainId.MAINNET],
+          farm.lpAddresses[ChainId.BSC],
           CAKE_PER_YEAR,
         )
         return { ...farm, apr: cakeRewardsApr, lpRewardsApr, liquidity: totalLiquidity }
@@ -92,8 +92,7 @@ const OldFarmStep1: React.FC = () => {
   })
 
   const renderContent = (): JSX.Element => {
-    const columnSchema = DesktopColumnSchema
-    const columns = columnSchema.map((column) => ({
+    const columns = DesktopColumnSchema.map((column) => ({
       id: column.id,
       name: column.name,
       label: column.label,

@@ -5,13 +5,14 @@ import AnimatedIconComponent from "../Svg/AnimatedIconComponent";
 import { StyledBottomNavItem, StyledBottomNavText } from "./styles";
 import { BottomNavItemProps } from "./types";
 
-const BottomNavItem: React.FC<BottomNavItemProps> = ({
+const BottomNavItem: React.FC<React.PropsWithChildren<BottomNavItemProps>> = ({
   label,
   icon,
   fillIcon,
   href,
   showItemsOnMobile = false,
   isActive = false,
+  disabled = false,
   ...props
 }) => {
   const { linkComponent } = useContext(MenuContext);
@@ -39,11 +40,11 @@ const BottomNavItem: React.FC<BottomNavItemProps> = ({
   );
 
   return showItemsOnMobile ? (
-    <StyledBottomNavItem type="button" {...props}>
+    <StyledBottomNavItem style={{ opacity: disabled ? 0.5 : 1 }} type="button" {...props}>
       {bottomNavItemContent}
     </StyledBottomNavItem>
   ) : (
-    <StyledBottomNavItem as={linkComponent} href={href} {...props}>
+    <StyledBottomNavItem style={{ opacity: disabled ? 0.5 : 1 }} as={linkComponent} href={href} {...props}>
       {bottomNavItemContent}
     </StyledBottomNavItem>
   );

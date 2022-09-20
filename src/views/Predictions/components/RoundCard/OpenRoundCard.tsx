@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react'
-import { useWeb3React } from '@web3-react/core'
+import { useState, useEffect, useMemo } from 'react'
+import { useWeb3React } from '@pancakeswap/wagmi'
 import {
   Card,
   CardBody,
@@ -10,7 +10,7 @@ import {
   ArrowDownIcon,
 } from '@pancakeswap/uikit'
 import { getNow } from 'utils/getNow'
-import { useTranslation } from 'contexts/Localization'
+import { useTranslation } from '@pancakeswap/localization'
 import useLocalDispatch from 'contexts/LocalRedux/useLocalDispatch'
 import { BetPosition, NodeLedger, NodeRound } from 'state/types'
 import { fetchLedgerData } from 'state/predictions'
@@ -40,7 +40,7 @@ interface State {
   position: BetPosition
 }
 
-const OpenRoundCard: React.FC<OpenRoundCardProps> = ({
+const OpenRoundCard: React.FC<React.PropsWithChildren<OpenRoundCardProps>> = ({
   round,
   betAmount,
   hasEnteredUp,
@@ -61,7 +61,23 @@ const OpenRoundCard: React.FC<OpenRoundCardProps> = ({
   const { lockTimestamp } = round ?? { lockTimestamp: null }
   const { isSettingPosition, position } = state
   const [isBufferPhase, setIsBufferPhase] = useState(false)
-  const positionDisplay = position === BetPosition.BULL ? t('Up').toUpperCase() : t('Down').toUpperCase()
+  const positionDisplay = useMemo(
+    () => (position === BetPosition.BULL ? t('Up').toUpperCase() : t('Down').toUpperCase()),
+    [t, position],
+  )
+  const positionEnteredText = useMemo(
+    () => (hasEnteredUp ? t('Up').toUpperCase() : hasEnteredDown ? t('Down').toUpperCase() : null),
+    [t, hasEnteredUp, hasEnteredDown],
+  )
+  const positionEnteredIcon = useMemo(
+    () =>
+      hasEnteredUp ? (
+        <ArrowUpIcon color="currentColor" />
+      ) : hasEnteredDown ? (
+        <ArrowDownIcon color="currentColor" />
+      ) : null,
+    [hasEnteredUp, hasEnteredDown],
+  )
   const { targetRef, tooltipVisible, tooltip } = useTooltip(
     <div style={{ whiteSpace: 'nowrap' }}>{`${formatBnbv2(betAmount)} ${token.symbol}`}</div>,
     { placement: 'top' },
@@ -131,10 +147,6 @@ const OpenRoundCard: React.FC<OpenRoundCardProps> = ({
     )
   }
 
-  const getPositionEnteredIcon = () => {
-    return position === BetPosition.BULL ? <ArrowUpIcon color="currentColor" /> : <ArrowDownIcon color="currentColor" />
-  }
-
   return (
     <CardFlip isFlipped={isSettingPosition} height="404px">
       <Card borderBackground={getBorderBackground(theme, 'next')}>
@@ -168,15 +180,24 @@ const OpenRoundCard: React.FC<OpenRoundCardProps> = ({
                   {t('Enter DOWN')}
                 </Button>
               </>
-            ) : (
+            ) : positionEnteredText ? (
               <>
                 <div ref={targetRef}>
-                  <Button disabled startIcon={getPositionEnteredIcon()} width="100%" mb="8px">
-                    {t('%position% Entered', { position: positionDisplay })}
+                  <Button disabled startIcon={positionEnteredIcon} width="100%" mb="8px">
+                    {t('%position% Entered', { position: positionEnteredText })}
                   </Button>
                 </div>
                 <PrizePoolRow totalAmount={round.totalAmount} />
                 {tooltipVisible && tooltip}
+              </>
+            ) : (
+              <>
+                <div>
+                  <Button disabled width="100%" mb="8px">
+                    {t('No position entered')}
+                  </Button>
+                </div>
+                <PrizePoolRow totalAmount={round.totalAmount} />
               </>
             )}
           </RoundResultBox>

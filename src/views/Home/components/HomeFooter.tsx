@@ -1,6 +1,6 @@
 import { Color } from '@assets'
 import { CopyrightIcon, GoogleIcon, TwitterIcon } from '@components'
-import { useTranslation } from 'contexts/Localization'
+import { useTranslation } from '@pancakeswap/localization'
 import styled from 'styled-components'
 
 const Container = styled.div`

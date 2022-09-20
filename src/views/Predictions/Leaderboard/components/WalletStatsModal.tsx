@@ -17,11 +17,11 @@ import {
 import { useProfileForAddress } from 'state/profile/hooks'
 import useTheme from 'hooks/useTheme'
 import styled from 'styled-components'
-import { getBscScanLink } from 'utils'
+import { getBlockExploreLink } from 'utils'
 import truncateHash from 'utils/truncateHash'
 import { Token } from '@pancakeswap/sdk'
 
-import { useTranslation } from 'contexts/Localization'
+import { useTranslation } from '@pancakeswap/localization'
 import { FetchStatus } from 'config/constants/types'
 import { PredictionUser } from 'state/types'
 import { NetWinningsView } from './Results/styles'
@@ -46,7 +46,7 @@ const ExternalLink = styled(LinkExternal)`
   }
 `
 
-const WalletStatsModal: React.FC<WalletStatsModalProps> = ({
+const WalletStatsModal: React.FC<React.PropsWithChildren<WalletStatsModalProps>> = ({
   result,
   address,
   leaderboardLoadingState,
@@ -70,7 +70,7 @@ const WalletStatsModal: React.FC<WalletStatsModalProps> = ({
   }
 
   return (
-    <ModalContainer minWidth="320px">
+    <ModalContainer $minWidth="320px">
       <ModalHeader background={theme.colors.gradients.bubblegum}>
         <Flex alignItems="center" style={{ flex: 1 }}>
           <Box width={['64px', null, null, null, null, null, '96px']} mr="16px">
@@ -82,7 +82,7 @@ const WalletStatsModal: React.FC<WalletStatsModalProps> = ({
                 {profile?.username}
               </Heading>
             )}
-            <ExternalLink href={getBscScanLink(address, 'address')}>{truncateHash(address)}</ExternalLink>
+            <ExternalLink href={getBlockExploreLink(address, 'address')}>{truncateHash(address)}</ExternalLink>
           </Box>
         </Flex>
         <IconButton variant="text" onClick={handleDismiss} aria-label="Close the dialog">

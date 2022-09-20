@@ -1,13 +1,22 @@
 import { renderHook } from '@testing-library/react-hooks'
 import { FixedNumber } from '@ethersproject/bignumber'
 import { createSWRWrapper } from 'testUtils'
-import * as PoolHooks from 'state/pools/hooks'
 import BigNumber from 'bignumber.js'
+import * as PoolHooks from '../state/pools/hooks'
 import { useVaultApy } from './useVaultApy'
 
-describe('useVaultApy', () => {
-  const mockUseCakeVault = jest.spyOn(PoolHooks, 'useCakeVault')
+BigNumber.config({
+  EXPONENTIAL_AT: 1000,
+  DECIMAL_PLACES: 80,
+})
 
+jest.mock('../state/pools/hooks', () => ({
+  // @ts-ignore
+  ...jest.requireActual('state/pools/hooks'),
+  useCakeVault: jest.fn(),
+}))
+
+describe('useVaultApy', () => {
   it.each([
     [
       {
@@ -21,7 +30,8 @@ describe('useVaultApy', () => {
       },
     ],
   ])('should get correct vault apy', (cases, want) => {
-    mockUseCakeVault.mockReturnValue({
+    // @ts-ignore
+    PoolHooks.useCakeVault.mockReturnValue({
       totalShares: cases.totalShares,
       pricePerFullShare: cases.pricePerFullShare,
     })

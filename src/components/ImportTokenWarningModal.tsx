@@ -1,14 +1,14 @@
 import { Token } from '@pancakeswap/sdk'
 import { Modal, InjectedModalProps } from '@pancakeswap/uikit'
 import ImportToken from 'components/SearchModal/ImportToken'
-import { useTranslation } from 'contexts/Localization'
+import { useTranslation } from '@pancakeswap/localization'
 
 interface Props extends InjectedModalProps {
   tokens: Token[]
   onCancel: () => void
 }
 
-const ImportTokenWarningModal: React.FC<Props> = ({ tokens, onDismiss, onCancel }) => {
+const ImportTokenWarningModal: React.FC<React.PropsWithChildren<Props>> = ({ tokens, onDismiss, onCancel }) => {
   const { t } = useTranslation()
   return (
     <Modal

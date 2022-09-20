@@ -1,15 +1,16 @@
-import { useWeb3React } from '@web3-react/core'
+import { useMemo } from 'react'
+import { useWeb3React } from '@pancakeswap/wagmi'
 import { Box, Flex, Heading, Text, PrizeIcon, BlockIcon, LinkExternal, useTooltip, InfoIcon } from '@pancakeswap/uikit'
 import styled from 'styled-components'
 import useLocalDispatch from 'contexts/LocalRedux/useLocalDispatch'
-import { useTranslation } from 'contexts/Localization'
+import { useTranslation } from '@pancakeswap/localization'
 import { REWARD_RATE } from 'state/predictions/config'
 import { Bet, BetPosition } from 'state/types'
 import { fetchLedgerData, markAsCollected } from 'state/predictions'
 import { Result } from 'state/predictions/helpers'
 import { useGetIsClaimable } from 'state/predictions/hooks'
 import useBUSDPrice from 'hooks/useBUSDPrice'
-import { getBscScanLink } from 'utils'
+import { getBlockExploreLink } from 'utils'
 import { multiplyPriceByAmount } from 'utils/prices'
 import { useConfig } from 'views/Predictions/context/ConfigProvider'
 
@@ -35,7 +36,7 @@ const Divider = styled.hr`
   border: 1px solid ${({ theme }) => theme.colors.cardBorder};
 `
 
-const BetResult: React.FC<BetResultProps> = ({ bet, result }) => {
+const BetResult: React.FC<React.PropsWithChildren<BetResultProps>> = ({ bet, result }) => {
   const { t } = useTranslation()
   const dispatch = useLocalDispatch()
   const { account } = useWeb3React()
@@ -55,7 +56,7 @@ const BetResult: React.FC<BetResultProps> = ({ bet, result }) => {
   const totalPayout = multiplyPriceByAmount(bnbBusdPrice, payout)
   const returned = payout + bet.amount
 
-  const getHeaderColor = () => {
+  const headerColor = useMemo(() => {
     switch (result) {
       case Result.WIN:
         return 'warning'
@@ -68,9 +69,9 @@ const BetResult: React.FC<BetResultProps> = ({ bet, result }) => {
       default:
         return 'text'
     }
-  }
+  }, [result])
 
-  const getHeaderText = () => {
+  const headerText = useMemo(() => {
     switch (result) {
       case Result.WIN:
         return t('Win')
@@ -83,21 +84,21 @@ const BetResult: React.FC<BetResultProps> = ({ bet, result }) => {
       default:
         return ''
     }
-  }
+  }, [t, result])
 
-  const getHeaderIcon = () => {
+  const headerIcon = useMemo(() => {
     switch (result) {
       case Result.WIN:
-        return <PrizeIcon color={getHeaderColor()} />
+        return <PrizeIcon color={headerColor} />
       case Result.LOSE:
       case Result.CANCELED:
-        return <BlockIcon color={getHeaderColor()} />
+        return <BlockIcon color={headerColor} />
       default:
         return null
     }
-  }
+  }, [result, headerColor])
 
-  const getResultColor = () => {
+  const resultColor = useMemo(() => {
     switch (result) {
       case Result.WIN:
         return 'success'
@@ -108,7 +109,7 @@ const BetResult: React.FC<BetResultProps> = ({ bet, result }) => {
       default:
         return 'text'
     }
-  }
+  }, [result])
 
   const handleSuccess = async () => {
     // We have to mark the bet as claimed immediately because it does not update fast enough
@@ -121,21 +122,21 @@ const BetResult: React.FC<BetResultProps> = ({ bet, result }) => {
       <Flex alignItems="center" justifyContent="space-between" mb="8px">
         <Heading>{t('Your History')}</Heading>
         <Flex alignItems="center">
-          <Heading as="h3" color={getHeaderColor()} textTransform="uppercase" bold mr="4px">
-            {getHeaderText()}
+          <Heading as="h3" color={headerColor} textTransform="uppercase" bold mr="4px">
+            {headerText}
           </Heading>
-          {getHeaderIcon()}
+          {headerIcon}
         </Flex>
       </Flex>
       <StyledBetResult>
-        {result === Result.WIN && !canClaim && (
+        {result === Result.WIN && canClaim && (
           <CollectWinningsButton hasClaimed={!canClaim} width="100%" mb="16px" onSuccess={handleSuccess}>
             {bet.claimed ? t('Already Collected') : t('Collect Winnings')}
           </CollectWinningsButton>
         )}
         {bet.claimed && bet.claimedHash && (
           <Flex justifyContent="center">
-            <LinkExternal href={getBscScanLink(bet.claimedHash, 'transaction')} mb="16px">
+            <LinkExternal href={getBlockExploreLink(bet.claimedHash, 'transaction')} mb="16px">
               {t('View on BscScan')}
             </LinkExternal>
           </Flex>
@@ -156,7 +157,7 @@ const BetResult: React.FC<BetResultProps> = ({ bet, result }) => {
         <Flex alignItems="start" justifyContent="space-between">
           <Text bold>{isWinner ? t('Your winnings') : t('Your Result')}:</Text>
           <Box style={{ textAlign: 'right' }}>
-            <Text bold color={getResultColor()}>{`${isWinner ? '+' : '-'}${formatBnb(payout)} ${token.symbol}`}</Text>
+            <Text bold color={resultColor}>{`${isWinner ? '+' : '-'}${formatBnb(payout)} ${token.symbol}`}</Text>
             <Text fontSize="12px" color="textSubtle">
               {`~$${totalPayout.toFixed(2)}`}
             </Text>
