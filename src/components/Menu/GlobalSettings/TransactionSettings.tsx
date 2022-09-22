@@ -3,6 +3,8 @@ import { escapeRegExp } from 'utils'
 import { Text, Button, Input, Flex, Box } from '@pancakeswap/uikit'
 import { useTranslation } from '@pancakeswap/localization'
 import { useUserSlippageTolerance, useUserTransactionTTL } from 'state/user/hooks'
+import { Color } from '@assets'
+import styled from 'styled-components'
 import QuestionHelper from '../../QuestionHelper'
 
 enum SlippageError {
@@ -17,6 +19,27 @@ enum DeadlineError {
 
 const inputRegex = RegExp(`^\\d*(?:\\\\[.])?\\d*$`) // match escaped "." characters via in a non-capturing group
 const THREE_DAYS_IN_SECONDS = 60 * 60 * 24 * 3
+
+const StyledButton = styled(Button)`
+  background: transparent;
+  border: 1px solid ${Color.baseColors.cistern};
+  color: ${Color.baseColors.bayWharf};
+  ${
+    ({ variant }) => variant === 'primary'
+    ? `
+      background: ${Color.baseColors.freinachtBlack};
+      border: 1px solid ${Color.baseColors.freinachtBlack};
+      color: ${Color.baseColors.white};
+    `
+    : ''
+  }
+`
+
+const StyledInput = styled(Input)`
+  background: transparent;
+  border: 1px solid ${Color.baseColors.cistern};
+  color: ${Color.baseColors.bayWharf};
+`
 
 const SlippageTabs = () => {
   const [userSlippageTolerance, setUserSlippageTolerance] = useUserSlippageTolerance()
@@ -82,7 +105,7 @@ const SlippageTabs = () => {
     <Flex flexDirection="column">
       <Flex flexDirection="column" mb="24px">
         <Flex mb="12px">
-          <Text>{t('Slippage Tolerance')}</Text>
+          <Text color={Color.baseColors.bayWharf}>{t('Slippage Tolerance')}</Text>
           <QuestionHelper
             text={t(
               'Setting a high slippage tolerance can help transactions succeed, but you may not get such a good price. Use with caution.',
@@ -92,7 +115,7 @@ const SlippageTabs = () => {
           />
         </Flex>
         <Flex flexWrap="wrap">
-          <Button
+          <StyledButton
             mt="4px"
             mr="4px"
             scale="sm"
@@ -103,8 +126,8 @@ const SlippageTabs = () => {
             variant={userSlippageTolerance === 10 ? 'primary' : 'tertiary'}
           >
             0.1%
-          </Button>
-          <Button
+          </StyledButton>
+          <StyledButton
             mt="4px"
             mr="4px"
             scale="sm"
@@ -115,8 +138,8 @@ const SlippageTabs = () => {
             variant={userSlippageTolerance === 50 ? 'primary' : 'tertiary'}
           >
             0.5%
-          </Button>
-          <Button
+          </StyledButton>
+          <StyledButton
             mr="4px"
             mt="4px"
             scale="sm"
@@ -127,10 +150,10 @@ const SlippageTabs = () => {
             variant={userSlippageTolerance === 100 ? 'primary' : 'tertiary'}
           >
             1.0%
-          </Button>
+          </StyledButton>
           <Flex alignItems="center">
             <Box width="76px" mt="4px">
-              <Input
+              <StyledInput
                 scale="sm"
                 inputMode="decimal"
                 pattern="^[0-9]*[.,]?[0-9]{0,2}$"
@@ -148,7 +171,7 @@ const SlippageTabs = () => {
                 isSuccess={![10, 50, 100].includes(userSlippageTolerance)}
               />
             </Box>
-            <Text color="primary" bold ml="2px">
+            <Text color={Color.baseColors.bayWharf} bold ml="2px">
               %
             </Text>
           </Flex>
@@ -165,7 +188,7 @@ const SlippageTabs = () => {
       </Flex>
       <Flex justifyContent="space-between" alignItems="center" mb="24px">
         <Flex alignItems="center">
-          <Text>{t('Tx deadline (mins)')}</Text>
+          <Text color={Color.baseColors.bayWharf}>{t('Tx deadline (mins)')}</Text>
           <QuestionHelper
             text={t('Your transaction will revert if it is left confirming for longer than this time.')}
             placement="top-start"
@@ -174,7 +197,7 @@ const SlippageTabs = () => {
         </Flex>
         <Flex>
           <Box width="52px" mt="4px">
-            <Input
+            <StyledInput
               scale="sm"
               inputMode="numeric"
               pattern="^[0-9]+$"

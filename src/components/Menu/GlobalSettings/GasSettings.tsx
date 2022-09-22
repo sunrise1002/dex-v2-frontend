@@ -5,6 +5,23 @@ import { useGasPriceManager } from 'state/user/hooks'
 import { GAS_PRICE_GWEI, GAS_PRICE } from 'state/types'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { ChainId } from '@pancakeswap/sdk'
+import styled from 'styled-components'
+import { Color } from '@assets'
+
+const StyledButton = styled(Button)`
+  background: transparent;
+  border: 1px solid ${Color.baseColors.cistern};
+  color: ${Color.baseColors.bayWharf};
+  ${
+    ({ variant }) => variant === 'primary'
+    ? `
+      background: ${Color.baseColors.freinachtBlack};
+      border: 1px solid ${Color.baseColors.freinachtBlack};
+      color: ${Color.baseColors.white};
+    `
+    : ''
+  }
+`
 
 const GasSettings = () => {
   const { t } = useTranslation()
@@ -26,7 +43,7 @@ const GasSettings = () => {
         </Flex>
       )}
       <Flex flexWrap="wrap">
-        <Button
+        <StyledButton
           mt="4px"
           mr="4px"
           scale="sm"
@@ -36,8 +53,8 @@ const GasSettings = () => {
           variant={gasPrice === GAS_PRICE_GWEI.default ? 'primary' : 'tertiary'}
         >
           {t('Standard (%gasPrice%)', { gasPrice: GAS_PRICE.default })}
-        </Button>
-        <Button
+        </StyledButton>
+        <StyledButton
           mt="4px"
           mr="4px"
           scale="sm"
@@ -47,8 +64,8 @@ const GasSettings = () => {
           variant={gasPrice === GAS_PRICE_GWEI.fast ? 'primary' : 'tertiary'}
         >
           {t('Fast (%gasPrice%)', { gasPrice: GAS_PRICE.fast })}
-        </Button>
-        <Button
+        </StyledButton>
+        <StyledButton
           mr="4px"
           mt="4px"
           scale="sm"
@@ -58,7 +75,7 @@ const GasSettings = () => {
           variant={gasPrice === GAS_PRICE_GWEI.instant ? 'primary' : 'tertiary'}
         >
           {t('Instant (%gasPrice%)', { gasPrice: GAS_PRICE.instant })}
-        </Button>
+        </StyledButton>
       </Flex>
     </Flex>
   )

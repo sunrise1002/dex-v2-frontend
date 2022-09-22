@@ -1,12 +1,17 @@
 import React, { useRef } from "react";
-import { useTheme } from "styled-components";
+import styled, { useTheme } from "styled-components";
 import Heading from "../../components/Heading/Heading";
 import getThemeValue from "../../util/getThemeValue";
 import { ModalBody, ModalHeader, ModalTitle, ModalContainer, ModalCloseButton, ModalBackButton } from "./styles";
 import { ModalProps } from "./types";
 import { useMatchBreakpointsContext } from "../../contexts";
+import { Color } from '../../../../../src/assets';
 
 export const MODAL_SWIPE_TO_CLOSE_VELOCITY = 300;
+
+const StyledHeading = styled(Heading)`
+  color: ${Color.baseColors.bayWharf}
+`
 
 const Modal: React.FC<React.PropsWithChildren<ModalProps>> = ({
   title,
@@ -42,7 +47,7 @@ const Modal: React.FC<React.PropsWithChildren<ModalProps>> = ({
       <ModalHeader background={getThemeValue(theme, `colors.${headerBackground}`, headerBackground)}>
         <ModalTitle>
           {onBack && <ModalBackButton onBack={onBack} />}
-          <Heading>{title}</Heading>
+          <StyledHeading>{title}</StyledHeading>
         </ModalTitle>
         {!hideCloseButton && <ModalCloseButton onDismiss={onDismiss} />}
       </ModalHeader>

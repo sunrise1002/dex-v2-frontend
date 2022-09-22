@@ -1,4 +1,5 @@
 import { InputHTMLAttributes, ReactNode } from "react";
+import { Color } from "../../../../../src/assets";
 import { Colors } from "../../theme";
 
 export const scales = {
@@ -28,8 +29,8 @@ export interface InputProps {
 
 export interface StyleToggleProps {
   $checked: boolean;
-  $checkedColor: keyof Colors;
-  $defaultColor: keyof Colors;
+  $checkedColor: string;
+  $defaultColor: string;
   scale: Scales;
 }
 

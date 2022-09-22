@@ -10,6 +10,8 @@ import { FixedSizeList } from 'react-window'
 import { useAllLists, useInactiveListUrls } from 'state/lists/hooks'
 import { TagInfo, WrappedTokenInfo } from 'state/types'
 import { useAudioModeManager } from 'state/user/hooks'
+import styled from 'styled-components'
+import { Color } from '@assets'
 import { useAllTokens, useIsUserAddedToken, useToken } from '../../hooks/Tokens'
 import { isAddress } from '../../utils'
 import Column, { AutoColumn } from '../Layout/Column'
@@ -78,6 +80,12 @@ function useSearchInactiveTokenLists(search: string | undefined, minResults = 10
     return [...exactMatches, ...rest].slice(0, minResults)
   }, [activeTokens, chainId, inactiveUrls, lists, minResults, search])
 }
+
+const StyledSearchInput = styled(Input)`
+  background: transparent;
+  border: 1px solid ${Color.baseColors.cistern};
+  color: ${Color.baseColors.bayWharf};
+`
 
 function CurrencySearch({
   selectedCurrency,
@@ -231,7 +239,7 @@ function CurrencySearch({
     <>
       <AutoColumn gap="16px">
         <Row>
-          <Input
+          <StyledSearchInput
             id="token-search-input"
             placeholder={t('Search name or paste address')}
             scale="lg"

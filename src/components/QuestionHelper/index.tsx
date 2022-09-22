@@ -1,3 +1,4 @@
+import { Color } from '@assets'
 import { HelpIcon, useTooltip, Box, BoxProps, Placement } from '@pancakeswap/uikit'
 import styled from 'styled-components'
 
@@ -26,7 +27,7 @@ const QuestionHelper: React.FC<React.PropsWithChildren<Props>> = ({
     <Box {...props}>
       {tooltipVisible && tooltip}
       <QuestionWrapper ref={targetRef}>
-        <HelpIcon color="textSubtle" width={size} />
+        <HelpIcon color={Color.baseColors.bayWharf} width={size} />
       </QuestionWrapper>
     </Box>
   )

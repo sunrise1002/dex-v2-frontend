@@ -10,6 +10,7 @@ import { CurrencyLogo } from 'components/Logo'
 import { getBlockExploreLink, isAddress } from 'utils'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { useTranslation } from '@pancakeswap/localization'
+import { Color } from '@assets'
 import Column, { AutoColumn } from '../Layout/Column'
 import ImportRow from './ImportRow'
 import { CurrencyModalView } from './types'
@@ -28,6 +29,16 @@ const Footer = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+`
+
+const StyledInput = styled(Input)`
+  background: ${Color.baseColors.white};
+  border: 1px solid ${Color.baseColors.cistern};
+  color: ${Color.baseColors.bayWharf};
+`
+
+const StyledClearButton = styled(Button)`
+  color: ${Color.baseColors.white};
 `
 
 export default function ManageTokens({
@@ -79,9 +90,9 @@ export default function ManageTokens({
           </RowFixed>
           <RowFixed>
             <IconButton variant="text" onClick={() => removeToken(chainId, token.address)}>
-              <CloseIcon />
+              <CloseIcon color={Color.baseColors.bayWharf} />
             </IconButton>
-            <LinkExternal href={getBlockExploreLink(token.address, 'address', chainId)} />
+            <LinkExternal color={Color.baseColors.bayWharf} href={getBlockExploreLink(token.address, 'address', chainId)} />
           </RowFixed>
         </RowBetween>
       ))
@@ -95,7 +106,7 @@ export default function ManageTokens({
       <Column style={{ width: '100%', flex: '1 1' }}>
         <AutoColumn gap="14px">
           <Row>
-            <Input
+            <StyledInput
               id="token-search-input"
               scale="lg"
               placeholder="0x0000"
@@ -122,9 +133,9 @@ export default function ManageTokens({
             {userAddedTokens?.length} {userAddedTokens.length === 1 ? t('Custom Token') : t('Custom Tokens')}
           </Text>
           {userAddedTokens.length > 0 && (
-            <Button variant="tertiary" onClick={handleRemoveAll}>
+            <StyledClearButton variant="tertiary" onClick={handleRemoveAll}>
               {t('Clear all')}
-            </Button>
+            </StyledClearButton>
           )}
         </Footer>
       </Column>

@@ -14,6 +14,7 @@ import { AutoColumn } from 'components/Layout/Column'
 import QuestionHelper from 'components/QuestionHelper'
 import { AutoRow, RowBetween, RowFixed } from 'components/Layout/Row'
 import { TOTAL_FEE, LP_HOLDERS_FEE, TREASURY_FEE, BUYBACK_FEE } from 'config/constants/info'
+import { Color } from '@assets'
 import FormattedPriceImpact from './FormattedPriceImpact'
 import { StyledBalanceMaxMini, SwapCallbackError } from './styleds'
 
@@ -31,6 +32,10 @@ const StyledRowBetween = styled(RowBetween)`
 
 const StyledRowFixed = styled(RowFixed)`
   background: transparent;
+`
+
+const StyledConfirmSwapButton = styled(Button)`
+  background: ${Color.baseColors.freinachtBlack}
 `
 
 export default function SwapModalFooter({
@@ -139,7 +144,7 @@ export default function SwapModalFooter({
       </SwapModalFooterContainer>
 
       <AutoRow>
-        <Button
+        <StyledConfirmSwapButton
           variant={severity > 2 ? 'danger' : 'primary'}
           onClick={onConfirm}
           disabled={disabledConfirm}
@@ -148,7 +153,7 @@ export default function SwapModalFooter({
           width="100%"
         >
           {severity > 2 ? t('Swap Anyway') : t('Confirm Swap')}
-        </Button>
+        </StyledConfirmSwapButton>
 
         {swapErrorMessage ? <SwapCallbackError error={swapErrorMessage} /> : null}
       </AutoRow>

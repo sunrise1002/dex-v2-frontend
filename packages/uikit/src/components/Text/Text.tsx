@@ -1,5 +1,6 @@
 import styled, { DefaultTheme } from "styled-components";
 import { space, typography, layout } from "styled-system";
+import { Color } from "../../../../../src/assets";
 import getThemeValue from "../../util/getThemeValue";
 import { TextProps } from "./types";
 
@@ -12,7 +13,8 @@ const getColor = ({ color, theme }: ThemedProps) => {
 };
 
 const Text = styled.div<TextProps>`
-  color: ${getColor};
+  // color: ${getColor};
+  color: ${Color.baseColors.bayWharf};
   font-weight: ${({ bold }) => (bold ? 600 : 400)};
   line-height: 1.5;
   ${({ textTransform }) => textTransform && `text-transform: ${textTransform};`}

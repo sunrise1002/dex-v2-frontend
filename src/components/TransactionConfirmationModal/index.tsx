@@ -18,6 +18,7 @@ import { useTranslation } from '@pancakeswap/localization'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { wrappedCurrency } from 'utils/wrappedCurrency'
 import { WrappedTokenInfo } from 'state/types'
+import { Color } from '@assets'
 import { AutoColumn, ColumnCenter } from '../Layout/Column'
 import { getBlockExploreLink, getBlockExploreName } from '../../utils'
 import AddToWalletButton, { AddToWalletTextOptions } from '../AddToWallet/AddToWalletButton'
@@ -31,6 +32,10 @@ const Section = styled(AutoColumn)`
 
 const ConfirmedIcon = styled(ColumnCenter)`
   padding: 24px 0;
+`
+
+const StyledDismissButton = styled(Button)`
+  background: ${Color.baseColors.freinachtBlack};
 `
 
 function ConfirmationPendingContent({ pendingText }: { pendingText: string }) {
@@ -134,7 +139,7 @@ export function TransactionErrorContent({ message, onDismiss }: { message: strin
       </AutoColumn>
 
       <Flex justifyContent="center" pt="24px">
-        <Button onClick={onDismiss}>{t('Dismiss')}</Button>
+        <StyledDismissButton onClick={onDismiss}>{t('Dismiss')}</StyledDismissButton>
       </Flex>
     </Wrapper>
   )
@@ -165,7 +170,7 @@ const TransactionConfirmationModal: React.FC<
   if (!chainId) return null
 
   return (
-    <Modal title={title} headerBackground="gradients.cardHeader" {...props} onDismiss={handleDismiss}>
+    <Modal title={title} headerBackground="transparent" {...props} onDismiss={handleDismiss}>
       {attemptingTxn ? (
         <ConfirmationPendingContent pendingText={pendingText} />
       ) : hash ? (

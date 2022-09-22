@@ -12,6 +12,7 @@ import {
 import { useSwapActionHandlers } from 'state/swap/useSwapActionHandlers'
 import { useTranslation } from '@pancakeswap/localization'
 import useTheme from 'hooks/useTheme'
+import { Color } from '@assets'
 import QuestionHelper from '../../QuestionHelper'
 import TransactionSettings from './TransactionSettings'
 import ExpertModal from './ExpertModal'
@@ -67,7 +68,7 @@ const SettingsModal: React.FC<React.PropsWithChildren<InjectedModalProps>> = ({ 
   return (
     <Modal
       title={t('Settings')}
-      headerBackground="gradients.cardHeader"
+      headerBackground={Color.baseColors.white}
       onDismiss={onDismiss}
       style={{ maxWidth: '420px' }}
     >
@@ -109,7 +110,7 @@ const SettingsModal: React.FC<React.PropsWithChildren<InjectedModalProps>> = ({ 
         {mode === SettingsMode.SWAP_LIQUIDITY && (
           <>
             <Flex pt="3px" flexDirection="column">
-              <Text bold textTransform="uppercase" fontSize="18px" color="secondary" mb="24px">
+              <Text bold textTransform="uppercase" fontSize="18px" color={Color.baseColors.bayWharf} mb="24px">
                 {t('Swaps & Liquidity')}
               </Text>
               <Flex justifyContent="space-between" alignItems="center" mb="24px">
@@ -119,7 +120,7 @@ const SettingsModal: React.FC<React.PropsWithChildren<InjectedModalProps>> = ({ 
             </Flex>
             <Flex justifyContent="space-between" alignItems="center" mb="24px">
               <Flex alignItems="center">
-                <Text>{t('Zap (Beta)')}</Text>
+                <Text color={Color.baseColors.bayWharf}>{t('Zap (Beta)')}</Text>
                 <QuestionHelper
                   text={
                     <Box>
@@ -149,7 +150,7 @@ const SettingsModal: React.FC<React.PropsWithChildren<InjectedModalProps>> = ({ 
             </Flex>
             <Flex justifyContent="space-between" alignItems="center" mb="24px">
               <Flex alignItems="center">
-                <Text>{t('Expert Mode')}</Text>
+                <Text color={Color.baseColors.bayWharf}>{t('Expert Mode')}</Text>
                 <QuestionHelper
                   text={t('Bypasses confirmation modals and allows high slippage trades. Use at your own risk.')}
                   placement="top-start"
@@ -165,7 +166,7 @@ const SettingsModal: React.FC<React.PropsWithChildren<InjectedModalProps>> = ({ 
             </Flex>
             <Flex justifyContent="space-between" alignItems="center" mb="24px">
               <Flex alignItems="center">
-                <Text>{t('Disable Multihops')}</Text>
+                <Text color={Color.baseColors.bayWharf}>{t('Disable Multihops')}</Text>
                 <QuestionHelper text={t('Restricts swaps to direct pairs only.')} placement="top-start" ml="4px" />
               </Flex>
               <Toggle
@@ -179,14 +180,20 @@ const SettingsModal: React.FC<React.PropsWithChildren<InjectedModalProps>> = ({ 
             </Flex>
             <Flex justifyContent="space-between" alignItems="center" mb="24px">
               <Flex alignItems="center">
-                <Text>{t('Flippy sounds')}</Text>
+                <Text color={Color.baseColors.bayWharf}>{t('Flippy sounds')}</Text>
                 <QuestionHelper
                   text={t('Fun sounds to make a truly immersive pancake-flipping trading experience')}
                   placement="top-start"
                   ml="4px"
                 />
               </Flex>
-              <PancakeToggle checked={audioPlay} onChange={toggleSetAudioMode} scale="md" />
+              {/* <PancakeToggle checked={audioPlay} onChange={toggleSetAudioMode} scale="md" /> */}
+              <Toggle
+                id="pancake-toggle"
+                checked={audioPlay}
+                scale="md"
+                onChange={toggleSetAudioMode}
+              />
             </Flex>
           </>
         )}

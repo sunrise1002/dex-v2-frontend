@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { Color } from "../../../../../src/assets";
 import { CheckboxProps, scales } from "./types";
 
 const getScale = ({ scale }: CheckboxProps) => {
@@ -21,9 +22,9 @@ const Checkbox = styled.input.attrs({ type: "checkbox" })<CheckboxProps>`
   width: ${getScale};
   vertical-align: middle;
   transition: background-color 0.2s ease-in-out;
-  border: 0;
+  border: 1px solid ${Color.baseColors.cistern};
   border-radius: 8px;
-  background-color: ${({ theme }) => theme.colors.input};
+  background-color: transparent;
   box-shadow: ${({ theme }) => theme.shadows.inset};
 
   &:after {
@@ -42,17 +43,17 @@ const Checkbox = styled.input.attrs({ type: "checkbox" })<CheckboxProps>`
     transition: border-color 0.2s ease-in-out;
   }
 
-  &:hover:not(:disabled):not(:checked) {
-    box-shadow: ${({ theme }) => theme.shadows.focus};
-  }
+  // &:hover:not(:disabled):not(:checked) {
+  //   box-shadow: ${({ theme }) => theme.shadows.focus};
+  // }
 
-  &:focus {
-    outline: none;
-    box-shadow: ${({ theme }) => theme.shadows.focus};
-  }
+  // &:focus {
+  //   outline: none;
+  //   box-shadow: ${({ theme }) => theme.shadows.focus};
+  // }
 
   &:checked {
-    background-color: ${({ theme }) => theme.colors.success};
+    background-color: ${Color.baseColors.freinachtBlack};
     &:after {
       border-color: white;
     }

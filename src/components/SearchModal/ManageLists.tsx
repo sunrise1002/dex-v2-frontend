@@ -6,6 +6,7 @@ import { TokenList, Version } from '@uniswap/token-lists'
 import Card from 'components/Card'
 import { UNSUPPORTED_LIST_URLS } from 'config/constants/lists'
 import { useTranslation } from '@pancakeswap/localization'
+import { Color } from '@assets'
 import useFetchListCallback from '../../hooks/useFetchListCallback'
 
 import { AppState, useAppDispatch } from '../../state'
@@ -131,6 +132,12 @@ const ListContainer = styled.div`
   overflow: auto;
 `
 
+const StyledInput = styled(Input)`
+  background: ${Color.baseColors.white};
+  border: 1px solid ${Color.baseColors.cistern};
+  color: ${Color.baseColors.bayWharf};
+`
+
 function ManageLists({
   setModalView,
   setImportList,
@@ -244,7 +251,7 @@ function ManageLists({
     <Wrapper>
       <AutoColumn gap="14px">
         <Row>
-          <Input
+          <StyledInput
             id="list-add-input"
             scale="lg"
             placeholder={t('https:// or ipfs://')}

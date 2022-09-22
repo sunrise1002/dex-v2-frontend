@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+import { Color } from '../../../../../src/assets'
 import Flex from "../../components/Box/Flex";
 import { MotionBox } from "../../components/Box";
 import { ArrowBackIcon, CloseIcon } from "../../components/Svg";
@@ -11,7 +12,7 @@ export const mobileFooterHeight = 73;
 export const ModalHeader = styled.div<{ background?: string }>`
   align-items: center;
   background: transparent;
-  border-bottom: 1px solid ${({ theme }) => theme.colors.cardBorder};
+  // border-bottom: 1px solid ${({ theme }) => theme.colors.cardBorder};
   display: flex;
   padding: 12px 24px;
 
@@ -40,7 +41,7 @@ export const ModalCloseButton: React.FC<React.PropsWithChildren<{ onDismiss: Mod
 }) => {
   return (
     <IconButton variant="text" onClick={onDismiss} aria-label="Close the dialog">
-      <CloseIcon color="primary" />
+      <CloseIcon color={Color.baseColors.bayWharf} />
     </IconButton>
   );
 };
@@ -48,16 +49,16 @@ export const ModalCloseButton: React.FC<React.PropsWithChildren<{ onDismiss: Mod
 export const ModalBackButton: React.FC<React.PropsWithChildren<{ onBack: ModalProps["onBack"] }>> = ({ onBack }) => {
   return (
     <IconButton variant="text" onClick={onBack} area-label="go back" mr="8px">
-      <ArrowBackIcon color="primary" />
+      <ArrowBackIcon color={Color.baseColors.bayWharf} />
     </IconButton>
   );
 };
 
 export const ModalContainer = styled(MotionBox)<{ $minWidth: string }>`
   overflow: hidden;
-  background: ${({ theme }) => theme.modal.background};
+  background: ${Color.baseColors.white};
   box-shadow: 0px 20px 36px -8px rgba(14, 14, 44, 0.1), 0px 1px 1px rgba(0, 0, 0, 0.05);
-  border: 1px solid ${({ theme }) => theme.colors.cardBorder};
+  // border: 1px solid ${({ theme }) => theme.colors.cardBorder};
   border-radius: 32px 32px 0px 0px;
   width: 100%;
   max-height: calc(var(--vh, 1vh) * 100);

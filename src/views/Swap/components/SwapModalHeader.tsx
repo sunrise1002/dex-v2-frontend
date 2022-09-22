@@ -8,6 +8,7 @@ import { AutoColumn } from 'components/Layout/Column'
 import { CurrencyLogo } from 'components/Logo'
 import { RowBetween, RowFixed } from 'components/Layout/Row'
 import truncateHash from 'utils/truncateHash'
+import { Color } from '@assets'
 import { TruncatedText, SwapShowAcceptChanges } from './styleds'
 
 export default function SwapModalHeader({
@@ -78,7 +79,7 @@ export default function SwapModalHeader({
         </RowFixed>
       </RowBetween>
       <RowFixed>
-        <ArrowDownIcon width="16px" ml="4px" />
+        <ArrowDownIcon color={Color.baseColors.bayWharf} width="16px" ml="4px" />
       </RowFixed>
       <RowBetween align="flex-end">
         <RowFixed gap="4px">

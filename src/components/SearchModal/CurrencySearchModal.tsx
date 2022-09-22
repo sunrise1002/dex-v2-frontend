@@ -17,6 +17,7 @@ import styled from 'styled-components'
 import { usePreviousValue } from '@pancakeswap/hooks'
 import { TokenList } from '@uniswap/token-lists'
 import { useTranslation } from '@pancakeswap/localization'
+import { Color } from '@assets'
 import CurrencySearch from './CurrencySearch'
 import ImportToken from './ImportToken'
 import Manage from './Manage'
@@ -25,7 +26,7 @@ import { CurrencyModalView } from './types'
 
 const Footer = styled.div`
   width: 100%;
-  background-color: ${({ theme }) => theme.colors.backgroundAlt};
+  background-color: transparent;
   text-align: center;
 `
 const StyledModalContainer = styled(ModalContainer)`
@@ -46,6 +47,10 @@ const StyledModalBody = styled(ModalBody)`
   &::-webkit-scrollbar {
     display: none;
   }
+`
+
+const StyledButton = styled(Button)`
+  color: ${Color.baseColors.bayWharf};
 `
 
 export interface CurrencySearchModalProps extends InjectedModalProps {
@@ -148,14 +153,14 @@ export default function CurrencySearchModal({
         )}
         {modalView === CurrencyModalView.search && (
           <Footer>
-            <Button
+            <StyledButton
               scale="sm"
               variant="text"
               onClick={() => setModalView(CurrencyModalView.manage)}
               className="list-token-manage-button"
             >
               {t('Manage Tokens')}
-            </Button>
+            </StyledButton>
           </Footer>
         )}
       </StyledModalBody>

@@ -9,6 +9,7 @@ import QuestionHelper from 'components/QuestionHelper'
 import { TOTAL_FEE, LP_HOLDERS_FEE, TREASURY_FEE, BUYBACK_FEE } from 'config/constants/info'
 import { RowBetween, RowFixed } from 'components/Layout/Row'
 import styled from 'styled-components'
+import { Color } from '@assets'
 import FormattedPriceImpact from './FormattedPriceImpact'
 import SwapRoute from './SwapRoute'
 
@@ -41,7 +42,7 @@ function TradeSummary({
     <AutoColumn style={{ padding: '0 16px', background: 'transparent' }}>
       <StyledRowBetween>
         <StyledRowFixed>
-          <Text fontSize="14px" color="textSubtle">
+          <Text fontSize="14px" color={Color.baseColors.bayWharf}>
             {isExactIn ? t('Minimum received') : t('Maximum sold')}
           </Text>
           <QuestionHelper
@@ -53,7 +54,7 @@ function TradeSummary({
           />
         </StyledRowFixed>
         <StyledRowFixed>
-          <Text fontSize="14px">
+          <Text fontSize="14px" color={Color.baseColors.bayWharf}>
             {isExactIn
               ? `${slippageAdjustedAmounts[Field.OUTPUT]?.toSignificant(4)} ${trade.outputAmount.currency.symbol}` ??
                 '-'
@@ -63,7 +64,7 @@ function TradeSummary({
       </StyledRowBetween>
       <StyledRowBetween>
         <StyledRowFixed>
-          <Text fontSize="14px" color="textSubtle">
+          <Text fontSize="14px" color={Color.baseColors.bayWharf}>
             {t('Price Impact')}
           </Text>
           <QuestionHelper
@@ -77,7 +78,7 @@ function TradeSummary({
 
       <StyledRowBetween>
         <StyledRowFixed>
-          <Text fontSize="14px" color="textSubtle">
+          <Text fontSize="14px" color={Color.baseColors.bayWharf}>
             {t('Liquidity Provider Fee')}
           </Text>
           <QuestionHelper
@@ -93,7 +94,7 @@ function TradeSummary({
             placement="top-start"
           />
         </StyledRowFixed>
-        <Text fontSize="14px">
+        <Text fontSize="14px" color={Color.baseColors.bayWharf}>
           {realizedLPFee ? `${realizedLPFee.toSignificant(4)} ${trade.inputAmount.currency.symbol}` : '-'}
         </Text>
       </StyledRowBetween>
@@ -120,7 +121,7 @@ export function AdvancedSwapDetails({ trade }: AdvancedSwapDetailsProps) {
             <>
               <StyledRowBetween style={{ padding: '0 16px' }}>
                 <span style={{ display: 'flex', alignItems: 'center' }}>
-                  <Text fontSize="14px" color="textSubtle">
+                  <Text fontSize="14px" color={Color.baseColors.bayWharf}>
                     {t('Route')}
                   </Text>
                   <QuestionHelper

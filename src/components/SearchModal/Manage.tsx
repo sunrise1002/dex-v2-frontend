@@ -4,11 +4,14 @@ import { ButtonMenu, ButtonMenuItem, ModalBody } from '@pancakeswap/uikit'
 import styled from 'styled-components'
 import { TokenList } from '@uniswap/token-lists'
 import { useTranslation } from '@pancakeswap/localization'
+import { Color } from '@assets'
 import ManageLists from './ManageLists'
 import ManageTokens from './ManageTokens'
 import { CurrencyModalView } from './types'
 
 const StyledButtonMenu = styled(ButtonMenu)`
+  background: ${Color.baseColors.lagoonMirror};
+  border: 0px;
   width: 100%;
 `
 

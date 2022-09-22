@@ -1,4 +1,5 @@
 import React from "react";
+import { Color } from "../../../../../src/assets";
 import { Flex } from "../Box";
 import StyledToggle, { Input, Handle } from "./StyledToggle";
 import { ToggleProps, scales } from "./types";
@@ -15,7 +16,7 @@ const Toggle: React.FC<React.PropsWithChildren<ToggleProps>> = ({
   const isChecked = !!checked;
 
   return (
-    <StyledToggle $checked={isChecked} $checkedColor={checkedColor} $defaultColor={defaultColor} scale={scale}>
+    <StyledToggle $checked={isChecked} $checkedColor={Color.baseColors.cistern} $defaultColor={Color.baseColors.empireStateGrey} scale={scale}>
       <Input checked={checked} scale={scale} {...props} type="checkbox" />
       {startIcon && endIcon ? (
         <>
