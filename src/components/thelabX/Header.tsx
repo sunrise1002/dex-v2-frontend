@@ -4,6 +4,7 @@ import { FarmIcon, LanguageIcon, LiquidityHomeIcon, SettingIcon, SwapHomeIcon } 
 import { useRouter } from 'next/router'
 import { useTranslation } from '@pancakeswap/localization'
 import styled from 'styled-components'
+import { LangSelector, NavProps } from '@pancakeswap/uikit'
 
 const Container = styled.div<StyledProps>`
   flex: 1;
@@ -109,7 +110,7 @@ const ConnectButton = styled.div<StyledProps>`
   }
 `
 
-interface HeaderProps {
+interface HeaderProps extends Partial<NavProps> {
   isHomeScreen?: boolean;
 }
 
@@ -117,7 +118,12 @@ interface StyledProps extends HeaderProps {
   isDisabled?: boolean;
 }
 
-const Header: React.FC<React.PropsWithChildren<HeaderProps>> = ({ isHomeScreen }) => {
+const Header: React.FC<React.PropsWithChildren<HeaderProps>> = ({
+  isHomeScreen,
+  currentLang,
+  langs,
+  setLang,
+}) => {
   const { t } = useTranslation()
   const router = useRouter()
 
@@ -180,7 +186,15 @@ const Header: React.FC<React.PropsWithChildren<HeaderProps>> = ({ isHomeScreen }
 
       <FunctionsWrapper2>
         <SettingWrapper>
-          <LanguageIcon color={isHomeScreen ? Color.baseColors.cistern : Color.baseColors.wizardGrey} />
+          {/* <LanguageIcon color={isHomeScreen ? Color.baseColors.cistern : Color.baseColors.wizardGrey} /> */}
+          <LangSelector
+            currentLang={currentLang}
+            langs={langs}
+            setLang={setLang}
+            buttonScale="xs"
+            color={isHomeScreen ? Color.baseColors.cistern : Color.baseColors.wizardGrey}
+            hideLanguage
+          />
         </SettingWrapper>
 
         <SettingWrapper>

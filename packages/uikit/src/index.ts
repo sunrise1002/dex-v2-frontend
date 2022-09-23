@@ -37,6 +37,7 @@ export * from "./components/Text";
 export * from "./components/Timeline";
 export * from "./components/Toggle";
 export * from "./components/CoinSwitcher";
+export { default as LangSelector } from "./components/LangSelector/LangSelector";
 
 // Hooks
 export * from "./hooks";
